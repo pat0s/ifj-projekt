@@ -162,6 +162,18 @@ Token* read_token()
                 token->value[1] = '\0';
                 strcpy(state, "f21");
             }
+            else if (symbol == '\"')
+            {
+                strcpy(state, "p6");
+            }
+            else if (symbol == ' ' || symbol == '\n')
+            {
+                // iba navrat do s, nic sa nestane
+            }
+            else
+            {
+                // TODO error
+            }
         }
         else if (!strcmp(state, "f4"))
         {
@@ -392,6 +404,81 @@ Token* read_token()
                 ungetc(symbol, stdin);
                 strcpy(token->name, "exponent"); // nazov ?
                 return token;
+            }
+        }
+        else if (!strcmp(state, "p6"))
+        {
+            if (symbol < 32)
+            {
+                // TODO return error
+            }
+            else if (symbol == '\"')
+            {
+                strcpy(state, "f24"); // ?
+                strcpy(token->name, "string"); // nazov ?
+                return token;
+            }
+            else if (symbol == '\\')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "p7");
+            }
+            else
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+            }
+        }
+        else if (!strcmp(state, "p7"))
+        {
+            if (symbol == '\\' || symbol == 't' || symbol == '\"' || symbol == '\\')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "p6");
+            }
+            else if (symbol >= '0' && symbol <= '2')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "p8");
+            }
+            else
+            {
+                // TODO return error
+            }
+        }
+        if (!strcmp(state, "p8"))
+        {
+            if (symbol >= '0' && symbol <= '9')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "p9");
+            }
+            else
+            {
+                // TODO return error
+            }
+        }
+        if (!strcmp(state, "p9"))
+        {
+            if (symbol >= '0' && symbol <= '9')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "p6");
+            }
+            else
+            {
+                // TODO return error
             }
         }
     }  // end while
