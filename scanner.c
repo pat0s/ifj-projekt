@@ -106,6 +106,48 @@ Token* read_token()
                 token->name[1] = '\0';
                 return token;
             }
+            else if (symbol == ':')
+            {
+                token->name[0] = symbol;
+                token->name[1] = '\0';
+                return token;
+            }
+            else if (symbol == '.')
+            {
+                strcpy(state, "p1");
+                token->name[0] = symbol;
+                token->name[1] = '\0';
+            }
+            else if (symbol == ',')
+            {
+                token->name[0] = symbol;
+                token->name[1] = '\0';
+                return token;
+            }
+            else if (symbol == '#')
+            {
+                token->name[0] = symbol;
+                token->name[1] = '\0';
+                return token;
+            }
+            else if (symbol == '<')
+            {
+                strcpy(state, "f13");
+                token->name[0] = symbol;
+                token->name[1] = '\0';
+            }
+            else if (symbol == '>')
+            {
+                strcpy(state, "f15");
+                token->name[0] = symbol;
+                token->name[1] = '\0';
+            }
+            else if (symbol == '~')
+            {
+                strcpy(state, "p2");
+                token->name[0] = symbol;
+                token->name[1] = '\0';
+            }
             else if ((symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z') || symbol == '_')
             {
                 token_allocation(token);
@@ -113,14 +155,21 @@ Token* read_token()
                 token->value[1] = '\0';
                 strcpy(state, "f19");
             }
+            else if (symbol >= '0' && symbol <= '9')
+            {
+                token_allocation(token);
+                token->value[0] = symbol;
+                token->value[1] = '\0';
+                strcpy(state, "f21");
+            }
         }
         else if (!strcmp(state, "f4"))
         {
             if (symbol == '/')
             {
-                token_allocation(token);
-                token->name[token->value_len-1] = symbol;
-                token->name[token->value_len] = '\0';
+                int pos = strlen(token->name);
+                token->name[pos] = symbol;
+                token->name[pos+1] = '\0';
                 strcpy(state, "f5");    // ?
                 return token;
             }
@@ -134,10 +183,72 @@ Token* read_token()
         {
             if (symbol == '=')
             {
-                token_allocation(token);
-                token->name[token->value_len-2] = symbol;
-                token->name[token->value_len-1] = '\0';
+                int pos = strlen(token->name);
+                token->name[pos] = symbol;
+                token->name[pos+1] = '\0';
                 strcpy(state, "f17");    // ?
+                return token;
+            }
+            else
+            {
+                ungetc(symbol, stdin);
+                return token;
+            }
+        }
+        else if (!strcmp(state, "p1"))
+        {
+            if (symbol == '.')
+            {
+                int pos = strlen(token->name);
+                token->name[pos] = symbol;
+                token->name[pos+1] = '\0';
+                strcpy(state, "f10");    // ?
+                return token;
+            }
+            else
+            {
+                // TODO return error
+            }
+        }
+        else if (!strcmp(state, "f13"))
+        {
+            if (symbol == '=')
+            {
+                int pos = strlen(token->name);
+                token->name[pos] = symbol;
+                token->name[pos+1] = '\0';
+                strcpy(state, "f14");    // ?
+                return token;
+            }
+            else
+            {
+                // TODO: return error
+            }
+        }
+        else if (!strcmp(state, "f15"))
+        {
+            if (symbol == '=')
+            {
+                int pos = strlen(token->name);
+                token->name[pos] = symbol;
+                token->name[pos+1] = '\0';
+                strcpy(state, "f16");    // ?
+                return token;
+            }
+            else
+            {
+                ungetc(symbol, stdin);
+                return token;
+            }
+        }
+        else if (!strcmp(state, "p2"))
+        {
+            if (symbol == '=')
+            {
+                int pos = strlen(token->name);
+                token->name[pos] = symbol;
+                token->name[pos+1] = '\0';
+                strcpy(state, "f18");    // ?
                 return token;
             }
             else
@@ -167,6 +278,121 @@ Token* read_token()
                 }
                 return token;
             }          
+        }
+        else if (!strcmp(state, "f21"))
+        {
+            if (symbol >= '0' && symbol <= '9')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+            }
+            else if (symbol == 'e' || symbol == 'E')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "p4");
+            }
+            else if (symbol == '.')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "p3");	
+            }
+            else
+            {
+                strcpy(token->name, "int"); // nazov?
+                ungetc(symbol, stdin);
+                return token;
+            }
+        }
+        else if (!strcmp(state, "p3"))
+        {
+            if (symbol >= '0' && symbol <= '9')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "f22");	
+            }
+            else
+            {
+                // TODO return error
+            }
+        }
+        else if (!strcmp(state, "p4"))
+        {
+            if (symbol == '+' || symbol == '-')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "p5");
+            }
+            else if (symbol >= '0' && symbol <= '9')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "f23");
+            }
+            else
+            {
+                //TODO return error
+            }
+        }
+        else if (!strcmp(state, "f22"))
+        {
+            if (symbol >= '0' && symbol <= '9')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+            }
+            else if(symbol == 'e' || symbol == 'E')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "p4");
+            }
+            else
+            {
+                ungetc(symbol, stdin);
+                strcpy(token->name, "float"); // nazov ?
+                return token;
+            }
+        }
+        else if (!strcmp(state, "p5"))
+        {
+            if (symbol >= '0' && symbol <= '9')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+                strcpy(state, "f23");
+            }
+            else
+            {
+                // TODO return error
+            }
+        }
+        else if (!strcmp(state, "f23"))
+        {
+            if (symbol >= '0' && symbol <= '9')
+            {
+                token_allocation(token);
+                token->value[token->value_len-2] = symbol;
+                token->value[token->value_len-1] = '\0';
+            }
+            else
+            {
+                ungetc(symbol, stdin);
+                strcpy(token->name, "exponent"); // nazov ?
+                return token;
+            }
         }
     }  // end while
 }
