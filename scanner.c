@@ -207,40 +207,40 @@ Token* read_token()
         {
             if (symbol == '\n')
             {
-                strcmp(state, "s");
+                strcpy(state, "s");
             }
         }
         else if (!strcmp(state, "p12"))
         {
             if (symbol == '[')
             {
-                strcmp(state, "p13");
+                strcpy(state, "p13");
             }
             else if (symbol == '\n')
             {
-                strcmp(state, "s");
+                strcpy(state, "s");
             }
             else
             {
-                strcmp(state, "p11");
+                strcpy(state, "p11");
             }
         }
         else if (!strcmp(state, "p13"))
         {
             if (symbol == ']')
             {
-                strcmp(state, "p14");
+                strcpy(state, "p14");
             }
         }
         else if (!strcmp(state, "p14"))
         {
             if (symbol == ']')
             {
-                strcmp(state, "s");
+                strcpy(state, "s");
             }
             else
             {
-                strcmp(state, "p13");
+                strcpy(state, "p13");
             }       
         }
         else if (!strcmp(state, "f4"))
