@@ -172,8 +172,76 @@ Token* read_token()
             }
             else
             {
-                // TODO error
+                // TODO return error
             }
+        }
+        else if (!strcmp(state, "f2"))
+        {
+            // TODO kontrola
+            if (symbol == '-')
+            {
+                strcpy(state, "p10");
+            }
+            else
+            {
+                ungetc(symbol, stdin);
+                return token;
+            }
+        }
+        else if (!strcmp(state, "p10"))
+        {
+            if (symbol == '[')
+            {
+                strcpy(state, "p12");
+            }
+            else if (symbol == '\n')
+            {
+                strcpy(state, "s");
+            }
+            else
+            {
+                strcpy(state, "p11");
+            } 
+        }
+        else if (!strcmp(state, "p11"))
+        {
+            if (symbol == '\n')
+            {
+                strcmp(state, "s");
+            }
+        }
+        else if (!strcmp(state, "p12"))
+        {
+            if (symbol == '[')
+            {
+                strcmp(state, "p13");
+            }
+            else if (symbol == '\n')
+            {
+                strcmp(state, "s");
+            }
+            else
+            {
+                strcmp(state, "p11");
+            }
+        }
+        else if (!strcmp(state, "p13"))
+        {
+            if (symbol == ']')
+            {
+                strcmp(state, "p14");
+            }
+        }
+        else if (!strcmp(state, "p14"))
+        {
+            if (symbol == ']')
+            {
+                strcmp(state, "s");
+            }
+            else
+            {
+                strcmp(state, "p13");
+            }       
         }
         else if (!strcmp(state, "f4"))
         {
