@@ -1,7 +1,19 @@
+/**
+ * @file scanner.c
+ * 
+ * @brief Implementation of Scanner
+ * @author Patrik Sehnoutek, xsehno01
+ */
+
 #include "scanner.h"
 #include <string.h>
 
 
+/**
+ * @brief Function for token initialisation
+ * 
+ * @param token Pointer to token struct
+ */
 void token_initialisation(Token *token)
 {
     token->value = NULL;
@@ -9,6 +21,11 @@ void token_initialisation(Token *token)
 }
 
 
+/**
+ * @brief Function for token allocation
+ * 
+ * @param token Pointer to token struct
+ */
 void token_allocation(Token *token)
 {
     if (token->value)
@@ -24,6 +41,12 @@ void token_allocation(Token *token)
 }
 
 
+/**
+ * @brief Function to check if the given string literal is keyword
+ * 
+ * @param unknown Pointer to loaded string literal
+ * @returns True/False
+ */
 bool check_keyword(const char *unknown)
 {
     for (int i = 0; i < 12; i++)
@@ -37,6 +60,13 @@ bool check_keyword(const char *unknown)
 }
 
 
+/**
+ * @brief Function for adding new symbol to token value 
+ * 
+ * @param token Pointer to token struct
+ * @param symbol Loaded character
+ * @returns True/False
+ */
 bool add_symbol(Token *token, char symbol)
 {
     token_allocation(token);
@@ -53,11 +83,15 @@ bool add_symbol(Token *token, char symbol)
     return true;
 }
 
-
+/**
+ * @brief Implemented Finite State Machine (FSM)
+ * 
+ * @returns Pointer to token struct or NULL
+ */
 Token* read_token()
 {
     Token *token = (Token*) malloc(sizeof(Token));
-    if (token == NULL) return NULL;  // *token
+    if (token == NULL) return NULL;
     
     token_initialisation(token);
 
@@ -178,6 +212,11 @@ Token* read_token()
             else if (symbol == EOF)
             {
                 strcpy(token->name, "-1"); 
+                return token;
+            }
+            else
+            {
+                strcpy(token->name, "1");
                 return token;
             }
         }
