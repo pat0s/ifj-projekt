@@ -15,13 +15,11 @@ void token_allocation(Token *token)
     {
         token->value_len++;
         token->value = realloc(token->value, (token->value_len)*sizeof(char));
-        // TODO osetrenie
     }
     else
     {
         token->value = (char*)malloc(2*sizeof(char));
         token->value_len = 2;
-        // TODO osetrenie
     }
 }
 
@@ -39,17 +37,38 @@ bool check_keyword(const char *unknown)
 }
 
 
+bool add_symbol(Token *token, char symbol)
+{
+    token_allocation(token);
+    if (token->value == NULL)
+    {
+        token->value_len = 0;
+        strcpy(token->name, "99"); 
+        return false;
+    }
+    
+    token->value[token->value_len-2] = symbol;
+    token->value[token->value_len-1] = '\0';
+
+    return true;
+}
+
+
 Token* read_token()
 {
     Token *token = (Token*) malloc(sizeof(Token));
-    // TODO osetrenie
+    if (token == NULL) return NULL;  // *token
+    
     token_initialisation(token);
 
     char state[4] = "s";
     int symbol;
 
-    while((symbol = getchar()) != EOF)
+    do
     {
+        // Read char from stdin
+        symbol = getchar();
+
         if (!strcmp(state, "s"))
         {
             if (symbol == '+')
@@ -138,16 +157,14 @@ Token* read_token()
             }
             else if ((symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z') || symbol == '_')
             {
-                token_allocation(token);
-                token->value[0] = symbol;
-                token->value[1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "f19");
             }
             else if (symbol >= '0' && symbol <= '9')
             {
-                token_allocation(token);
-                token->value[0] = symbol;
-                token->value[1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "f21");
             }
             else if (symbol == '\"')
@@ -156,11 +173,12 @@ Token* read_token()
             }
             else if (symbol == ' ' || symbol == '\n')
             {
-                // iba navrat do s, nic sa nestane
+                strcpy(state, "s");
             }
-            else
+            else if (symbol == EOF)
             {
-                // TODO return error
+                strcpy(token->name, "-1"); 
+                return token;
             }
         }
         else if (!strcmp(state, "f2"))
@@ -330,9 +348,8 @@ Token* read_token()
         {
             if((symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z') || (symbol >= '0' && symbol <= '9') || symbol == '_')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
             }
             else
             {
@@ -352,22 +369,19 @@ Token* read_token()
         {
             if (symbol >= '0' && symbol <= '9')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
             }
             else if (symbol == 'e' || symbol == 'E')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "p4");
             }
             else if (symbol == '.')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "p3");	
             }
             else
@@ -381,9 +395,8 @@ Token* read_token()
         {
             if (symbol >= '0' && symbol <= '9')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "f22");	
             }
             else
@@ -396,16 +409,14 @@ Token* read_token()
         {
             if (symbol == '+' || symbol == '-')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "p5");
             }
             else if (symbol >= '0' && symbol <= '9')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "f23");
             }
             else
@@ -418,15 +429,13 @@ Token* read_token()
         {
             if (symbol >= '0' && symbol <= '9')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
             }
             else if(symbol == 'e' || symbol == 'E')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "p4");
             }
             else
@@ -440,9 +449,8 @@ Token* read_token()
         {
             if (symbol >= '0' && symbol <= '9')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "f23");
             }
             else
@@ -455,9 +463,8 @@ Token* read_token()
         {
             if (symbol >= '0' && symbol <= '9')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
             }
             else
             {
@@ -481,32 +488,28 @@ Token* read_token()
             }
             else if (symbol == '\\')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "p7");
             }
             else
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
             }
         }
         else if (!strcmp(state, "p7"))
         {
             if (symbol == '\n' || symbol == '\t' || symbol == '\"' || symbol == '\\')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "p6");
             }
             else if (symbol >= '0' && symbol <= '2')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "p8");
             }
             else
@@ -519,9 +522,8 @@ Token* read_token()
         {
             if (symbol >= '0' && symbol <= '9')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "p9");
             }
             else
@@ -534,9 +536,8 @@ Token* read_token()
         {
             if (symbol >= '0' && symbol <= '9')
             {
-                token_allocation(token);
-                token->value[token->value_len-2] = symbol;
-                token->value[token->value_len-1] = '\0';
+                if (!add_symbol(token, symbol))
+                    return token;
                 strcpy(state, "p6");
             }
             else
@@ -545,7 +546,8 @@ Token* read_token()
                 return token;
             }
         }
-    }  // end while
+    }  // end do-while
+    while(symbol != EOF);
 
     return token;
 }
