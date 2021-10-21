@@ -32,6 +32,8 @@ void token_allocation( Token *token );
 
 bool check_keyword (const char *unknown );
 
+bool add_symbol( Token *token, char symbol );
+
 Token* read_token();
 
 #endif
