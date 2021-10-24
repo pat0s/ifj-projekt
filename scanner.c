@@ -591,18 +591,4 @@ Token* read_token()
     return token;
 }
 
-// TODO: vymazat, iba na ucely testovania
-int main()
-{
-    Token *token = read_token();
-    if (token->name)
-        printf("name: %s\n", token->name);
-    if (token->value)
-    {
-        printf("value: ");
-        for (int i = 0; i < token->value_len-1; i++)
-            printf("%c", token->value[i]);
-    }
-        
-    return 0;
-}
+/* End of file scanner.c */
