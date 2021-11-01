@@ -18,10 +18,17 @@ typedef struct sAnalysRet{
 } analysRet;
 
 
-bool precAnalys(){
 
 
-}
+
+analysRet fRet_type(Token *token, enum STATE *state);
+analysRet fType(Token *token, enum STATE *state);
+analysRet fTypes(Token *token, enum STATE *state);
+analysRet fPar_type(Token *token, enum STATE *state);
+analysRet fProg_con(Token *token, enum STATE *state);
+analysRet fExp(Token *token, enum STATE *state);
+analysRet synAnalys(Token *token, enum STATE *state);
+
 
 
 
@@ -82,59 +89,111 @@ void checkError(int errorValue, Token *token){
 
 
 
-analysRet synAnalys(Token *token, enum STATE *state){
+
+analysRet fRet_type(Token *token, enum STATE *state){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
-    
-    //STRCMP -> ak sa stringy rovnaju, tak je return 0, preto v podmienkach !
-    if(*state == prog){
-        if(!strcmp(token->name,"keyword") && !strcmp(token->value,"require")){
-            //nacitanie dalsieho tokenu
+
+    //TODO AK JE TOKEN EPSILON
+    if(!strcmp(token->name,":")){
+    //TODO treba poriesit EPSILON, zasekol som sa pri <type>-> EPSILON a <types>->EPSILON
+    } 
+}
+
+
+analysRet fType(Token *token, enum STATE *state){
+    int errorValue;
+    analysRet returnValue;
+    returnValue.SynCorrect = 0;
+
+    if(!strcmp(token->name,"string") || !strcmp(token->name,"integer") || !strcmp(token->name,"number")){
+            return returnValue;
+        }
+        else{
+            returnValue.SynCorrect = 2;
+            return returnValue;
+        }
+}
+
+
+
+analysRet fTypes(Token *token, enum STATE *state){
+    int errorValue;
+    analysRet returnValue;
+    returnValue.SynCorrect = 0;
+
+      if(!strcmp(token->name,")")){
+            //parameter funkcie je prazdny, nie je tam nic 
+            return returnValue;
+        }
+        else if(!strcmp(token->name,",")){
+
+             //ocakavam <type>
             errorValue = read_token(token);
             checkError(errorValue, token);
-            
 
-            //Zmena stavu a nasledne rekurzivne zanorenie
-            *state = exp;
-            returnValue = synAnalys(token, state);
+            *state = type;
+            returnValue = fType(token, state);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
-            
 
-            //Natahanie dalsieho tokenu
+
+
+             //ocakavam <types>
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            //Zmena stavu a rekurzovne zanorenie
-            *state = prog_con;
-            returnValue = synAnalys(token, state);
+            *state = types;
+            //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
+            returnValue = fTypes(token, state);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
         }
         else{
-            fprintf(stderr, "Syntax Error\n");
-            exit(SYNTAX_ERROR);
+            returnValue.SynCorrect = 2;
+            return returnValue;
         }
-    }
-    else if(*state == exp){
-        //TODO CALL precedencnu analyzu
-        //TODO check token in symtable
-        
-        //if(!isExpression()){
-            if(!strcmp(token->name,"string") && !strcmp(token->value,"ifj21")){
-                returnValue.SynCorrect = 0;
-                return returnValue;
-            }
-            else{
-                returnValue.SynCorrect = 2;
-                return returnValue;
-            }
-        //}
+}
 
-    }
-    else if(*state == prog_con){
-        if(!strcmp(token->name,"keyword") && !strcmp(token->value,"global")){
+
+
+analysRet fPar_type(Token *token, enum STATE *state){
+    int errorValue;
+    analysRet returnValue;
+    returnValue.SynCorrect = 0;
+
+     if(!strcmp(token->name,")")){
+            //parameter funkcie je prazdny, nie je tam nic 
+            return returnValue;
+        }
+        else if(!strcmp(token->name,"string") || !strcmp(token->name,"integer") || !strcmp(token->name,"number")){
+            //parameter je jeden z datovych typov
+
+
+            //ocakavam <types>
+            errorValue = read_token(token);
+            checkError(errorValue, token);
+
+            //Zmena stavu na types
+            *state = types;
+            returnValue = fTypes(token, state);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(returnValue.SynCorrect, token);
+        }
+        else{
+            returnValue.SynCorrect = 2;
+            return returnValue;
+        }
+}
+
+
+analysRet fProg_con(Token *token, enum STATE *state){
+    int errorValue;
+    analysRet returnValue;
+    returnValue.SynCorrect = 0;
+
+    if(!strcmp(token->name,"keyword") && !strcmp(token->value,"global")){
               
             //nacitanie ID funkcie
             //TODO pridaj do tabulky symbolov
@@ -164,7 +223,7 @@ analysRet synAnalys(Token *token, enum STATE *state){
                         
                         //Zmena stavu
                         *state = par_type;
-                        returnValue = synAnalys(token, state);
+                        returnValue = fPar_type(token, state);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
 
@@ -174,9 +233,9 @@ analysRet synAnalys(Token *token, enum STATE *state){
                         checkError(errorValue, token);
                         
                         //Zmena stavu
-                        *state = par_type;
+                        *state = ret_type;
                         //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
-                        returnValue = synAnalys(token, state);
+                        returnValue = fRet_type(token, state);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
 
@@ -220,88 +279,62 @@ analysRet synAnalys(Token *token, enum STATE *state){
             returnValue.SynCorrect = 2;
             return returnValue;
         }
-
-    }
-    else if(*state == ret_type){
-        //TODO AK JE TOKEN EPSILON
-        if(!strcmp(token->name,":")){
-        //TODO treba poriesit EPSILON, zasekol som sa pri <type>-> EPSILON a <types>->EPSILON
-        }
+}
 
 
-    }
-    else if(*state == par_type){
-        if(!strcmp(token->name,")")){
-            //parameter funkcie je prazdny, nie je tam nic 
-            return returnValue;
-        }
-        else if(!strcmp(token->name,"string") || !strcmp(token->name,"integer") || !strcmp(token->name,"number")){
-            //parameter je jeden z datovych typov
 
+analysRet fExp(Token *token, enum STATE *state){
+    int errorValue;
+    analysRet returnValue;
+    returnValue.SynCorrect = 0;
 
-            //ocakavam <types>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
-
-            //Zmena stavu na types
-            *state = types;
-            returnValue = synAnalys(token, state);
-                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
-        }
-        else{
-            returnValue.SynCorrect = 2;
-            return returnValue;
-        }
-
-
-    }
-    else if(*state == type){
-        if(!strcmp(token->name,"string") || !strcmp(token->name,"integer") || !strcmp(token->name,"number")){
+    //TODO CALL precedencnu analyzu
+    //TODO check token in symtable
+        
+    //if(!isExpression()){
+        if(!strcmp(token->name,"string") && !strcmp(token->value,"ifj21")){
+            returnValue.SynCorrect = 0;
             return returnValue;
         }
         else{
             returnValue.SynCorrect = 2;
             return returnValue;
         }
+    //}
+}
 
 
+analysRet synAnalys(Token *token, enum STATE *state){
+    int errorValue;
+    analysRet returnValue;
+    returnValue.SynCorrect = 0;
+    
+    //STRCMP -> ak sa stringy rovnaju, tak je return 0, preto v podmienkach !
+    //Inizializovany stav, state->prog
+    if(!strcmp(token->name,"keyword") && !strcmp(token->value,"require")){
+        //nacitanie dalsieho tokenu
+        errorValue = read_token(token);
+        checkError(errorValue, token);
+            
+
+        //Zmena stavu a nasledne rekurzivne zanorenie
+        *state = exp;
+        returnValue = fExp(token, state);
+            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+        checkError(returnValue.SynCorrect, token);
+            
+
+        //Natahanie dalsieho tokenu
+        errorValue = read_token(token);
+        checkError(errorValue, token);
+
+        //Zmena stavu a rekurzovne zanorenie
+        *state = prog_con;
+        returnValue = fProg_con(token, state);
+            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+        checkError(returnValue.SynCorrect, token);
     }
-
-    else if(*state == types){
-        if(!strcmp(token->name,")")){
-            //parameter funkcie je prazdny, nie je tam nic 
-            return returnValue;
-        }
-        else if(!strcmp(token->name,",")){
-
-             //ocakavam <type>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
-
-            *state = type;
-            returnValue = synAnalys(token, state);
-                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
-
-
-
-             //ocakavam <types>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
-
-            *state = types;
-            //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
-            returnValue = synAnalys(token, state);
-                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
-        }
-        else{
-            returnValue.SynCorrect = 2;
-            return returnValue;
-        }
-
-    }
+        
 
     return returnValue;
 }   
