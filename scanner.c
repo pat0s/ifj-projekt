@@ -50,7 +50,7 @@ void token_allocation(Token *token)
  */
 bool check_keyword(const char *unknown)
 {
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < KEYWORDS_SIZE; i++)
     {
         if (!strcmp(unknown, keywords[i]))
         {

@@ -17,6 +17,7 @@
 
 /** Array of keywords **/
 const char keywords[][9] = {"do", "else", "end", "function", "global", "if", "local", "nil", "require", "return", "then", "while", "string", "integer", "number"};
+#define KEYWORDS_SIZE 15
 
 /** Token **/
 typedef struct Token
