@@ -95,10 +95,41 @@ analysRet fRet_type(Token *token, enum STATE *state){
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
-    //TODO AK JE TOKEN EPSILON
+    
     if(!strcmp(token->name,":")){
     //TODO treba poriesit EPSILON, zasekol som sa pri <type>-> EPSILON a <types>->EPSILON
-    } 
+       
+        //ocakavam <type>
+        errorValue = read_token(token);
+        checkError(errorValue, token);
+        //Zanorenie sa do fType
+
+        returnValue = fType(token, state);
+         //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+        checkError(returnValue.SynCorrect, token);
+        
+         //ocakavam <types>
+        errorValue = read_token(token);
+        checkError(errorValue, token);
+        
+        //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
+        //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
+        returnValue = fTypes(token, state);
+            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+        checkError(returnValue.SynCorrect, token);
+    
+    
+    }
+    else if((!strcmp(token->name,"keyword") && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))) || !strcmp(token->name,"identifier")){
+        //Znaci EPSILON prechod od <prog_con>, pravidlo 3., 4. a 5. 
+        return returnValue;
+    }
+    else if(!strcmp(token->name,"-1")){
+        //Znaci EPSILON prechod od <prog_con>, pravidlo 2. 
+        return returnValue;
+    }
+    
+    return returnValue;
 }
 
 
@@ -107,7 +138,7 @@ analysRet fType(Token *token, enum STATE *state){
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
-    if(!strcmp(token->name,"string") || !strcmp(token->name,"integer") || !strcmp(token->name,"number")){
+    if(!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")){
             return returnValue;
         }
         else{
@@ -123,8 +154,9 @@ analysRet fTypes(Token *token, enum STATE *state){
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
-      if(!strcmp(token->name,")")){
+        if(!strcmp(token->name,")") && *state == par_type){
             //parameter funkcie je prazdny, nie je tam nic 
+            //riesim parameter funkcie a momentalne je token v parmetri brany ako EPSILON
             return returnValue;
         }
         else if(!strcmp(token->name,",")){
@@ -133,7 +165,7 @@ analysRet fTypes(Token *token, enum STATE *state){
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            *state = type;
+            //Zanorenie sa do fType
             returnValue = fType(token, state);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
@@ -144,16 +176,31 @@ analysRet fTypes(Token *token, enum STATE *state){
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            *state = types;
+            
+            //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
             //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
             returnValue = fTypes(token, state);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
         }
+        else if((*state == ret_type && !strcmp(token->name,"keyword")) && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))){
+            //Znaci EPSILON prechod od <prog_con>, pravidlo 3. a 4. 
+            return returnValue;
+
+        }
+        else if(*state == ret_type && !strcmp(token->name,"identifier")){
+            //Znaci EPSILON prechod od <prog_con>, pravidlo 5. 
+            return returnValue;
+        }
+        else if(*state == ret_type && !strcmp(token->name,"-1")){
+            //Znaci EPSILON prechod od <prog_con>, pravidlo 2.
+            return returnValue;
+        }
         else{
             returnValue.SynCorrect = 2;
             return returnValue;
         }
+    return returnValue;
 }
 
 
@@ -162,21 +209,21 @@ analysRet fPar_type(Token *token, enum STATE *state){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
+    
+
 
      if(!strcmp(token->name,")")){
             //parameter funkcie je prazdny, nie je tam nic 
             return returnValue;
         }
-        else if(!strcmp(token->name,"string") || !strcmp(token->name,"integer") || !strcmp(token->name,"number")){
+        else if(!strcmp(token->name,"identifier") && (!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")) ){
             //parameter je jeden z datovych typov
-
 
             //ocakavam <types>
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            //Zmena stavu na types
-            *state = types;
+            //Zanorenie sa do funkcie fTypes, kde budem riesit datove typy
             returnValue = fTypes(token, state);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
@@ -185,6 +232,7 @@ analysRet fPar_type(Token *token, enum STATE *state){
             returnValue.SynCorrect = 2;
             return returnValue;
         }
+    return returnValue;
 }
 
 
@@ -239,7 +287,17 @@ analysRet fProg_con(Token *token, enum STATE *state){
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
 
-                         
+
+                        //Ocakavam <prog_con>
+                        errorValue = read_token(token);
+                        checkError(errorValue, token);
+                        
+                        //Zmena stavu
+                        *state = prog_con;
+                        //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
+                        returnValue = fRet_type(token, state);
+                            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                         checkError(returnValue.SynCorrect, token);
                     }
                     else{
                         returnValue.SynCorrect = 2;
@@ -271,14 +329,14 @@ analysRet fProg_con(Token *token, enum STATE *state){
 
         }
         else if(!strcmp(token->name,"-1")){
-            //Token je to EOF
-
-
+            //Token je to EOF, znaeci EPSILON
+            return returnValue;
         }
         else{
             returnValue.SynCorrect = 2;
             return returnValue;
         }
+    return returnValue;
 }
 
 
