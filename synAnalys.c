@@ -108,6 +108,7 @@ analysRet fRet_type(Token *token, enum STATE *state){
          //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
         
+
          //ocakavam <types>
         errorValue = read_token(token);
         checkError(errorValue, token);
@@ -122,10 +123,16 @@ analysRet fRet_type(Token *token, enum STATE *state){
     }
     else if((!strcmp(token->name,"keyword") && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))) || !strcmp(token->name,"identifier")){
         //Znaci EPSILON prechod od <prog_con>, pravidlo 3., 4. a 5. 
+        
+
         return returnValue;
     }
     else if(!strcmp(token->name,"-1")){
         //Znaci EPSILON prechod od <prog_con>, pravidlo 2. 
+        return returnValue;
+    }
+    else{
+        returnValue.SynCorrect = 2;
         return returnValue;
     }
     
@@ -184,9 +191,13 @@ analysRet fTypes(Token *token, enum STATE *state){
             checkError(returnValue.SynCorrect, token);
         }
         else if((*state == ret_type && !strcmp(token->name,"keyword")) && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))){
-            //Znaci EPSILON prechod od <prog_con>, pravidlo 3. a 4. 
-            return returnValue;
+            //Znaci EPSILON prechod od <prog_con>, pravidlo 3. a 4.
+            // printf("name : %s\n", token->name);
+            // printf("value : %s\n", token->value);
 
+             //TODO vratit TOKEN, treba nejako
+
+            return returnValue;
         }
         else if(*state == ret_type && !strcmp(token->name,"identifier")){
             //Znaci EPSILON prechod od <prog_con>, pravidlo 5. 
@@ -211,8 +222,8 @@ analysRet fPar_type(Token *token, enum STATE *state){
     returnValue.SynCorrect = 0;
     
 
-    printf("name : %s\n", token->name);
-    printf("value : %s\n", token->value);
+   // printf("name : %s\n", token->name);
+   // printf("value : %s\n", token->value);
 
      if(!strcmp(token->name,")")){
             //parameter funkcie je prazdny, nie je tam nic 
@@ -268,6 +279,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
                     if(!strcmp(token->name,"(")){
                         
                         //Ocakavam <par-type>
+                        
                         errorValue = read_token(token);
                         checkError(errorValue, token);
                         
@@ -290,16 +302,14 @@ analysRet fProg_con(Token *token, enum STATE *state){
                          checkError(returnValue.SynCorrect, token);
 
 
-                        //Ocakavam <prog_con>
-                        errorValue = read_token(token);
-                        checkError(errorValue, token);
-                        
+                        //Ocakavam <prog_con>                        
                         //Zmena stavu
                         *state = prog_con;
                         //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
-                        returnValue = fRet_type(token, state);
+                        returnValue = fProg_con(token, state);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
+                        
                     }
                     else{
                         returnValue.SynCorrect = 2;
@@ -319,8 +329,8 @@ analysRet fProg_con(Token *token, enum STATE *state){
             }
 
         }
-        else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"local")){
-
+        else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
+           
 
 
         }
