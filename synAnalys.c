@@ -211,12 +211,14 @@ analysRet fPar_type(Token *token, enum STATE *state){
     returnValue.SynCorrect = 0;
     
 
+    printf("name : %s\n", token->name);
+    printf("value : %s\n", token->value);
 
      if(!strcmp(token->name,")")){
             //parameter funkcie je prazdny, nie je tam nic 
             return returnValue;
         }
-        else if(!strcmp(token->name,"identifier") && (!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")) ){
+        else if(!strcmp(token->name,"keyword") && (!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")) ){
             //parameter je jeden z datovych typov
 
             //ocakavam <types>
@@ -392,6 +394,10 @@ analysRet synAnalys(Token *token, enum STATE *state){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
     }
+    else{
+        returnValue.SynCorrect = 2;
+        return returnValue;
+    }
         
 
     return returnValue;
@@ -418,7 +424,7 @@ int main(){
 
 
     analysRet returnValue = synAnalys(token, state);
-
+    checkError(returnValue.SynCorrect, token);
     
     
     printf("Syn analys: %d", returnValue.SynCorrect);  
