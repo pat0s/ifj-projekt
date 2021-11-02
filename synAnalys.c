@@ -97,7 +97,7 @@ analysRet fRet_type(Token *token, enum STATE *state){
 
     
     if(!strcmp(token->name,":")){
-    //TODO treba poriesit EPSILON, zasekol som sa pri <type>-> EPSILON a <types>->EPSILON
+    //Nacitane: global ID : function(<par-type>) : 
        
         //ocakavam <type>
         errorValue = read_token(token);
@@ -107,6 +107,7 @@ analysRet fRet_type(Token *token, enum STATE *state){
         returnValue = fType(token, state);
          //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
+        //Nacitane: global ID : function(<par-type>) : integer
         
 
          //ocakavam <types>
@@ -118,20 +119,22 @@ analysRet fRet_type(Token *token, enum STATE *state){
         returnValue = fTypes(token, state);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
-    
+
+        //Nacitane: global ID : function(<par-type>) : integer, string
     
     }
     else if((!strcmp(token->name,"keyword") && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))) || !strcmp(token->name,"identifier")){
-        //Znaci EPSILON prechod od <prog_con>, pravidlo 3., 4. a 5. 
+        //Znaci EPSILON prechod do <prog_con>, pravidlo 3., 4. a 5. 
         
 
         return returnValue;
     }
     else if(!strcmp(token->name,"-1")){
-        //Znaci EPSILON prechod od <prog_con>, pravidlo 2. 
+        //Znaci EPSILON prechod do <prog_con>, pravidlo 2. 
         return returnValue;
     }
     else{
+        printf("Error in state %d, fRet_type\n", *state);
         returnValue.SynCorrect = 2;
         return returnValue;
     }
@@ -149,6 +152,7 @@ analysRet fType(Token *token, enum STATE *state){
             return returnValue;
         }
         else{
+            printf("Error in state %d, fType\n", *state);
             returnValue.SynCorrect = 2;
             return returnValue;
         }
@@ -162,12 +166,14 @@ analysRet fTypes(Token *token, enum STATE *state){
     returnValue.SynCorrect = 0;
 
         if(!strcmp(token->name,")") && *state == par_type){
+            //Nacitane: global ID : function (string,integer) 
+
             //parameter funkcie je prazdny, nie je tam nic 
             //riesim parameter funkcie a momentalne je token v parmetri brany ako EPSILON
             return returnValue;
         }
         else if(!strcmp(token->name,",")){
-
+            //Nacitane: global ID : function (string, 
              //ocakavam <type>
             errorValue = read_token(token);
             checkError(errorValue, token);
@@ -176,6 +182,7 @@ analysRet fTypes(Token *token, enum STATE *state){
             returnValue = fType(token, state);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
+            //Nacitane: global ID : function (string, integer  / global ID : function (string,integer) : integer, integer
 
 
 
@@ -189,6 +196,7 @@ analysRet fTypes(Token *token, enum STATE *state){
             returnValue = fTypes(token, state);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
+            //Nacitane: global ID : function (string, integer,number, / global ID : function (string,integer) : integer, integer, string, 
         }
         else if((*state == ret_type && !strcmp(token->name,"keyword")) && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))){
             //Znaci EPSILON prechod od <prog_con>, pravidlo 3. a 4.
@@ -208,6 +216,7 @@ analysRet fTypes(Token *token, enum STATE *state){
             return returnValue;
         }
         else{
+            printf("Error in state %d, fTypes\n", *state);
             returnValue.SynCorrect = 2;
             return returnValue;
         }
@@ -226,6 +235,7 @@ analysRet fPar_type(Token *token, enum STATE *state){
    // printf("value : %s\n", token->value);
 
      if(!strcmp(token->name,")")){
+            //Nacitane: global ID : function ()
             //parameter funkcie je prazdny, nie je tam nic 
             return returnValue;
         }
@@ -240,8 +250,10 @@ analysRet fPar_type(Token *token, enum STATE *state){
             returnValue = fTypes(token, state);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
+            //Nacitane: global ID : function (string, integer)
         }
         else{
+            printf("Error in state %d, fPar_type\n", *state);
             returnValue.SynCorrect = 2;
             return returnValue;
         }
@@ -255,31 +267,35 @@ analysRet fProg_con(Token *token, enum STATE *state){
     returnValue.SynCorrect = 0;
 
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"global")){
+        //Riesime pravidlo 3. kedy ideme inizializovat globalnu funkciu
+        //nacitane: global, pravidlo 3.
               
             //nacitanie ID funkcie
             //TODO pridaj do tabulky symbolov
             errorValue = read_token(token);
             checkError(errorValue, token);
+            //nacitane: global ID
             
             //ocakavanie dvojbodky
             errorValue = read_token(token);
             checkError(errorValue, token);
 
             if(!strcmp(token->name, ":")){
+            //nacitane: global ID :
                 //Ocakavam klucove slovo 'function'
                 errorValue = read_token(token);
                 checkError(errorValue, token);
 
                 if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
-                
+                //Nacitane: global ID : function
                     //Ocakavam '('
                     errorValue = read_token(token);
                     checkError(errorValue, token);
 
                     if(!strcmp(token->name,"(")){
+                    //Nacitane: global ID : function (
                         
                         //Ocakavam <par-type>
-                        
                         errorValue = read_token(token);
                         checkError(errorValue, token);
                         
@@ -288,6 +304,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
                         returnValue = fPar_type(token, state);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
+                        //Nacitane: global ID : function(<par-type>)
 
 
                         //Ocakavam <ret-type>
@@ -300,6 +317,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
                         returnValue = fRet_type(token, state);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
+                        //Nacitane: global ID : function(<par-type>)<ret-type>
 
 
                         //Ocakavam <prog_con>                        
@@ -309,45 +327,51 @@ analysRet fProg_con(Token *token, enum STATE *state){
                         returnValue = fProg_con(token, state);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
+                        //Nacitane: global ID : function(<par-type>)<ret-type><prog-con>
                         
                     }
                     else{
+                        printf("Error in state %d, \'(\' not included\n", *state);
                         returnValue.SynCorrect = 2;
                         return returnValue;
                     }
 
                 }
                 else{
+                    printf("Error in state %d, function keyword not included\n", *state);
                     returnValue.SynCorrect = 2;
                     return returnValue;
                 }
 
             }
             else{
+                printf("Error in state %d, : not included\n", *state);
                 returnValue.SynCorrect = 2;
                 return returnValue;
             }
 
-        }
-        else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
-           
+    }
+    else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
+        //Nacitane: function, pravidlo 4.
 
 
-        }
-        else if(!strcmp(token->name,"identifier")){
-
+    }
+    else if(!strcmp(token->name,"identifier")){
+        //Nacitane: ID, pravidlo 5.
 
         
 
-        }
-        else if(!strcmp(token->name,"-1")){
-            //Token je to EOF, znaeci EPSILON
-            return returnValue;
-        }
-        else{
-            returnValue.SynCorrect = 2;
-            return returnValue;
-        }
+    }
+    else if(!strcmp(token->name,"-1")){
+        //Token je to EOF, znaeci EPSILON
+        //Nacitane: EPSILON, pravidlo 2.
+        return returnValue;
+    }
+    else{
+        printf("Error in state %d, fProg_con\n", *state);
+        returnValue.SynCorrect = 2;
+        return returnValue;
+    }
     return returnValue;
 }
 
@@ -367,6 +391,7 @@ analysRet fExp(Token *token, enum STATE *state){
             return returnValue;
         }
         else{
+            printf("Error in state %d, fExp\n", *state);
             returnValue.SynCorrect = 2;
             return returnValue;
         }
@@ -405,6 +430,7 @@ analysRet synAnalys(Token *token, enum STATE *state){
         checkError(returnValue.SynCorrect, token);
     }
     else{
+        printf("Error in state %d, keyword require not included\n", *state);
         returnValue.SynCorrect = 2;
         return returnValue;
     }
