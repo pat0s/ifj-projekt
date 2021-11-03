@@ -16,7 +16,8 @@
 #define MAX_SIZE 20
 
 /** Array of keywords **/
-const char keywords[][9] = {"do", "else", "end", "function", "global", "if", "local", "nil", "require", "return", "then", "while"};
+const char keywords[][9] = {"do", "else", "end", "function", "global", "if", "local", "nil", "require", "return", "then", "while", "string", "integer", "number"};
+#define KEYWORDS_SIZE 15
 
 /** Token **/
 typedef struct Token
@@ -34,7 +35,7 @@ bool check_keyword (const char *unknown );
 
 bool add_symbol( Token *token, char symbol );
 
-Token* read_token();
+int read_token( Token *token );
 
 #endif
 
