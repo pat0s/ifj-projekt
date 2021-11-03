@@ -18,7 +18,9 @@ typedef struct sAnalysRet{
 } analysRet;
 
 
-
+analysRet fSt_list(Token *token, enum STATE *state);
+analysRet fParams_n(Token *token, enum STATE *state);
+analysRet fParams(Token *token, enum STATE *state);
 analysRet fArgs(Token *token, enum STATE *state);
 analysRet fArg(Token *token, enum STATE *state);
 analysRet fRet_type(Token *token, enum STATE *state);
@@ -86,6 +88,183 @@ void checkError(int errorValue, Token *token){
 }
 
 
+
+analysRet fSt_list(Token *token, enum STATE *state){
+    int errorValue;
+    analysRet returnValue;
+    returnValue.SynCorrect = 0;
+
+    
+
+    if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
+        //Narazil som na EPSILON prechod
+        return returnValue;
+    }
+    else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"if")){
+        
+       
+
+
+    }
+    else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"while")){
+        
+       //TODO
+
+
+    }
+    else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"local")){
+        
+       //TODO
+
+
+    }
+    else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"return")){
+        
+       //TODO
+
+
+    }
+    else if(!strcmp(token->name,"identifier")){
+        
+       //TODO
+
+    }
+    else{
+        printf("Error in state %d, fSt_list\n", *state);
+        returnValue.SynCorrect = 2;
+        return returnValue;
+    }
+    
+
+
+
+
+    return returnValue;
+}
+
+
+
+
+
+analysRet fParams_n(Token *token, enum STATE *state){
+    int errorValue;
+    analysRet returnValue;
+    returnValue.SynCorrect = 0;
+    
+
+    if(!strcmp(token->name,")")){
+        //Narazil som na EPSILON prechod
+        return returnValue;
+    }
+    else if(!strcmp(token->name,",")){
+            //Ocakavam ID
+        errorValue = read_token(token);
+        checkError(errorValue, token);
+
+        if(!strcmp(token->name,"identifier")){
+            //Ocakavam ':'
+            errorValue = read_token(token);
+            checkError(errorValue, token);
+
+
+            if(!strcmp(token->name,":")){
+                    //ocakavam argument <type>
+                errorValue = read_token(token);
+                checkError(errorValue, token);
+
+                returnValue = fType(token, state);
+                    //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                checkError(returnValue.SynCorrect, token);
+
+
+                    //ocakavam argument <params_n>
+                errorValue = read_token(token);
+                checkError(errorValue, token);
+
+                returnValue = fParams_n(token, state);
+                    //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                checkError(returnValue.SynCorrect, token);
+
+                return returnValue;
+
+            }
+            else{
+                printf("Error in state %d, fParams_n\n", *state);
+                returnValue.SynCorrect = 2;
+                return returnValue;
+            }
+        }
+        else{
+            printf("Error in state %d, fParams_n\n", *state);
+            returnValue.SynCorrect = 2;
+            return returnValue;
+        }
+        return returnValue;
+    }
+    else {
+        printf("Error in state %d, fParams_n\n", *state);
+        returnValue.SynCorrect = 2;
+        return returnValue;
+    }
+
+    return returnValue;
+}
+
+
+
+analysRet fParams(Token *token, enum STATE *state){
+    int errorValue;
+    analysRet returnValue;
+    returnValue.SynCorrect = 0;
+
+    if(!strcmp(token->name,")")){
+        //Narazil som na EPSILON prechod
+        return returnValue;
+    }
+    else if(!strcmp(token->name,"identifier")){
+        //ocakavam argument ':'
+        errorValue = read_token(token);
+        checkError(errorValue, token);
+
+        if(!strcmp(token->name,":")){
+                //ocakavam argument <type>
+            errorValue = read_token(token);
+            checkError(errorValue, token);
+
+            returnValue = fType(token, state);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(returnValue.SynCorrect, token);
+
+
+
+                //ocakavam argument <params_n>
+            errorValue = read_token(token);
+            checkError(errorValue, token);
+
+            returnValue = fParams_n(token, state);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(returnValue.SynCorrect, token);
+
+
+            return returnValue;
+
+        }else{
+            printf("Error in state %d, fParams\n", *state);
+            returnValue.SynCorrect = 2;
+            return returnValue;
+        }
+
+        return returnValue;
+    }
+    else{
+        printf("Error in state %d, fParams\n", *state);
+        returnValue.SynCorrect = 2;
+        return returnValue;
+    }
+
+
+return returnValue;
+}
 
 analysRet fArgs(Token *token, enum STATE *state){
     int errorValue;
@@ -199,14 +378,18 @@ analysRet fRet_type(Token *token, enum STATE *state){
         //Nacitane: global ID : function(<par-type>) : integer, string
     
     }
-    else if((!strcmp(token->name,"keyword") && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))) || !strcmp(token->name,"identifier")){
+    else if(((!strcmp(token->name,"keyword") && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))) || !strcmp(token->name,"identifier")) && *state == ret_type){
         //Znaci EPSILON prechod do <prog_con>, pravidlo 3., 4. a 5. 
         
 
         return returnValue;
     }
-    else if(!strcmp(token->name,"-1")){
+    else if(!strcmp(token->name,"-1") && *state == ret_type){
         //Znaci EPSILON prechod do <prog_con>, pravidlo 2. 
+        return returnValue;
+    }
+    else if(*state == params && (!strcmp(token->name,"identifier") || (!strcmp(token->name,"keyword") && (!strcmp(token->value,"if") || !strcmp(token->value,"while") || !strcmp(token->value,"local") || !strcmp(token->value,"return") || !strcmp(token->value,"end"))))){
+        //Znaci EPSILON prechod do <st-list>, pravidlo 4.
         return returnValue;
     }
     else{
@@ -226,12 +409,12 @@ analysRet fType(Token *token, enum STATE *state){
 
     if(!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")){
             return returnValue;
-        }
-        else{
-            printf("Error in state %d, fType\n", *state);
-            returnValue.SynCorrect = 2;
-            return returnValue;
-        }
+    }
+    else{
+        printf("Error in state %d, fType\n", *state);
+        returnValue.SynCorrect = 2;
+        return returnValue;
+    }
 }
 
 
@@ -289,6 +472,10 @@ analysRet fTypes(Token *token, enum STATE *state){
         }
         else if(*state == ret_type && !strcmp(token->name,"-1")){
             //Znaci EPSILON prechod od <prog_con>, pravidlo 2.
+            return returnValue;
+        }
+        else if(*state == params && (!strcmp(token->name,"identifier") || (!strcmp(token->name,"keyword") && (!strcmp(token->value,"if") || !strcmp(token->value,"while") || !strcmp(token->value,"local") || !strcmp(token->value,"return") || !strcmp(token->value,"end"))))){
+            //Znaci EPSILON prechod od <st-list>, pravidlo 4.
             return returnValue;
         }
         else{
@@ -351,6 +538,17 @@ analysRet fProg_con(Token *token, enum STATE *state){
             errorValue = read_token(token);
             checkError(errorValue, token);
             //nacitane: global ID
+
+             //printf("name : %s\n", token->name);
+             //printf("value : %s\n", token->value);
+            
+            if(strcmp(token->name,"identifier")){
+                printf("Error in state %d, ID not included\n", *state);
+                returnValue.SynCorrect = 2;
+                return returnValue;
+            }
+
+
             
             //ocakavanie dvojbodky
             errorValue = read_token(token);
@@ -430,6 +628,89 @@ analysRet fProg_con(Token *token, enum STATE *state){
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
         //Nacitane: function, pravidlo 4.
 
+            //Ocakavam ID
+        errorValue = read_token(token);
+        checkError(errorValue, token);
+
+            //nacitane: function ID
+        if(strcmp(token->name,"identifier")){
+            printf("Error in state %d, ID not included\n", *state);
+            returnValue.SynCorrect = 2;
+            return returnValue;
+        }
+
+
+
+            //Ocakavam '('
+        errorValue = read_token(token);
+        checkError(errorValue, token);
+            //nacitane: function ID (
+        if(!strcmp(token->name,"(")){
+                
+                //*state = params;
+
+                //Ocakavam <params>
+            errorValue = read_token(token);
+            checkError(errorValue, token);
+
+            returnValue = fParams(token, state);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(returnValue.SynCorrect, token);
+
+
+
+            //Tento stav simuluje pravidlo 4., teda definiciu funkcie aj s telom
+            //Stav je tu preto, aby som v <ret-type> dokazal rozoznat EPSILON prechod do <st-list>
+            *state = params;
+
+                //Ocakavam <ret-type>
+            errorValue = read_token(token);
+            checkError(errorValue, token);
+
+            returnValue = fRet_type(token, state);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(returnValue.SynCorrect, token);
+
+
+            
+            *state = st_list;
+            //Token mam nacitany z fRet_type, na zaklane neho som urcoval EPSILON prechod
+            returnValue = fSt_list(token, state);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(returnValue.SynCorrect, token);
+
+
+
+
+
+
+
+
+
+
+
+                //Zaver
+            *state = prog_con;
+
+            //Ocakavam <prog_con>, musim nacitat token lebo <st-list> konicl v EPSILON prechode a tym bol keyword 'end' danej funkcie
+            errorValue = read_token(token);
+            checkError(errorValue, token);
+
+            returnValue = fProg_con(token, state);
+            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(returnValue.SynCorrect, token);
+
+
+
+            return returnValue;
+        }
+        else{
+            printf("Error in state %d, \'(\' not included\n", *state);
+            returnValue.SynCorrect = 2;
+            return returnValue;
+        }
+
+        return returnValue;
 
     }
     else if(!strcmp(token->name,"identifier")){
@@ -493,7 +774,7 @@ analysRet fExp(Token *token, enum STATE *state){
     //TODO CALL precedencnu analyzu
     //TODO check token in symtable
         
-    //if(!isExpression()){
+    
 
     if(*state == prog){
         if(!strcmp(token->name,"string") && !strcmp(token->value,"ifj21")){
@@ -522,7 +803,8 @@ analysRet fExp(Token *token, enum STATE *state){
         returnValue.SynCorrect = 2;
         return returnValue;
     }
-    //}
+    
+    //TODO poriesit ostatne znaky ako napriklad operatory 
     returnValue;
 }
 
