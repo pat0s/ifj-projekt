@@ -18,18 +18,25 @@ typedef struct sAnalysRet{
 } analysRet;
 
 
-analysRet fSt_list(Token *token, enum STATE *state);
-analysRet fParams_n(Token *token, enum STATE *state);
-analysRet fParams(Token *token, enum STATE *state);
-analysRet fArgs(Token *token, enum STATE *state);
-analysRet fArg(Token *token, enum STATE *state);
-analysRet fRet_type(Token *token, enum STATE *state);
-analysRet fType(Token *token, enum STATE *state);
-analysRet fTypes(Token *token, enum STATE *state);
-analysRet fPar_type(Token *token, enum STATE *state);
-analysRet fProg_con(Token *token, enum STATE *state);
-analysRet fExp(Token *token, enum STATE *state);
-analysRet synAnalys(Token *token, enum STATE *state);
+typedef struct sData{
+    int errorValue;
+
+
+
+} Data_t;
+
+analysRet fSt_list(Token *token, enum STATE *state, Data_t *data);
+analysRet fParams_n(Token *token, enum STATE *state, Data_t *data);
+analysRet fParams(Token *token, enum STATE *state, Data_t *data);
+analysRet fArgs(Token *token, enum STATE *state, Data_t *data);
+analysRet fArg(Token *token, enum STATE *state, Data_t *data);
+analysRet fRet_type(Token *token, enum STATE *state, Data_t *data);
+analysRet fType(Token *token, enum STATE *state, Data_t *data);
+analysRet fTypes(Token *token, enum STATE *state, Data_t *data);
+analysRet fPar_type(Token *token, enum STATE *state, Data_t *data);
+analysRet fProg_con(Token *token, enum STATE *state, Data_t *data);
+analysRet fExp(Token *token, enum STATE *state, Data_t *data);
+analysRet synAnalys(Token *token, enum STATE *state, Data_t *data);
 
 
 
@@ -89,7 +96,7 @@ void checkError(int errorValue, Token *token){
 
 
 
-analysRet fSt_list(Token *token, enum STATE *state){
+analysRet fSt_list(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -146,7 +153,7 @@ analysRet fSt_list(Token *token, enum STATE *state){
 
 
 
-analysRet fParams_n(Token *token, enum STATE *state){
+analysRet fParams_n(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -172,7 +179,7 @@ analysRet fParams_n(Token *token, enum STATE *state){
                 errorValue = read_token(token);
                 checkError(errorValue, token);
 
-                returnValue = fType(token, state);
+                returnValue = fType(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(returnValue.SynCorrect, token);
 
@@ -181,7 +188,7 @@ analysRet fParams_n(Token *token, enum STATE *state){
                 errorValue = read_token(token);
                 checkError(errorValue, token);
 
-                returnValue = fParams_n(token, state);
+                returnValue = fParams_n(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(returnValue.SynCorrect, token);
 
@@ -212,7 +219,7 @@ analysRet fParams_n(Token *token, enum STATE *state){
 
 
 
-analysRet fParams(Token *token, enum STATE *state){
+analysRet fParams(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -231,7 +238,7 @@ analysRet fParams(Token *token, enum STATE *state){
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            returnValue = fType(token, state);
+            returnValue = fType(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
 
@@ -241,7 +248,7 @@ analysRet fParams(Token *token, enum STATE *state){
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            returnValue = fParams_n(token, state);
+            returnValue = fParams_n(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
 
@@ -266,7 +273,7 @@ analysRet fParams(Token *token, enum STATE *state){
 return returnValue;
 }
 
-analysRet fArgs(Token *token, enum STATE *state){
+analysRet fArgs(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -282,7 +289,7 @@ analysRet fArgs(Token *token, enum STATE *state){
         errorValue = read_token(token);
         checkError(errorValue, token);
 
-        returnValue = fExp(token, state);
+        returnValue = fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
 
@@ -292,7 +299,7 @@ analysRet fArgs(Token *token, enum STATE *state){
         errorValue = read_token(token);
         checkError(errorValue, token);
 
-        returnValue = fArgs(token, state);
+        returnValue = fArgs(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
     }
@@ -308,7 +315,7 @@ analysRet fArgs(Token *token, enum STATE *state){
 }
 
 
-analysRet fArg(Token *token, enum STATE *state){
+analysRet fArg(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -322,7 +329,7 @@ analysRet fArg(Token *token, enum STATE *state){
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
 
         //Ocakavam argument <arg>
-        returnValue = fExp(token, state);
+        returnValue = fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
 
@@ -330,7 +337,7 @@ analysRet fArg(Token *token, enum STATE *state){
         errorValue = read_token(token);
         checkError(errorValue, token);
 
-        returnValue = fArgs(token, state);
+        returnValue = fArgs(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
 
@@ -346,7 +353,7 @@ analysRet fArg(Token *token, enum STATE *state){
     return returnValue;
 }
 
-analysRet fRet_type(Token *token, enum STATE *state){
+analysRet fRet_type(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -360,7 +367,7 @@ analysRet fRet_type(Token *token, enum STATE *state){
         checkError(errorValue, token);
         //Zanorenie sa do fType
 
-        returnValue = fType(token, state);
+        returnValue = fType(token, state, data);
          //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
         //Nacitane: global ID : function(<par-type>) : integer
@@ -372,7 +379,7 @@ analysRet fRet_type(Token *token, enum STATE *state){
         
         //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
         //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
-        returnValue = fTypes(token, state);
+        returnValue = fTypes(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
 
@@ -403,7 +410,7 @@ analysRet fRet_type(Token *token, enum STATE *state){
 }
 
 
-analysRet fType(Token *token, enum STATE *state){
+analysRet fType(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -420,7 +427,7 @@ analysRet fType(Token *token, enum STATE *state){
 
 
 
-analysRet fTypes(Token *token, enum STATE *state){
+analysRet fTypes(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -439,7 +446,7 @@ analysRet fTypes(Token *token, enum STATE *state){
             checkError(errorValue, token);
 
             //Zanorenie sa do fType
-            returnValue = fType(token, state);
+            returnValue = fType(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
             //Nacitane: global ID : function (string, integer  / global ID : function (string,integer) : integer, integer
@@ -453,7 +460,7 @@ analysRet fTypes(Token *token, enum STATE *state){
             
             //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
             //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
-            returnValue = fTypes(token, state);
+            returnValue = fTypes(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
             //Nacitane: global ID : function (string, integer,number, / global ID : function (string,integer) : integer, integer, string, 
@@ -489,7 +496,7 @@ analysRet fTypes(Token *token, enum STATE *state){
 
 
 
-analysRet fPar_type(Token *token, enum STATE *state){
+analysRet fPar_type(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -511,7 +518,7 @@ analysRet fPar_type(Token *token, enum STATE *state){
             checkError(errorValue, token);
 
             //Zanorenie sa do funkcie fTypes, kde budem riesit datove typy
-            returnValue = fTypes(token, state);
+            returnValue = fTypes(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
             //Nacitane: global ID : function (string, integer)
@@ -525,7 +532,7 @@ analysRet fPar_type(Token *token, enum STATE *state){
 }
 
 
-analysRet fProg_con(Token *token, enum STATE *state){
+analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -576,7 +583,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
                         
                         //Zmena stavu
                         *state = par_type;
-                        returnValue = fPar_type(token, state);
+                        returnValue = fPar_type(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
                         //Nacitane: global ID : function(<par-type>)
@@ -589,7 +596,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
                         //Zmena stavu
                         *state = ret_type;
                         //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
-                        returnValue = fRet_type(token, state);
+                        returnValue = fRet_type(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
                         //Nacitane: global ID : function(<par-type>)<ret-type>
@@ -599,7 +606,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
                         //Zmena stavu
                         *state = prog_con;
                         //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
-                        returnValue = fProg_con(token, state);
+                        returnValue = fProg_con(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                          checkError(returnValue.SynCorrect, token);
                         //Nacitane: global ID : function(<par-type>)<ret-type><prog-con>
@@ -654,7 +661,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            returnValue = fParams(token, state);
+            returnValue = fParams(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
 
@@ -668,7 +675,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            returnValue = fRet_type(token, state);
+            returnValue = fRet_type(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
 
@@ -677,7 +684,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
             
             *state = st_list;
             //Token mam nacitany z fRet_type, na zaklane neho som urcoval EPSILON prechod
-            returnValue = fSt_list(token, state);
+            returnValue = fSt_list(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
 
@@ -698,7 +705,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            returnValue = fProg_con(token, state);
+            returnValue = fProg_con(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
 
@@ -732,7 +739,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
             *state = arg;
             //Ocakavam argument
 
-            returnValue = fArg(token, state);
+            returnValue = fArg(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
 
@@ -743,7 +750,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
             errorValue = read_token(token);
             checkError(errorValue, token);
 
-            returnValue = fProg_con(token, state);
+            returnValue = fProg_con(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);        
         }
@@ -768,7 +775,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
 
 
 
-analysRet fExp(Token *token, enum STATE *state){
+analysRet fExp(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -813,7 +820,7 @@ analysRet fExp(Token *token, enum STATE *state){
 }
 
 
-analysRet synAnalys(Token *token, enum STATE *state){
+analysRet synAnalys(Token *token, enum STATE *state, Data_t *data){
     int errorValue;
     analysRet returnValue;
     returnValue.SynCorrect = 0;
@@ -827,7 +834,7 @@ analysRet synAnalys(Token *token, enum STATE *state){
             
 
         
-        returnValue = fExp(token, state);
+        returnValue = fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
             
@@ -838,7 +845,7 @@ analysRet synAnalys(Token *token, enum STATE *state){
 
         //Zmena stavu a rekurzovne zanorenie
         *state = prog_con;
-        returnValue = fProg_con(token, state);
+        returnValue = fProg_con(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(returnValue.SynCorrect, token);
     }
@@ -856,10 +863,12 @@ analysRet synAnalys(Token *token, enum STATE *state){
 
 int main(){
 
-    enum STATE *state = malloc(sizeof(enum STATE));
+    enum STATE state = prog;
     //Osetrenie chyby mallocu
+
+    Data_t *data = malloc(sizeof(Data_t));
+    //osetrenie chyby mallocu
     
-    *state = prog;
 
     int errorValue;
 
@@ -871,10 +880,11 @@ int main(){
     checkError(errorValue, token);
 
 
-    analysRet returnValue = synAnalys(token, state);
+    analysRet returnValue = synAnalys(token, &state, data);
     checkError(returnValue.SynCorrect, token);
     
-    
+    free(token);
+    free(data);
     printf("Syn analys: %d", returnValue.SynCorrect);  
 
 
