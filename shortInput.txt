@@ -1,3 +1,4 @@
 require "ifj21" global asdf : function(string) : integer
 global fsdfas:function(string)
-global sdads : function(): string. integer
+global sdads : function(): string, integer
+main("asdfa", sdfasd)
