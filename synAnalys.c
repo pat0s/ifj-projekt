@@ -19,9 +19,9 @@ typedef struct sAnalysRet{
 
 
 typedef struct sData{
+    
+    bool isError;
     int errorValue;
-
-
 
 } Data_t;
 
@@ -41,63 +41,54 @@ analysRet synAnalys(Token *token, enum STATE *state, Data_t *data);
 
 
 
-void checkError(int errorValue, Token *token){
-    if(errorValue == 1){
+int checkError(Data_t *data){
+    if(data->errorValue == 1){
         fprintf(stderr, "Lexical analysis Error\n");
-        free(token);        
-        exit (LEX_ERROR);
+        return LEX_ERROR;
     }
-    else if(errorValue == 2){
+    else if(data->errorValue == 2){
         fprintf(stderr, "Syntax Error\n");
-        free(token);
-        exit(SYNTAX_ERROR);
+        return SYNTAX_ERROR;
     }
-    else if(errorValue == 3){
+    else if(data->errorValue == 3){
         fprintf(stderr, "Syntax Error\n");
-        free(token);
-        exit(SYNTAX_ERROR);
+        return SYNTAX_ERROR;
     }
-    else if(errorValue == 4){
+    else if(data->errorValue == 4){
         fprintf(stderr, "Syntax Error\n");
-        free(token);
-        exit(SYNTAX_ERROR);
+        return SYNTAX_ERROR;
     }
-    else if(errorValue == 5){
+    else if(data->errorValue == 5){
         fprintf(stderr, "Syntax Error\n");
-        free(token);
-        exit(SYNTAX_ERROR);
+        return SYNTAX_ERROR;
     }
-    else if(errorValue == 6){
+    else if(data->errorValue == 6){
         fprintf(stderr, "Syntax Error\n");
-        free(token);
-        exit(SYNTAX_ERROR);
+        return SYNTAX_ERROR;
     }
-    else if(errorValue == 7){
+    else if(data->errorValue == 7){
         fprintf(stderr, "Syntax Error\n");
-        free(token);
-        exit(SYNTAX_ERROR);
+        return SYNTAX_ERROR;
     }
-    else if(errorValue == 8){
+    else if(data->errorValue == 8){
         fprintf(stderr, "Syntax Error\n");
-        free(token);
-        exit(SYNTAX_ERROR);
+        return SYNTAX_ERROR;
     }
-    else if(errorValue == 9){
+    else if(data->errorValue == 9){
         fprintf(stderr, "Syntax Error\n");
-        free(token);
-        exit(SYNTAX_ERROR);
+        return SYNTAX_ERROR;
     }
-    else if (errorValue == 99){
+    else if (data->errorValue == 99){
         fprintf(stderr, "Internal Error\n");
-        free(token);
-        exit(INTERNAL_ERROR);
-    }
+        return INTERNAL_ERROR;
+    }else
+        return 0;
 }
 
 
 
 analysRet fSt_list(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
@@ -154,7 +145,7 @@ analysRet fSt_list(Token *token, enum STATE *state, Data_t *data){
 
 
 analysRet fParams_n(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
     
@@ -165,32 +156,32 @@ analysRet fParams_n(Token *token, enum STATE *state, Data_t *data){
     }
     else if(!strcmp(token->name,",")){
             //Ocakavam ID
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
 
         if(!strcmp(token->name,"identifier")){
             //Ocakavam ':'
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
 
             if(!strcmp(token->name,":")){
                     //ocakavam argument <type>
-                errorValue = read_token(token);
-                checkError(errorValue, token);
+               data->errorValue = read_token(token);
+                checkError(data);
 
                 returnValue = fType(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-                checkError(returnValue.SynCorrect, token);
+                checkError(data);
 
 
                     //ocakavam argument <params_n>
-                errorValue = read_token(token);
-                checkError(errorValue, token);
+               data->errorValue = read_token(token);
+                checkError(data);
 
                 returnValue = fParams_n(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-                checkError(returnValue.SynCorrect, token);
+                checkError(data);
 
                 return returnValue;
 
@@ -220,7 +211,7 @@ analysRet fParams_n(Token *token, enum STATE *state, Data_t *data){
 
 
 analysRet fParams(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
@@ -230,27 +221,27 @@ analysRet fParams(Token *token, enum STATE *state, Data_t *data){
     }
     else if(!strcmp(token->name,"identifier")){
         //ocakavam argument ':'
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
 
         if(!strcmp(token->name,":")){
                 //ocakavam argument <type>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             returnValue = fType(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
 
 
 
                 //ocakavam argument <params_n>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             returnValue = fParams_n(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
 
 
             return returnValue;
@@ -274,7 +265,7 @@ return returnValue;
 }
 
 analysRet fArgs(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
@@ -286,22 +277,22 @@ analysRet fArgs(Token *token, enum STATE *state, Data_t *data){
     else if(!strcmp(token->name,",")){
 
         //ocakavam argument <arg>
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
 
         returnValue = fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(returnValue.SynCorrect, token);
+        checkError(data);
 
 
         //ocakavam <args>
         //WARNING, tu by som nevoval read_token, lebo mi precedencna analyza vrati uz ciarku
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
 
         returnValue = fArgs(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(returnValue.SynCorrect, token);
+        checkError(data);
     }
     else{
         printf("Error in state %d, fArgs\n", *state);
@@ -316,7 +307,7 @@ analysRet fArgs(Token *token, enum STATE *state, Data_t *data){
 
 
 analysRet fArg(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
@@ -331,15 +322,15 @@ analysRet fArg(Token *token, enum STATE *state, Data_t *data){
         //Ocakavam argument <arg>
         returnValue = fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(returnValue.SynCorrect, token);
+        checkError(data);
 
         //ocakavam <args>
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
 
         returnValue = fArgs(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(returnValue.SynCorrect, token);
+        checkError(data);
 
 
         return returnValue;
@@ -354,7 +345,7 @@ analysRet fArg(Token *token, enum STATE *state, Data_t *data){
 }
 
 analysRet fRet_type(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
@@ -363,25 +354,25 @@ analysRet fRet_type(Token *token, enum STATE *state, Data_t *data){
     //Nacitane: global ID : function(<par-type>) : 
        
         //ocakavam <type>
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
         //Zanorenie sa do fType
 
         returnValue = fType(token, state, data);
          //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(returnValue.SynCorrect, token);
+        checkError(data);
         //Nacitane: global ID : function(<par-type>) : integer
         
 
          //ocakavam <types>
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
         
         //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
         //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
         returnValue = fTypes(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(returnValue.SynCorrect, token);
+        checkError(data);
 
         //Nacitane: global ID : function(<par-type>) : integer, string
     
@@ -411,7 +402,7 @@ analysRet fRet_type(Token *token, enum STATE *state, Data_t *data){
 
 
 analysRet fType(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
@@ -428,7 +419,7 @@ analysRet fType(Token *token, enum STATE *state, Data_t *data){
 
 
 analysRet fTypes(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
@@ -442,27 +433,27 @@ analysRet fTypes(Token *token, enum STATE *state, Data_t *data){
         else if(!strcmp(token->name,",")){
             //Nacitane: global ID : function (string, 
              //ocakavam <type>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             //Zanorenie sa do fType
             returnValue = fType(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
             //Nacitane: global ID : function (string, integer  / global ID : function (string,integer) : integer, integer
 
 
 
              //ocakavam <types>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             
             //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
             //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
             returnValue = fTypes(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
             //Nacitane: global ID : function (string, integer,number, / global ID : function (string,integer) : integer, integer, string, 
         }
         else if((*state == ret_type && !strcmp(token->name,"keyword")) && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))){
@@ -497,7 +488,7 @@ analysRet fTypes(Token *token, enum STATE *state, Data_t *data){
 
 
 analysRet fPar_type(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
     
@@ -514,13 +505,13 @@ analysRet fPar_type(Token *token, enum STATE *state, Data_t *data){
             //parameter je jeden z datovych typov
 
             //ocakavam <types>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             //Zanorenie sa do funkcie fTypes, kde budem riesit datove typy
             returnValue = fTypes(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
             //Nacitane: global ID : function (string, integer)
         }
         else{
@@ -533,7 +524,7 @@ analysRet fPar_type(Token *token, enum STATE *state, Data_t *data){
 
 
 analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
@@ -543,8 +534,8 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
               
             //nacitanie ID funkcie
             //TODO pridaj do tabulky symbolov
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
             //nacitane: global ID
 
              //printf("name : %s\n", token->name);
@@ -559,46 +550,46 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             
             //ocakavanie dvojbodky
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             if(!strcmp(token->name, ":")){
             //nacitane: global ID :
                 //Ocakavam klucove slovo 'function'
-                errorValue = read_token(token);
-                checkError(errorValue, token);
+               data->errorValue = read_token(token);
+                checkError(data);
 
                 if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
                 //Nacitane: global ID : function
                     //Ocakavam '('
-                    errorValue = read_token(token);
-                    checkError(errorValue, token);
+                   data->errorValue = read_token(token);
+                    checkError(data);
 
                     if(!strcmp(token->name,"(")){
                     //Nacitane: global ID : function (
                         
                         //Ocakavam <par-type>
-                        errorValue = read_token(token);
-                        checkError(errorValue, token);
+                       data->errorValue = read_token(token);
+                        checkError(data);
                         
                         //Zmena stavu
                         *state = par_type;
                         returnValue = fPar_type(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-                         checkError(returnValue.SynCorrect, token);
+                         checkError(data);
                         //Nacitane: global ID : function(<par-type>)
 
 
                         //Ocakavam <ret-type>
-                        errorValue = read_token(token);
-                        checkError(errorValue, token);
+                       data->errorValue = read_token(token);
+                        checkError(data);
                         
                         //Zmena stavu
                         *state = ret_type;
                         //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
                         returnValue = fRet_type(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-                         checkError(returnValue.SynCorrect, token);
+                         checkError(data);
                         //Nacitane: global ID : function(<par-type>)<ret-type>
 
 
@@ -608,7 +599,7 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
                         //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x returnValue = synAnalys(token, state)
                         returnValue = fProg_con(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-                         checkError(returnValue.SynCorrect, token);
+                         checkError(data);
                         //Nacitane: global ID : function(<par-type>)<ret-type><prog-con>
                         
                     }
@@ -637,8 +628,8 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
         //Nacitane: function, pravidlo 4.
 
             //Ocakavam ID
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
 
             //nacitane: function ID
         if(strcmp(token->name,"identifier")){
@@ -650,20 +641,20 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
 
 
             //Ocakavam '('
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
             //nacitane: function ID (
         if(!strcmp(token->name,"(")){
                 
                 //*state = params;
 
                 //Ocakavam <params>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             returnValue = fParams(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
 
             //TU JE ZOZNAM PARAMETROV
 
@@ -672,12 +663,12 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
             *state = params;
 
                 //Ocakavam <ret-type>
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             returnValue = fRet_type(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
 
 
             //ZOZNAME RETURN TYPOV
@@ -686,7 +677,7 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
             //Token mam nacitany z fRet_type, na zaklane neho som urcoval EPSILON prechod
             returnValue = fSt_list(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
 
 
 
@@ -702,12 +693,12 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
             *state = prog_con;
 
             //Ocakavam <prog_con>, musim nacitat token lebo <st-list> konicl v EPSILON prechode a tym bol keyword 'end' danej funkcie
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             returnValue = fProg_con(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
 
 
 
@@ -726,14 +717,14 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
         //Nacitane: ID, pravidlo 5.
 
         //Ocakavam '('
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
         
         if(!strcmp(token->name,"(")){
         //Nacitane: ID (
 
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
 
             *state = arg;
@@ -741,18 +732,18 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             returnValue = fArg(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);
+            checkError(data);
 
 
             //TODO pokracovanie do prog_con
 
             *state = prog_con;    
-            errorValue = read_token(token);
-            checkError(errorValue, token);
+           data->errorValue = read_token(token);
+            checkError(data);
 
             returnValue = fProg_con(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(returnValue.SynCorrect, token);        
+            checkError(data);        
         }
         else{
             printf("Error in state %d, \'(\' not included\n", *state);
@@ -776,7 +767,7 @@ analysRet fProg_con(Token *token, enum STATE *state, Data_t *data){
 
 
 analysRet fExp(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
 
@@ -821,7 +812,7 @@ analysRet fExp(Token *token, enum STATE *state, Data_t *data){
 
 
 analysRet synAnalys(Token *token, enum STATE *state, Data_t *data){
-    int errorValue;
+    
     analysRet returnValue;
     returnValue.SynCorrect = 0;
     
@@ -829,25 +820,26 @@ analysRet synAnalys(Token *token, enum STATE *state, Data_t *data){
     //Inizializovany stav, state->prog
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"require")){
         //nacitanie dalsieho tokenu
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        data->isError = checkError(data);
+
             
 
         
         returnValue = fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(returnValue.SynCorrect, token);
+        checkError(data);
             
 
         //Natahanie dalsieho tokenu
-        errorValue = read_token(token);
-        checkError(errorValue, token);
+       data->errorValue = read_token(token);
+        checkError(data);
 
         //Zmena stavu a rekurzovne zanorenie
         *state = prog_con;
         returnValue = fProg_con(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(returnValue.SynCorrect, token);
+        checkError(data);
     }
     else{
         printf("Error in state %d, keyword require not included\n", *state);
@@ -869,23 +861,27 @@ int main(){
     Data_t *data = malloc(sizeof(Data_t));
     //osetrenie chyby mallocu
     
+    data->errorValue = 0;
+    data->isError = false;
 
-    int errorValue;
+    //Sluzi na nacitanie
+    
 
 
     Token *token = malloc(sizeof(Token));
     //TODO osetri malloc error
 
-    errorValue = read_token(token);
-    checkError(errorValue, token);
+    data->errorValue = read_token(token);
+    data->isError = checkError(data);
 
 
     analysRet returnValue = synAnalys(token, &state, data);
-    checkError(returnValue.SynCorrect, token);
+    data->isError = checkError(data);
     
+    printf("Syn analys: %d", data->errorValue);  
+
     free(token);
     free(data);
-    printf("Syn analys: %d", returnValue.SynCorrect);  
 
 
     return 0;
