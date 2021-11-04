@@ -41,48 +41,61 @@ analysRet synAnalys(Token *token, enum STATE *state, Data_t *data);
 
 
 
-int checkError(Data_t *data){
-    if(data->errorValue == 1){
-        fprintf(stderr, "Lexical analysis Error\n");
-        return LEX_ERROR;
+void checkError(Data_t *data){
+
+        if(!data->isError){
+        if(data->errorValue == 1){
+            fprintf(stderr, "Lexical analysis Error\n");
+            data->isError = true;
+
+        }
+        else if(data->errorValue == 2){
+            fprintf(stderr, "Syntax Error\n");
+            data->isError = true;
+
+        }
+        else if(data->errorValue == 3){
+            fprintf(stderr, "Syntax Error\n");
+            data->isError = true;
+
+        }
+        else if(data->errorValue == 4){
+            fprintf(stderr, "Syntax Error\n");
+            data->isError = true;
+
+        }
+        else if(data->errorValue == 5){
+            fprintf(stderr, "Syntax Error\n");
+            data->isError = true;
+
+        }
+        else if(data->errorValue == 6){
+            fprintf(stderr, "Syntax Error\n");
+            data->isError = true;
+
+        }
+        else if(data->errorValue == 7){
+            fprintf(stderr, "Syntax Error\n");
+            data->isError = true;
+
+        }
+        else if(data->errorValue == 8){
+            fprintf(stderr, "Syntax Error\n");
+            data->isError = true;
+
+        }
+        else if(data->errorValue == 9){
+            fprintf(stderr, "Syntax Error\n");
+            data->isError = true;
+
+        }
+        else if (data->errorValue == 99){
+            fprintf(stderr, "Internal Error\n");
+            data->isError = true;
+
+        }else
+            data->errorValue = 0;
     }
-    else if(data->errorValue == 2){
-        fprintf(stderr, "Syntax Error\n");
-        return SYNTAX_ERROR;
-    }
-    else if(data->errorValue == 3){
-        fprintf(stderr, "Syntax Error\n");
-        return SYNTAX_ERROR;
-    }
-    else if(data->errorValue == 4){
-        fprintf(stderr, "Syntax Error\n");
-        return SYNTAX_ERROR;
-    }
-    else if(data->errorValue == 5){
-        fprintf(stderr, "Syntax Error\n");
-        return SYNTAX_ERROR;
-    }
-    else if(data->errorValue == 6){
-        fprintf(stderr, "Syntax Error\n");
-        return SYNTAX_ERROR;
-    }
-    else if(data->errorValue == 7){
-        fprintf(stderr, "Syntax Error\n");
-        return SYNTAX_ERROR;
-    }
-    else if(data->errorValue == 8){
-        fprintf(stderr, "Syntax Error\n");
-        return SYNTAX_ERROR;
-    }
-    else if(data->errorValue == 9){
-        fprintf(stderr, "Syntax Error\n");
-        return SYNTAX_ERROR;
-    }
-    else if (data->errorValue == 99){
-        fprintf(stderr, "Internal Error\n");
-        return INTERNAL_ERROR;
-    }else
-        return 0;
 }
 
 
@@ -807,7 +820,7 @@ analysRet fExp(Token *token, enum STATE *state, Data_t *data){
     }
     
     //TODO poriesit ostatne znaky ako napriklad operatory 
-    returnValue;
+    return returnValue;
 }
 
 
@@ -821,7 +834,7 @@ analysRet synAnalys(Token *token, enum STATE *state, Data_t *data){
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"require")){
         //nacitanie dalsieho tokenu
        data->errorValue = read_token(token);
-        data->isError = checkError(data);
+        checkError(data);
 
             
 
@@ -872,11 +885,11 @@ int main(){
     //TODO osetri malloc error
 
     data->errorValue = read_token(token);
-    data->isError = checkError(data);
+    checkError(data);
 
 
     analysRet returnValue = synAnalys(token, &state, data);
-    data->isError = checkError(data);
+    checkError(data);
     
     printf("Syn analys: %d", data->errorValue);  
 
