@@ -95,10 +95,6 @@ void checkError(Data_t *data){
 
 
 void fSt_list(Token *token, enum STATE *state, Data_t *data){
-    
-    
-
-    
 
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
         //Narazil som na EPSILON prechod
@@ -140,11 +136,6 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         
     }
     
-
-
-
-
-    
 }
 
 
@@ -153,9 +144,6 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
 void fParams_n(Token *token, enum STATE *state, Data_t *data){
     
-    
-    
-
     if(!strcmp(token->name,")")){
         //Narazil som na EPSILON prechod
         
@@ -187,9 +175,7 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
 
                  fParams_n(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-                checkError(data);
-
-                
+                checkError(data);            
 
             }
             else{
@@ -205,7 +191,7 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
             data->isError = true;
             
         }
-        
+       
     }
     else {
         printf("Error in state %d, fParams_n\n", *state);
@@ -213,15 +199,11 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
         data->isError = true;
         
     }
-
-    
 }
 
 
 
-void fParams(Token *token, enum STATE *state, Data_t *data){
-    
-    
+void fParams(Token *token, enum STATE *state, Data_t *data){    
 
     if(!strcmp(token->name,")")){
         //Narazil som na EPSILON prechod
@@ -242,7 +224,6 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
 
 
-
                 //ocakavam argument <params_n>
            data->errorValue = read_token(token);
             checkError(data);
@@ -251,16 +232,12 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
-
-            
-
         }else{
             printf("Error in state %d, fParams\n", *state);
             data->errorValue = 2;
             data->isError = true;
             
         }
-
         
     }
     else{
@@ -269,16 +246,10 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
         data->isError = true;
         
     }
-
-
-
 }
 
 void fArgs(Token *token, enum STATE *state, Data_t *data){
     
-    
-
-
     if(!strcmp(token->name,")")){
         //Narazil som na EPSILON prechod
         
@@ -309,17 +280,10 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
         data->isError = true;
         
     }
-
-    
-
-
 }
 
 
 void fArg(Token *token, enum STATE *state, Data_t *data){
-    
-    
-
 
     if(!strcmp(token->name,")")){
         //nacitali sme EPSILON
@@ -340,24 +304,16 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
          fArgs(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
-
-
         
     }
     else{
         printf("Error in state %d, fArg\n", *state);
         data->errorValue = 2;
-        data->isError = true;
-        
+        data->isError = true;   
     }
-
-    
 }
 
 void fRet_type(Token *token, enum STATE *state, Data_t *data){
-    
-    
-
     
     if(!strcmp(token->name,":")){
     //Nacitane: global ID : function(<par-type>) : 
@@ -406,15 +362,11 @@ void fRet_type(Token *token, enum STATE *state, Data_t *data){
         data->isError = true;
         
     }
-    
-    
 }
 
 
 void fType(Token *token, enum STATE *state, Data_t *data){
     
-    
-
     if(!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")){
             
     }
@@ -430,8 +382,6 @@ void fType(Token *token, enum STATE *state, Data_t *data){
 
 void fTypes(Token *token, enum STATE *state, Data_t *data){
     
-    
-
         if(!strcmp(token->name,")") && *state == par_type){
             //Nacitane: global ID : function (string,integer) 
 
@@ -450,7 +400,6 @@ void fTypes(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
             //Nacitane: global ID : function (string, integer  / global ID : function (string,integer) : integer, integer
-
 
 
              //ocakavam <types>
@@ -489,19 +438,13 @@ void fTypes(Token *token, enum STATE *state, Data_t *data){
         else{
             printf("Error in state %d, fTypes\n", *state);
             data->errorValue = 2;
-            data->isError = true;
-            
+            data->isError = true;   
         }
-    
 }
 
 
 
 void fPar_type(Token *token, enum STATE *state, Data_t *data){
-    
-    
-    
-
    // printf("name : %s\n", token->name);
    // printf("value : %s\n", token->value);
 
@@ -526,17 +469,13 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
         else{
             printf("Error in state %d, fPar_type\n", *state);
             data->errorValue = 2;
-            data->isError = true;
-            
+            data->isError = true;   
         }
-    
 }
 
 
 void fProg_con(Token *token, enum STATE *state, Data_t *data){
     
-    
-
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"global")){
         //Riesime pravidlo 3. kedy ideme inizializovat globalnu funkciu
         //nacitane: global, pravidlo 3.
@@ -557,8 +496,6 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 
             }
 
-
-            
             //ocakavanie dvojbodky
            data->errorValue = read_token(token);
             checkError(data);
@@ -624,10 +561,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 else{
                     printf("Error in state %d, function keyword not included\n", *state);
                     data->errorValue = 2;
-                    data->isError = true;
-                    
+                    data->isError = true;                   
                 }
-
             }
             else{
                 printf("Error in state %d, : not included\n", *state);
@@ -635,7 +570,6 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 data->isError = true;
                 
             }
-
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
         //Nacitane: function, pravidlo 4.
@@ -652,10 +586,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             
         }
 
-
-
             //Ocakavam '('
-       data->errorValue = read_token(token);
+        data->errorValue = read_token(token);
         checkError(data);
             //nacitane: function ID (
         if(!strcmp(token->name,"(")){
@@ -685,23 +617,13 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
 
 
-            //ZOZNAME RETURN TYPOV
+            //ZOZNAM RETURN TYPOV
             
             *state = st_list;
             //Token mam nacitany z fRet_type, na zaklane neho som urcoval EPSILON prechod
              fSt_list(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-
-
-
-
-
-
-
-
-
-
 
                 //Zaver
             *state = prog_con;
@@ -713,20 +635,12 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
              fProg_con(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-
-
-
-            
         }
         else{
             printf("Error in state %d, \'(\' not included\n", *state);
             data->errorValue = 2;
-            data->isError = true;
-            
+            data->isError = true;   
         }
-
-        
-
     }
     else if(!strcmp(token->name,"identifier")){
         //Nacitane: ID, pravidlo 5.
@@ -741,7 +655,6 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
            data->errorValue = read_token(token);
             checkError(data);
 
-
             *state = arg;
             //Ocakavam argument
 
@@ -749,11 +662,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
-
-            //TODO pokracovanie do prog_con
-
+            // pokracovanie do prog_con
             *state = prog_con;    
-           data->errorValue = read_token(token);
+            data->errorValue = read_token(token);
             checkError(data);
 
              fProg_con(token, state, data);
@@ -764,13 +675,11 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             printf("Error in state %d, \'(\' not included\n", *state);
             data->errorValue = 2;
             data->isError = true;
-            
         }
     }
     else if(!strcmp(token->name,"-1")){
         //Token je to EOF, znaeci EPSILON
-        //Nacitane: EPSILON, pravidlo 2.
-        
+        //Nacitane: EPSILON, pravidlo 2.   
     }
     else{
         printf("Error in state %d, fProg_con\n", *state);
@@ -778,32 +687,23 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
         data->isError = true;
         
     }
-    
 }
 
 
 
 void fExp(Token *token, enum STATE *state, Data_t *data){
-    
-    
-
     //TODO CALL precedencnu analyzu
     //TODO check token in symtable
-        
-    
 
     if(*state == prog){
         if(!strcmp(token->name,"string") && !strcmp(token->value,"ifj21")){
             data->errorValue = 0;
-            
         }
         else{
             printf("Error in state %d, fExp\n", *state);
             data->errorValue = 2;
-            data->isError = true;
-            
+            data->isError = true;   
         }
-
     }
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
         //TODO ALL
@@ -812,7 +712,6 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             //if Expression and *state = arg then ERROR;
             //if Function ID and *state = arg then ERROR;
             //Call precedence analysis
-        
 
     }
     //TODO SKONTROLUJ, nesedi mi to
@@ -821,7 +720,6 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
         printf("Error in state %d, fExp\n", *state);
         data->errorValue = 2;
         data->isError = true;
-        
     }
     
     //TODO poriesit ostatne znaky ako napriklad operatory 
@@ -831,19 +729,14 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
 
 void synAnalys(Token *token, enum STATE *state, Data_t *data){
     
-    
-    
     //STRCMP -> ak sa stringy rovnaju, tak je return 0, preto v podmienkach !
     //Inizializovany stav, state->prog
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"require")){
         //nacitanie dalsieho tokenu
        data->errorValue = read_token(token);
         checkError(data);
-
-            
-
-        
-         fExp(token, state, data);
+    
+        fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
             
@@ -861,11 +754,9 @@ void synAnalys(Token *token, enum STATE *state, Data_t *data){
     else{
         printf("Error in state %d, keyword require not included\n", *state);
         data->errorValue = 2;
-        data->isError = true;
-        
-    }
-        
-    
+        data->isError = true;   
+    }  
+
 }   
 
 
@@ -880,10 +771,7 @@ int main(){
     //osetrenie chyby mallocu
     
     data->errorValue = 0;
-    data->isError = false;
-
-    //Sluzi na nacitanie
-    
+    data->isError = false;  
 
 
     Token *token = malloc(sizeof(Token));
