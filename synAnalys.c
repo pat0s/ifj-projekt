@@ -288,6 +288,7 @@ analysRet fArgs(Token *token, enum STATE *state){
 
 
         //ocakavam <args>
+        //WARNING, tu by som nevoval read_token, lebo mi precedencna analyza vrati uz ciarku
         errorValue = read_token(token);
         checkError(errorValue, token);
 
@@ -657,7 +658,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(returnValue.SynCorrect, token);
 
-
+            //TU JE ZOZNAM PARAMETROV
 
             //Tento stav simuluje pravidlo 4., teda definiciu funkcie aj s telom
             //Stav je tu preto, aby som v <ret-type> dokazal rozoznat EPSILON prechod do <st-list>
@@ -672,6 +673,7 @@ analysRet fProg_con(Token *token, enum STATE *state){
             checkError(returnValue.SynCorrect, token);
 
 
+            //ZOZNAME RETURN TYPOV
             
             *state = st_list;
             //Token mam nacitany z fRet_type, na zaklane neho som urcoval EPSILON prechod
@@ -798,7 +800,9 @@ analysRet fExp(Token *token, enum STATE *state){
         return returnValue;
 
     }
+    //TODO SKONTROLUJ, nesedi mi to
     else if(*state == arg && !strcmp(token->name,")")){
+        //situacia, ak by som v argumetne dostal nedokonceny argument, takze napr: (x,5,), to znamena ze by to koncilo ciarkou co je semanticka chyba
         printf("Error in state %d, fExp\n", *state);
         returnValue.SynCorrect = 2;
         return returnValue;
@@ -854,7 +858,7 @@ int main(){
 
     enum STATE *state = malloc(sizeof(enum STATE));
     //Osetrenie chyby mallocu
-
+    
     *state = prog;
 
     int errorValue;
