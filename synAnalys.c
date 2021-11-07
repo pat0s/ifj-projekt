@@ -8,7 +8,7 @@
 
 
 
-enum STATE {assign, assigns, arg, args, exp, item, item_n, init, init_value, prog, prog_con, par_type, ret_val, ret_type, st_list, type, types, value, values, params, params_n};
+enum STATE {assign, assigns, arg, args, exp, ifStatement, item, item_n, init, init_value, prog, prog_con, par_type, ret_val, ret_type, st_list, type, types, value, values, params, params_n};
 
 
 
@@ -181,9 +181,8 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             fArg(token, state, data);
             checkError(data);
 
-            //Nacitanie <st-list>, pocita sa s tym ze ked sa vynorime, v tokene bude nacitany <st-list>, vyporime sa v fSt_list() a tam sa opat zanorime do fSt_list
-            data->errorValue = read_token(token);
-            checkError(data);
+
+            //Netreba nacitat dalsi token, ked sa vynorim, a bude posledny token ')' co bude, tak sa nacita novy token
 
         }
         else{
@@ -374,15 +373,144 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"if")){
+
+        //Ocakavam <exp>
+        data->errorValue = read_token(token);
+        checkError(data);
         
-       
+        //Ak je nacitany token identifikator a je to ID funkcie, tak Error
+        if(!strcmp(token->name,"identifier")){
+            if(isFunction(token)){
+                printf("Error in state %d, fSt_list, ID of function in if statement as a condition\n", *state);
+                data->errorValue = 2;
+                checkError(data);
+            }    
+        }
+
+        //precedencna analyza by sa mala zastavit po nacitany klucoveho slova 'then', netreba to teda potom nacitavat
+        fExp(token, state, data);
+            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+        checkError(data);
+
+        //Nemusim nacitavat dalsi token, lebo precedencna analyza nacita do premennje token klucove slovo 'then'
+        if(!strcmp(token->name,"keyword") && !strcmp(token->value,"then")){
+            
+            //TODO zmena framu v symtable, tabulke symbolov
+
+            //Ocakavam <st-list>
+            data->errorValue = read_token(token);
+            checkError(data);
+
+            fSt_list(token, state, data);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(data);
+
+            //Teraz by sa v tokene mal nachadza 'else', otestujem to a pokracujem v behu
+            if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else")){
+                //Ocakavam <st-list>
+                data->errorValue = read_token(token);
+                checkError(data);
+
+                fSt_list(token, state, data);
+                    //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                checkError(data);    
+
+                //v Tokene by sa mal nachadza 'end', idem to otestovat a pokracujem v behu programu uz mimo if statement
+                if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
+                    //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo if statement
+
+                        //Ocakavam <st-list>
+                    data->errorValue = read_token(token);
+                    checkError(data);
+
+
+                    fSt_list(token, state, data);
+                        //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                    checkError(data);
+
+                }
+                else{
+                    printf("Error in state %d, fSt_list, missing keyword \'end\'\n", *state);
+                    data->errorValue = 2;
+                    checkError(data);
+                }
+            }
+            else{
+                printf("Error in state %d, fSt_list, missing od keyword \'else\' in if statement \n", *state);
+                data->errorValue = 2;
+                checkError(data);
+            }
+
+        }
+        else{
+            printf("Error in state %d, fSt_list, missing od keyword \'then\' in if statement \n", *state);
+            data->errorValue = 2;
+            checkError(data);
+
+        }
 
 
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"while")){
         
-       //TODO
+       //Ocakavam <exp>
+        data->errorValue = read_token(token);
+        checkError(data);
+        
+        //Ak je nacitany token identifikator a je to ID funkcie, tak Error
+        if(!strcmp(token->name,"identifier")){
+            if(isFunction(token)){
+                printf("Error in state %d, fSt_list, ID of function in while cycle as a condition\n", *state);
+                data->errorValue = 2;
+                checkError(data);
+            }    
+        }
 
+        //precedencna analyza nacitava dovtedy, kym nenarazi na klucove slovo 'do'
+        fExp(token, state, data);
+            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+        checkError(data);
+
+
+        //Nemusim nacitavat dalsi token, lebo v tokene bude nacitane klucove slovo 'do', pretoze sa na tomto tokene precedencna analyza zastavi
+        //Prestane nacitavat vyraz a spracuje ho
+
+        if(!strcmp(token->name,"keyword") && !strcmp(token->value,"do")){
+
+            //Ocakavam <st-list>
+            data->errorValue = read_token(token);
+            checkError(data);
+
+
+            fSt_list(token, state, data);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(data);
+
+            //Teraz by som mal mat v tokene slovo 'end', spytam sa, ci tam je
+            if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
+                //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo while cyklu
+
+                    //Ocakavam <st-list>
+                data->errorValue = read_token(token);
+                checkError(data);
+
+
+                fSt_list(token, state, data);
+                    //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                checkError(data);
+
+            }
+            else{
+                printf("Error in state %d, fSt_list, missing keyword \'end\'\n", *state);
+                data->errorValue = 2;
+                checkError(data);
+            }
+        }
+        else{
+            printf("Error in state %d, fSt_list, missing keyword \'do\'\n", *state);
+                data->errorValue = 2;
+                checkError(data);
+        }
 
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"local")){
@@ -407,6 +535,12 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
+        //Ak som mal ID funkcie, tak v tokene je ')', musim  teda nacitat za tejto podmienky dalsi token a prejst do <st-list>
+        if(!strcmp(token->name,")")){
+            //Ocakavam <st-list>
+            data->errorValue = read_token(token);
+            checkError(data);
+        }
 
         //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
         //Token som nacital preto dopredu, lebo pri pravidle 16. musim rozpoznat EPSILON prechod a to tak, ze tam nacitam token, vynorim sa az sem a v 
@@ -548,7 +682,7 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
        data->errorValue = read_token(token);
         checkError(data);
 
-         fExp(token, state, data);
+        fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
