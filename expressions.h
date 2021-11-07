@@ -5,7 +5,7 @@
  * @author Patrik Sehnoutek, xsehno01
  * @author Dovhalenko Dmytro, xdovha00
  */
-
+#include "scanner.h"
 #ifndef _EXPRESSIONS_H_
 #define _EXPRESSIONS_H_
 
@@ -20,6 +20,9 @@ typedef enum
     EMPTY   // ERROR
 } TableItem; 
 
+int vstupni_znak(Token* token);
+int zasobnikovy_znak(Stack *s);
+Token *exp_analysator(Token*token);
 
 // Rules
 /*
