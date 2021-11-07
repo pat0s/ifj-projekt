@@ -20,7 +20,8 @@ typedef struct sData{
 
 } Data_t;
 
-
+bool isFunction(Token *token);
+void fItem_n(Token *token, enum STATE *state, Data_t *data);
 void fAssigns(Token *token, enum STATE *state, Data_t *data);
 void fAssign(Token *token, enum STATE *state, Data_t *data);
 void fItem(Token *token, enum STATE *state, Data_t *data);
@@ -38,7 +39,10 @@ void fExp(Token *token, enum STATE *state, Data_t *data);
 void synAnalys(Token *token, enum STATE *state, Data_t *data);
 
 
-
+bool isFunction(Token *token){
+    //check if token is function or variable
+    return true;
+}
 
 void checkError(Data_t *data){
 
@@ -128,8 +132,9 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
         //Ak je ID funkcie, tak problem, lebo je vo viacnasobnom priradeni ID funkcia, ktora vracia hodnotu
         //Ak je ID premennej, idem do funkcie <exp>
         //Ak je to int, float alebo string, volame <exp>
-        //fExp(token, state, data);
 
+        //fExp(token, state, data);
+        //checkError(data);
 
 
         //Nebude treba nacitavat token, lebo v precedencnej analyze bude musiet nacitat dalsi token, aby vedel ze ukonicl vyraz.
@@ -164,16 +169,21 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"identifier")){
         //TODO treba zistit ci je to identifikator funkcie alebo premennej, ak funkcie tak riesim (<arg>), ak premennej tak idem to <exp>
-        /*TODO if(isFunction()){
+        /*TODO if(isFunction(token)){
             //Nacitanie '('
             data->errorValue = read_token(token);
             checkError(data);
 
-            //Nacitanie 
+            //Nacitanie argumentu funkcie
             data->errorValue = read_token(token);
             checkError(data);
 
             fArg(token, state, data);
+            checkError(data);
+
+            //Nacitanie <st-list>, pocita sa s tym ze ked sa vynorime, v tokene bude nacitany <st-list>, vyporime sa v fSt_list() a tam sa opat zanorime do fSt_list
+            data->errorValue = read_token(token);
+            checkError(data);
 
         }
         else{
@@ -209,11 +219,64 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
 
     }
     else{
-        printf("Error in state %d, fSt_list\n", *state);
+        printf("Error in state %d, fAssign\n", *state);
         data->errorValue = 2;
         checkError(data);
 
 
+    }
+
+
+}
+
+
+void fItem_n(Token *token, enum STATE *state, Data_t *data){
+
+    if(!strcmp(token->name,",")){
+        //Ocakavam ID premennej
+        data->errorValue = read_token(token);
+        checkError(data);
+
+        //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction() zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
+        if(!strcmp(token->name,"identifier")){
+            if(!isFunction(token)){
+                //ocakavam ',' alebo '=' a teda prechod od <item-n>
+                data->errorValue = read_token(token);
+                checkError(data);
+    
+                fItem_n(token, state, data);
+                    //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                checkError(data);
+            }
+            else{
+                printf("Error in state %d, fItem_n, function instead of ID of variable\n", *state);
+                data->errorValue = 2;
+                checkError(data);
+    
+            }
+        }
+        else{
+            printf("Error in state %d, fItem_n, expect ID but token is not ID\n", *state);
+            data->errorValue = 2;
+            checkError(data);
+        }
+
+    }
+    else if(!strcmp(token->name,"=")){
+        //Ocakavam <assign>
+
+        data->errorValue = read_token(token);
+        checkError(data);
+
+
+        fAssign(token, state, data);
+            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+        checkError(data);
+    }
+    else{
+        printf("Error in state %d, fItem_n\n", *state);
+        data->errorValue = 2;
+        checkError(data);
     }
 
 
@@ -236,7 +299,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //Som v stave, kedy mam nacitanu ')' argumentu a musim prejst do <st-list>
         data->errorValue = read_token(token);
         checkError(data);
-        //Teraz som naictal dalsi token, v ktorom ocakavam <st-list>, spravil som to preto tu, pretoze musim pocitat situaciu spojenu s pravidlo 16. kde priradzujem a musim rozpoznat EPSILON prechod
+        //Teraz som nacital dalsi token, v ktorom ocakavam <st-list>, spravil som to preto tu, pretoze musim pocitat situaciu spojenu s pravidlo 16. kde priradzujem a musim rozpoznat EPSILON prechod
         
    
     }
@@ -252,15 +315,49 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
+        //Token so <st-list> som nacital vo fAssign()
+
 
 
     }
     else if(!strcmp(token->name,",")){
         //prikaz priradenia, viacnasobne priradenie
 
+        //ocakavam ID premennej
+        data->errorValue = read_token(token);
+        checkError(data);
+
+        //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction() zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
+        if(!strcmp(token->name,"identifier")){
+            if(!isFunction(token)){
+
+                //ocakavam ',' alebo '=' a teda prechod od <item-n>
+                data->errorValue = read_token(token);
+                checkError(data);
+
+                fItem_n(token, state, data);
+                    //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                checkError(data);
+            }
+            else{
+                printf("Error in state %d, fItem_n, function instead of ID of variable\n", *state);
+                data->errorValue = 2;
+                checkError(data);
+
+            }
+
+        }
+        else{
+            printf("Error in state %d, fItem_n, expect ID but token is not ID\n", *state);
+            data->errorValue = 2;
+            checkError(data);
+        }
+
+
+
     }
     else{
-        printf("Error in state %d, fSt_list\n", *state);
+        printf("Error in state %d, fItem\n", *state);
         data->errorValue = 2;
         checkError(data);
 
