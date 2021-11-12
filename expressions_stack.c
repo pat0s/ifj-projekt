@@ -7,22 +7,23 @@ void init_stack(Stack *s){
     s->top=NULL;
 }
 
-void push(Stack *s, char *newData){
-    SElement * newElement = (SElement *)malloc(sizeof(SElement));
-    if(newElement ==NULL){
+void push(Stack *s, char *new_data, char* new_type){
+    SElement * new_element = (SElement *)malloc(sizeof(SElement));
+    if(new_element ==NULL){
         //Error;
     }
     else{
-        strcpy(newElement->data,newData);
-        newElement->nextElement=s->top;
-        s->top=newElement;
+        strcpy(new_element->data,new_data);
+        strcpy(new_element->type,new_type);
+        new_element->next_element=s->top;
+        s->top=new_element;
     }
 }
 
 void pop(Stack *s){
     if(s->top!=NULL){
         SElement* tmp=s->top;
-        s->top=tmp->nextElement;
+        s->top=tmp->next_element;
         free(tmp);
     }
 }
@@ -31,10 +32,24 @@ char* top(Stack *s){
     return s->top->data;
 }
 
+char* top_type(Stack *s){
+    return s->top->type;
+}
+
 char* top1(Stack *s){
-    if(s->top->nextElement!=NULL){
-        SElement * tmp = s->top->nextElement;
-        return tmp->data;
+    if(s->top!=NULL){
+        if(s->top->next_element!=NULL){
+            SElement * tmp = s->top->next_element;
+            return tmp->data;
+        }
+    }
+    return NULL;
+}
+
+char* top1_type(Stack *s){
+    if(s->top->next_element!=NULL){
+        SElement * tmp = s->top->next_element;
+        return tmp->type;
     }
     return NULL;
 }
