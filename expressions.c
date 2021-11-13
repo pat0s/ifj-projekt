@@ -128,7 +128,62 @@ void do_equal(Stack*s){
     else return;
 }
 
-
+/**
+ * @brief Provede kontrolu typu u binarnich operatoru a nastavi typ vysledneho vyrazu;
+ * 
+ * @returns 0 pri uspechu, -1 pri chybe;
+ */
+int kontrola_typu(Stack *s){
+    char type[7];
+    if(!strcmp(top_type(s),"string")){
+        pop(s);
+        pop(s);
+        if(!strcmp(top_type(s),"string")){
+            strcpy(type,"string");
+            change_top_type(s,type);
+            return 0;
+        }
+        else{
+            return -1;
+        }
+    }
+    else if(!strcmp(top_type(s),"int")){
+        pop(s);
+        pop(s);
+        if(!strcmp(top_type(s),"int")){
+            strcpy(type,"int");
+            change_top_type(s,type);
+            return 0;
+        }
+        else if(!strcmp(top_type(s),"number")){
+            //zmenit typ posledniho vlozeneho na number
+            strcpy(type,"number");
+            change_top_type(s,type);
+            return 0;
+        }
+        else{
+            return -1;
+        }
+    }
+    else {
+        pop(s);
+        pop(s);
+        if(!strcmp(top_type(s),"number")){
+            strcpy(type,"number");
+            change_top_type(s,type);
+            return 0;
+        }
+        else if(!strcmp(top_type(s),"int")){
+            //zmenit typ predposledniho na number
+            strcpy(type,"number");
+            change_top_type(s,type);
+            return 0;
+        }
+        else {
+            return -1;
+        }
+    }
+}
 
 /**
  * @brief Provede zmenu zasobniku podle pravidel
@@ -166,87 +221,67 @@ int do_reduc(Stack*s){
             }
         }
         else if(!strcmp(top1(s),"+")){                      //E -> E + E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani +
+            
         }
         else if(!strcmp(top1(s),"-")){                      //E -> E - E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani -
         }
         else if(!strcmp(top1(s),"*")){                      //E -> E * E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani *
         }
         else if(!strcmp(top1(s),"/")){                      //E -> E / E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani /
         }
         else if(!strcmp(top1(s),"//")){                     //E -> E // E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            change_top_type(s,"int");
+            //zavolat zmenu typu na int
+            //zavolat generovani //
+            //???
         }
         else if(!strcmp(top1(s),"<")){                      //E -> E > E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani >
         }
         else if(!strcmp(top1(s),">")){                      //E -> E < E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani <
         }
         else if(!strcmp(top1(s),"<=")){                     //E -> E <= E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani <=
         }
         else if(!strcmp(top1(s),">=")){                     //E -> E >= E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani >=
         }
         else if(!strcmp(top1(s),"==")){                     //E -> E == E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani ==
         }
         else if(!strcmp(top1(s),"~=")){                     //E -> E ~= E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
-            }
+            kontrola_typu(s);
+            //zavolat generovani ~=
         }
         else if(!strcmp(top1(s),"..")){                     //E -> E..E
-            pop(s);
-            pop(s);
-            if(!strcmp(top(s),"E")){
-                //zmenit typ
+            if(!strcmp(top_type(s),"string")){
+                pop(s);
+                pop(s);
+                if(!strcmp(top_type(s),"string")){
+                    change_top_type(s,"string");
+                    //zavolat generovani ..
+                }
+                else {
+                    return -1;
+                }
+            }
+            else {
+                return -1;
             }
         }
         
@@ -274,10 +309,10 @@ Token *exp_analysator(Token*token){
     printf("Vrchol zasobniku: %s%s\n",print2,print);
     print=token->name;
     printf("Vstupni znak: %s\n",print);
-*/
+
     i=zasobnikovy_znak(s);
     j=vstupni_znak(token);
-/*
+
     printf("Index tabulky:(%i, %i) \n",i,j);
     printf("Pravidlo tabulky: %i\n",precence_table[i][j]);
 */
@@ -295,16 +330,19 @@ Token *exp_analysator(Token*token){
                 error = do_reduc(s);
             }                                           
         else if(precence_table[i][j]==3||error==-1){    //Prazdny zasobnik a vstup je prazdny nebo ')'
-                if(i==8 && (j==7||j==8)){               
+                if(i==8 && (j==7||j==8)){   
+                    destroy(s);            
                     return token;
                 }
                 else{                                  //EMPTY
                     printf("Chyba syntaktickeho analyzatoru zdola nahoru\n");
-                    break;//chyba
+                    destroy(s);
+                    free(token);
+                    exit(1);//chyba
                 }
             }                                           
 //Vypis stavu zasobniku po provedeni operace
-/*    
+/*   
     print=top(s);
     print2=top1(s);
     printf("Vrchol zasobniku: %s%s\n",print2,print);
@@ -313,6 +351,7 @@ Token *exp_analysator(Token*token){
 */
 ///////////////////////////////////////////////////////////
     }
+    destroy(s);
     return token;
 }
 
@@ -321,6 +360,7 @@ int main(){
     strcpy(token->name,"int");
     token->value="sfd";
     token= exp_analysator(token);
+    free(token);
     return 0;
 }
 

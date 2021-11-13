@@ -28,6 +28,12 @@ void pop(Stack *s){
     }
 }
 
+void change_top_type(Stack *s,char*new_type){
+    if(s->top!=NULL){
+        strcpy(s->top->type,new_type);
+    }
+}
+
 char* top(Stack *s){
     return s->top->data;
 }
@@ -56,4 +62,11 @@ char* top1_type(Stack *s){
 
 bool is_empty(Stack *s){
     return(s->top==NULL);
+}
+
+void destroy(Stack *s){
+    while (s->top!=NULL){
+        pop(s);
+    }
+    free(s);
 }
