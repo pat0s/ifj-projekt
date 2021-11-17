@@ -9,6 +9,8 @@
 #include "error.h"
 #include <string.h>
 
+const char keywords[][9] = {"do", "else", "end", "function", "global", "if", "local", "nil", "require", "return", "then", "while", "string", "integer", "number"};
+
 
 /**
  * @brief Function for token initialisation
