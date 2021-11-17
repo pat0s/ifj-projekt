@@ -2,7 +2,7 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<string.h>
-#include "scanner.c"
+#include "scanner.h"
 #include "error.h"
 
 
