@@ -6,7 +6,6 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<string.h>
-#include"scanner.h"
 #include"synAnalys.h"
 #include"error.h"
 

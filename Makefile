@@ -1,23 +1,17 @@
-EXECUTABLE = main
-CFLAGS = -g -Wall -Wextra  --std=c99
+EXECUTABLE = IFJ21
+CFLAGS = -g -Wall -Wextra -Werror -lm
 
 .PHONY = clean all
 
+all: $(EXECUTABLE)
 
-$(EXECUTABLE): scanner.o synAnalys.o
-	gcc $(CFLAGS) -o $@ $^ 
-
-scanner.o: scanner.c scanner.h error.h 
-	gcc $(CFLAGS) -c $<
-
-
-synAnalys.o: synAnalys.c scanner.o  
-	gcc $(CFLAGS) -c scanner.o synAnalys.c
+$(EXECUTABLE): scanner.o synAnalys.o #symtable.o
+	gcc $(CFLAGS) $^ -o $@
+	 
 
 
-#Nedavam, lebo je tam nejaky erro a teraz to nie je dolezite
-#symtable.o: symtable.c error.h
-#	gcc $(CFLAGS) -c $<
+%.o: %.c
+	gcc $(CFLAGS) -c $^ -o $@
 
 
 
