@@ -2,51 +2,24 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<string.h>
-#include "scanner.c"
-#include "error.h"
+#include"scanner.c"
+#include"synAnalys.h"
+#include"error.h"
 
 
-
-
-enum STATE {assign, assigns, arg, args, exp, ifStatement, item, item_n, init, init_value, prog, prog_con, par_type, ret_val, ret_type, st_list, type, types, value, values, params, params_n};
-
-
-
-typedef struct sData{
-    
-    bool isError;
-    int errorValue;
-    Token *token;
-
-} Data_t;
-
-bool isFunction(Token *token);
-void fValues(Token *token, enum STATE *state, Data_t *data);
-void fValue(Token *token, enum STATE *state, Data_t *data);
-void fInit_value(Token *token, enum STATE *state, Data_t *data);
-void fInit(Token *token, enum STATE *state, Data_t *data);
-void fItem_n(Token *token, enum STATE *state, Data_t *data);
-void fAssigns(Token *token, enum STATE *state, Data_t *data);
-void fAssign(Token *token, enum STATE *state, Data_t *data);
-void fItem(Token *token, enum STATE *state, Data_t *data);
-void fSt_list(Token *token, enum STATE *state, Data_t *data);
-void fParams_n(Token *token, enum STATE *state, Data_t *data);
-void fParams(Token *token, enum STATE *state, Data_t *data);
-void fArgs(Token *token, enum STATE *state, Data_t *data);
-void fArg(Token *token, enum STATE *state, Data_t *data);
-void fRet_type(Token *token, enum STATE *state, Data_t *data);
-void fType(Token *token, enum STATE *state, Data_t *data);
-void fTypes(Token *token, enum STATE *state, Data_t *data);
-void fPar_type(Token *token, enum STATE *state, Data_t *data);
-void fProg_con(Token *token, enum STATE *state, Data_t *data);
-void fExp(Token *token, enum STATE *state, Data_t *data);
-void synAnalys(Token *token, enum STATE *state, Data_t *data);
 
 
 bool isFunction(Token *token){
     //check if token is function or variable
     return true;
 }
+
+
+/**
+ * @brief Function for checking errors
+ * 
+ * @param data Pointer to data structure with errorValue which trigger error message
+ */
 
 void checkError(Data_t *data){
 
@@ -123,6 +96,16 @@ void checkError(Data_t *data){
             data->errorValue = 0;
 }
 
+
+
+/**
+ * @brief Function for nondeterminal Values in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fValues(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,",")){
@@ -136,7 +119,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-            //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory pojdem analyzovat
+                //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory pojdem analyzovat
 
         }
         else{
@@ -152,15 +135,25 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
 
 }
 
+
+
+/**
+ * @brief Function for nondeterminal Value in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fValue(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
         if(!strcmp(token->name,"identifier")){
             if(isFunction(token)){
-                //je to ID funkcie
-                //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
+                    //je to ID funkcie
+                    //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
-                //Nacitanie '('
+                    //Nacitanie '('
                 data->errorValue = read_token(token);
                 checkError(data);
 
@@ -170,39 +163,38 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                     checkError(data);
                 }
 
-                //Nacitanie argumentu funkcie
+                    //Nacitanie argumentu funkcie
                 data->errorValue = read_token(token);
                 checkError(data);
 
                 fArg(token, state, data);
                 checkError(data);
 
-
-                //Nacitanie dalsieho tokenu, ocakavam <st-list>
+                    //Nacitanie dalsieho tokenu, ocakavam <st-list>
                 data->errorValue = read_token(token);
                 checkError(data);
             }
             else{
-                //Token je ID premennej
-                //TODO treba zistit zo symtable, ci je ID premenna inicializovana
-                //je to ID premennej, idem do <exp> fExp
+                    //Token je ID premennej
+                    //TODO treba zistit zo symtable, ci je ID premenna inicializovana
+                    //je to ID premennej, idem do <exp> fExp
                 fExp(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
-                //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
+                    //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
 
                 fValues(token, state, data);
-                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                    //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
 
             }
         }
         else{
-            //Token je string, float lebo int
+                //Token je string, float lebo int
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-            //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
+                //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
 
             fValues(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -215,19 +207,25 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
         //Som v EPSILON prechode a returnujem NIL
         //TODO treba zabezpecit navratovu hodnotu NIL
     }
-
-
 }
 
+
+/**
+ * @brief Function for nondeterminal Init_value in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
 
 void fInit_value(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"identifier")){
         if(isFunction(token)){
-            //je to ID funkcie
-            //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
+                //je to ID funkcie
+                //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
-            //Nacitanie '('
+                //Nacitanie '('
             data->errorValue = read_token(token);
             checkError(data);
 
@@ -237,56 +235,53 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
 
-            //Nacitanie argumentu funkcie
+                //Nacitanie argumentu funkcie
             data->errorValue = read_token(token);
             checkError(data);
 
             fArg(token, state, data);
             checkError(data);
 
-
-            //Nacitanie dalsieho tokenu, ocakavam <st-list>
+                //Nacitanie dalsieho tokenu, ocakavam <st-list>
             data->errorValue = read_token(token);
             checkError(data);
-
-
-
         }
         else{
-            //TODO treba zistit zo symtable, ci je ID premenna inicializovana
-            //je to ID premennej, idem do <exp> fExp
+                //TODO treba zistit zo symtable, ci je ID premenna inicializovana
+                //je to ID premennej, idem do <exp> fExp
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-            //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
-        
+                //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
         }
     }
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float")){
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
-
-        //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
-
-
+            //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
     }
     else{
         printf("Error in state %d, fInit_value\n", *state);
         data->errorValue = 2;
         checkError(data);
     }
-
-
-
 }
 
 
 
+/**
+ * @brief Function for nondeterminal Init in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fInit(Token *token, enum STATE *state, Data_t *data){
     
     if(!strcmp(token->name,"=")){
-        //nacitam dalsi token, ocakavam <init-value>
+            //nacitam dalsi token, ocakavam <init-value>
         data->errorValue = read_token(token);
         checkError(data);
 
@@ -294,39 +289,42 @@ void fInit(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-        //WARNING -> postaraj sa o to, aby bol v tokene nacitany <st-list>, pri vynoreni s tym pocitas
-        //          - Pre string, int a float je to ZABEZPECENE
-        //          - Pre ID premennej je to ZABEZPECENE
-        //          - Pre ID funkcie je to ZABEZPECENE
-
-
+            //WARNING -> postaraj sa o to, aby bol v tokene nacitany <st-list>, pri vynoreni s tym pocitas
+            //          - Pre string, int a float je to ZABEZPECENE
+            //          - Pre ID premennej je to ZABEZPECENE
+            //          - Pre ID funkcie je to ZABEZPECENE
     }
     else{
         //Znaci EPSILON PRECHOD
         //Tento 'else' je tu len symbolicky pre spravne porozumenie situacie
     }
-
-
 }
 
 
 
+/**
+ * @brief Function for nondeterminal Assigns in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fAssigns(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,",")){
-
-        //nacitam dalsi token, ocakavam <exp>
+            //nacitam dalsi token, ocakavam <exp>
         data->errorValue = read_token(token);
         checkError(data);
 
-        //TODO treba zistit ci je to identifikator funkcie alebo premennej
-        //Ak je ID funkcie, tak problem, lebo je vo viacnasobnom priradeni ID funkcia, ktora vracia hodnotu
-        //Ak je ID premennej, idem do funkcie <exp>
-        //Ak je to int, float alebo string, volame <exp>
+            //TODO treba zistit ci je to identifikator funkcie alebo premennej
+            //Ak je ID funkcie, tak problem, lebo je vo viacnasobnom priradeni ID funkcia, ktora vracia hodnotu
+            //Ak je ID premennej, idem do funkcie <exp>
+            //Ak je to int, float alebo string, volame <exp>
 
-        //Osetrenie, ci je token int, float, string alebo ID
+            //Osetrenie, ci je token int, float, string alebo ID
         if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
-            //Osetrenie, aby ID bolo ID premennej a nie funkcie
+                //Osetrenie, aby ID bolo ID premennej a nie funkcie
             if(isFunction(token)){
                 printf("Error in state %d, fAssigns, ID of function in <assigns>\n", *state);
                 data->errorValue = 2;
@@ -343,15 +341,13 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
 
-        //Nebude treba nacitavat token, lebo v precedencnej analyze bude musiet nacitat dalsi token, aby vedel ze ukonicl vyraz.
-        // Bud nacita ',' a pokracujem, alebo nacita EPSILON PRECHOD a koncim
+            //Nebude treba nacitavat token, lebo v precedencnej analyze bude musiet nacitat dalsi token, aby vedel ze ukonicl vyraz.
+            // Bud nacita ',' a pokracujem, alebo nacita EPSILON PRECHOD a koncim
 
-        //Vzdy sa rekurzivne zanorim do fAssigns(), ak bude EPSILON prechod, tak sa vynori, ak bude ',' tak riesim dalsie priradenie
+            //Vzdy sa rekurzivne zanorim do fAssigns(), ak bude EPSILON prechod, tak sa vynori, ak bude ',' tak riesim dalsie priradenie
         fAssigns(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
-
-
     }
     else{
         //EPSILON PRECHOD
@@ -360,24 +356,26 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
         //TO, ci je v tokene <st-list> osetri az samotna funkcia fSt_list(), v ktorej sa momentalne vynorim, raz sa rekurzivne zanorim a skontrolujem ci je token <st-list> alebo nie
         //Error sa osetri vo funkcii fSt_list()
     }
-
-
-
-
-
-
-
 }
 
+
+/**
+ * @brief Function for nondeterminal Assign in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fAssign(Token *token, enum STATE *state, Data_t *data){
-    //Ocakavam bud ID funkcie alebo <exp>(<exp> moze byt aj nazov premennej, treba zistit v symtable)
-    //TODO zistit v symtable
+        //Ocakavam bud ID funkcie alebo <exp>(<exp> moze byt aj nazov premennej, treba zistit v symtable)
+        //TODO zistit v symtable
 
     if(!strcmp(token->name,"identifier")){
-        //TODO treba zistit ci je to identifikator funkcie alebo premennej, ak funkcie tak riesim (<arg>), ak premennej tak idem to <exp>
+            //TODO treba zistit ci je to identifikator funkcie alebo premennej, ak funkcie tak riesim (<arg>), ak premennej tak idem to <exp>
         if(isFunction(token)){
-            //TODO Zistit v symtable, ci je deklarovana, ak nie tak ERROR
-            //Nacitanie '('
+                //TODO Zistit v symtable, ci je deklarovana, ak nie tak ERROR
+                //Nacitanie '('
             data->errorValue = read_token(token);
             checkError(data);
 
@@ -387,31 +385,27 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
 
-            //Nacitanie argumentu funkcie
+                //Nacitanie argumentu funkcie
             data->errorValue = read_token(token);
             checkError(data);
 
             fArg(token, state, data);
             checkError(data);
-
-
-            //Netreba nacitat dalsi token, ked sa vynorim, a bude posledny token ')', tak sa nacita novy token
-
+                //Netreba nacitat dalsi token, ked sa vynorim, a bude posledny token ')', tak sa nacita novy token
         }
         else{
-            // ide o ID premennej
+                // ide o ID premennej
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
-            //nemusim nacitavat dalsi token, lebo mi to precedencna analyza vrati v ukazatali a premennej 'token'
-            //precedencna analyza sa musi zastavit v momente, kedy narazi na ',' alebo EPSILON PRECHOD, v tomto pripade <st-list>
-            //Az vo funkcii fAssings() zistim, ci sa jednalo o EPSILON prechod alebo o ',' a teda dalsie hodnoty do priradenia
+                //nemusim nacitavat dalsi token, lebo mi to precedencna analyza vrati v ukazatali a premennej 'token'
+                //precedencna analyza sa musi zastavit v momente, kedy narazi na ',' alebo EPSILON PRECHOD, v tomto pripade <st-list>
+                //Az vo funkcii fAssings() zistim, ci sa jednalo o EPSILON prechod alebo o ',' a teda dalsie hodnoty do priradenia
             fAssigns(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
         }
-
     }
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float")){
 
@@ -419,14 +413,12 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-        
-        //nemusim nacitavat dalsi token, lebo mi to precedencna analyza vrati v ukazatali a premennej 'token'
-        //precedencna analyza sa musi zastavit v momente, kedy narazi na ',' alebo EPSILON PRECHOD, v tomto pripade <st-list>
-        //Az vo funkcii fAssings() zistim, ci sa jednalo o EPSILON prechod alebo o ',' a teda dalsie hodnoty do priradenia
+            //nemusim nacitavat dalsi token, lebo mi to precedencna analyza vrati v ukazatali a premennej 'token'
+            //precedencna analyza sa musi zastavit v momente, kedy narazi na ',' alebo EPSILON PRECHOD, v tomto pripade <st-list>
+            //Az vo funkcii fAssings() zistim, ci sa jednalo o EPSILON prechod alebo o ',' a teda dalsie hodnoty do priradenia
         fAssigns(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
-
     }
     else{
         printf("Error in state %d, fAssign\n", *state);
@@ -436,17 +428,26 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
 }
 
 
+
+/**
+ * @brief Function for nondeterminal Item_n in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fItem_n(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,",")){
-        //Ocakavam ID premennej
+            //Ocakavam ID premennej
         data->errorValue = read_token(token);
         checkError(data);
 
-        //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction() zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
+            //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction() zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
         if(!strcmp(token->name,"identifier")){
             if(!isFunction(token)){
-                //ocakavam ',' alebo '=' a teda prechod od <item-n>
+                    //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
                 checkError(data);
     
@@ -458,7 +459,6 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
                 printf("Error in state %d, fItem_n, function instead of ID of variable\n", *state);
                 data->errorValue = 2;
                 checkError(data);
-    
             }
         }
         else{
@@ -466,11 +466,10 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = 2;
             checkError(data);
         }
-
     }
     else if(!strcmp(token->name,"=")){
-        //Ocakavam <assign>
 
+            //Ocakavam <assign>
         data->errorValue = read_token(token);
         checkError(data);
 
@@ -484,19 +483,27 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = 2;
         checkError(data);
     }
-
-
 }
 
+
+
+
+/**
+ * @brief Function for nondeterminal Item in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
 
 void fItem(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"(")){
-        //Ide argumnet funkcie, dany identifikator by mal patrit funkcii
+            //Ide argumnet funkcie, dany identifikator by mal patrit funkcii
 
-        //TODO treba skontrolovat, ci je funkcia aspon deklarovana
+            //TODO treba skontrolovat, ci je funkcia aspon deklarovana
         
-        //Ocakavam token argumentu
+            //Ocakavam token argumentu
         data->errorValue = read_token(token);
         checkError(data);
 
@@ -507,15 +514,13 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //Som v stave, kedy mam nacitanu ')' argumentu a musim prejst do <st-list>
         data->errorValue = read_token(token);
         checkError(data);
-        //Teraz som nacital dalsi token, v ktorom ocakavam <st-list>, spravil som to preto tu, pretoze musim pocitat situaciu spojenu s pravidlo 16. kde priradzujem a musim rozpoznat EPSILON prechod
-        
-   
+            //Teraz som nacital dalsi token, v ktorom ocakavam <st-list>, spravil som to preto tu, pretoze musim pocitat situaciu spojenu s pravidlo 16. kde priradzujem a musim rozpoznat EPSILON prechod
     }
     else if(!strcmp(token->name,"=")){
-        //Prikaz priradenia, dany identifikator by mal byt premenna
+            //Prikaz priradenia, dany identifikator by mal byt premenna
 
-        //Ocakavam bud ID funkcie alebo <exp>(<exp> moze byt aj nazov premennej, treba zistit v symtable)
-        //TODO zistit v symtable
+            //Ocakavam bud ID funkcie alebo <exp>(<exp> moze byt aj nazov premennej, treba zistit v symtable)
+            //TODO zistit v symtable
         data->errorValue = read_token(token);
         checkError(data);
 
@@ -523,23 +528,20 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-        //Token so <st-list> som nacital vo fAssign()
-
-
-
+            //Token so <st-list> som nacital vo fAssign()
     }
     else if(!strcmp(token->name,",")){
-        //prikaz priradenia, viacnasobne priradenie
+            //prikaz priradenia, viacnasobne priradenie
 
-        //ocakavam ID premennej
+            //ocakavam ID premennej
         data->errorValue = read_token(token);
         checkError(data);
 
-        //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction() zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
+            //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction() zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
         if(!strcmp(token->name,"identifier")){
             if(!isFunction(token)){
 
-                //ocakavam ',' alebo '=' a teda prechod od <item-n>
+                    //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
                 checkError(data);
 
@@ -551,43 +553,43 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
                 printf("Error in state %d, fItem_n, function instead of ID of variable\n", *state);
                 data->errorValue = 2;
                 checkError(data);
-
             }
-
         }
         else{
             printf("Error in state %d, fItem_n, expect ID but token is not ID\n", *state);
             data->errorValue = 2;
             checkError(data);
         }
-
-
-
     }
     else{
         printf("Error in state %d, fItem\n", *state);
         data->errorValue = 2;
         checkError(data);
-
     }
-
-
 }
+
+/**
+ * @brief Function for nondeterminal st-list in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
 
 
 void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
-        //Narazil som na EPSILON prechod
+            //Narazil som na EPSILON prechod
         
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"if")){
 
-        //Ocakavam <exp>
+            //Ocakavam <exp>
         data->errorValue = read_token(token);
         checkError(data);
         
-        //Ak je nacitany token identifikator a je to ID funkcie, tak Error
+            //Ak je nacitany token identifikator a je to ID funkcie, tak Error
         if(!strcmp(token->name,"identifier")){
             if(isFunction(token)){
                 printf("Error in state %d, fSt_list, ID of function in if statement as a condition\n", *state);
@@ -596,17 +598,17 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             }    
         }
 
-        //precedencna analyza by sa mala zastavit po nacitany klucoveho slova 'then', netreba to teda potom nacitavat
+            //precedencna analyza by sa mala zastavit po nacitany klucoveho slova 'then', netreba to teda potom nacitavat
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-        //Nemusim nacitavat dalsi token, lebo precedencna analyza nacita do premennje token klucove slovo 'then'
+            //Nemusim nacitavat dalsi token, lebo precedencna analyza nacita do premennje token klucove slovo 'then'
         if(!strcmp(token->name,"keyword") && !strcmp(token->value,"then")){
             
-            //TODO zmena framu v symtable, tabulke symbolov
+                //TODO zmena framu v symtable, tabulke symbolov
 
-            //Ocakavam <st-list>
+                //Ocakavam <st-list>
             data->errorValue = read_token(token);
             checkError(data);
 
@@ -614,9 +616,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
-            //Teraz by sa v tokene mal nachadza 'else', otestujem to a pokracujem v behu
+                //Teraz by sa v tokene mal nachadza 'else', otestujem to a pokracujem v behu
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else")){
-                //Ocakavam <st-list>
+                    //Ocakavam <st-list>
                 data->errorValue = read_token(token);
                 checkError(data);
 
@@ -624,9 +626,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);    
 
-                //v Tokene by sa mal nachadza 'end', idem to otestovat a pokracujem v behu programu uz mimo if statement
+                    //v Tokene by sa mal nachadza 'end', idem to otestovat a pokracujem v behu programu uz mimo if statement
                 if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
-                    //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo if statement
+                        //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo if statement
 
                         //Ocakavam <st-list>
                     data->errorValue = read_token(token);
@@ -636,7 +638,6 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                     fSt_list(token, state, data);
                         //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                     checkError(data);
-
                 }
                 else{
                     printf("Error in state %d, fSt_list, missing keyword \'end\'\n", *state);
@@ -649,24 +650,20 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 data->errorValue = 2;
                 checkError(data);
             }
-
         }
         else{
             printf("Error in state %d, fSt_list, missing od keyword \'then\' in if statement \n", *state);
             data->errorValue = 2;
             checkError(data);
-
         }
-
-
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"while")){
         
-       //Ocakavam <exp>
+            //Ocakavam <exp>
         data->errorValue = read_token(token);
         checkError(data);
         
-        //Ak je nacitany token identifikator a je to ID funkcie, tak Error
+            //Ak je nacitany token identifikator a je to ID funkcie, tak Error
         if(!strcmp(token->name,"identifier")){
             if(isFunction(token)){
                 printf("Error in state %d, fSt_list, ID of function in while cycle as a condition\n", *state);
@@ -675,18 +672,17 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             }    
         }
 
-        //precedencna analyza nacitava dovtedy, kym nenarazi na klucove slovo 'do'
+            //precedencna analyza nacitava dovtedy, kym nenarazi na klucove slovo 'do'
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-
-        //Nemusim nacitavat dalsi token, lebo v tokene bude nacitane klucove slovo 'do', pretoze sa na tomto tokene precedencna analyza zastavi
-        //Prestane nacitavat vyraz a spracuje ho
+            //Nemusim nacitavat dalsi token, lebo v tokene bude nacitane klucove slovo 'do', pretoze sa na tomto tokene precedencna analyza zastavi
+            //Prestane nacitavat vyraz a spracuje ho
 
         if(!strcmp(token->name,"keyword") && !strcmp(token->value,"do")){
 
-            //Ocakavam <st-list>
+                //Ocakavam <st-list>
             data->errorValue = read_token(token);
             checkError(data);
 
@@ -695,7 +691,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
-            //Teraz by som mal mat v tokene slovo 'end', spytam sa, ci tam je
+                //Teraz by som mal mat v tokene slovo 'end', spytam sa, ci tam je
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
                 //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo while cyklu
 
@@ -703,11 +699,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 data->errorValue = read_token(token);
                 checkError(data);
 
-
                 fSt_list(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
-
             }
             else{
                 printf("Error in state %d, fSt_list, missing keyword \'end\'\n", *state);
@@ -720,35 +714,34 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 data->errorValue = 2;
                 checkError(data);
         }
-
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"local")){
 
-        //Ocakavam ID
+            //Ocakavam ID
         data->errorValue = read_token(token);
         checkError(data);
 
-        //test, ci je dany token ID, ak nie tak ERROR
+            //test, ci je dany token ID, ak nie tak ERROR
         if(strcmp(token->name,"identifier")){
             printf("Error in state %d, fSt_list->local, missing ID of variable\n", *state);
             data->errorValue = 2;
             checkError(data);
         }
 
-        //TODO zistit ci sa dane ID vyskytuje v tomto frame v symtable, ak ano tak error, ak nie tak treba nasledne vlozit do symtable tuto premennu
+            //TODO zistit ci sa dane ID vyskytuje v tomto frame v symtable, ak ano tak error, ak nie tak treba nasledne vlozit do symtable tuto premennu
 
-        //Ocakavam ':'
+            //Ocakavam ':'
         data->errorValue = read_token(token);
         checkError(data);
 
-        //Ak chyba ':' tak ERROR inak pokracujeme
+            //Ak chyba ':' tak ERROR inak pokracujeme
         if(strcmp(token->name,":")){
             printf("Error in state %d, fSt_list->local, missing \':\'\n", *state);
             data->errorValue = 2;
             checkError(data);
         }
 
-        //Ocakavam <type>
+            //Ocakavam <type>
         data->errorValue = read_token(token);
         checkError(data);
 
@@ -757,7 +750,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
 
-        //Ocakavam <init>
+            //Ocakavam <init>
         data->errorValue = read_token(token);
         checkError(data);
 
@@ -765,18 +758,16 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-        //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
-        //Nacitanie som spravil v fInit() v epsilon prechode alebo vo <init-value>
+            //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
+            //Nacitanie som spravil v fInit() v epsilon prechode alebo vo <init-value>
 
         *state = st_list;
         fSt_list(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
-
-
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"return")){
-        //Ocakavam <ret-val> a rovno <value>
+            //Ocakavam <ret-val> a rovno <value>
         data->errorValue = read_token(token);
         checkError(data);
 
@@ -785,13 +776,11 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
         
-       //V EPSILON prechode mam rovno nacitany dalsi token
-
-
+            //V EPSILON prechode mam rovno nacitany dalsi token
     }
     else if(!strcmp(token->name,"identifier")){
 
-        //Ocakavam <item>
+            //Ocakavam <item>
         data->errorValue = read_token(token);
         checkError(data);
 
@@ -799,122 +788,123 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-        //Ak som mal ID funkcie, tak v tokene je ')', musim  teda nacitat za tejto podmienky dalsi token a prejst do <st-list>
+            //Ak som mal ID funkcie, tak v tokene je ')', musim  teda nacitat za tejto podmienky dalsi token a prejst do <st-list>
         if(!strcmp(token->name,")")){
-            //Ocakavam <st-list>
+                //Ocakavam <st-list>
             data->errorValue = read_token(token);
             checkError(data);
         }
 
-        //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
-        //Token som nacital preto dopredu, lebo pri pravidle 16. musim rozpoznat EPSILON prechod a to tak, ze tam nacitam token, vynorim sa az sem a v 
-        //dalsom zanoreni skontrolujem ci je tancitany token <st-list>
-
+            //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
+            //Token som nacital preto dopredu, lebo pri pravidle 16. musim rozpoznat EPSILON prechod a to tak, ze tam nacitam token, vynorim sa az sem a v 
+            //dalsom zanoreni skontrolujem ci je tancitany token <st-list>
         fSt_list(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
-
     }
     else{
         printf("Error in state %d, fSt_list\n", *state);
         data->errorValue = 2;
         checkError(data);
-        
     }
-    
 }
 
 
 
-
+/**
+ * @brief Function for nondeterminal Params-n in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
 
 void fParams_n(Token *token, enum STATE *state, Data_t *data){
     
     if(!strcmp(token->name,")")){
         //Narazil som na EPSILON prechod
-        
     }
     else if(!strcmp(token->name,",")){
             //Ocakavam ID
-       data->errorValue = read_token(token);
+        data->errorValue = read_token(token);
         checkError(data);
 
         if(!strcmp(token->name,"identifier")){
             //Ocakavam ':'
-           data->errorValue = read_token(token);
+            data->errorValue = read_token(token);
             checkError(data);
-
 
             if(!strcmp(token->name,":")){
                     //ocakavam argument <type>
-               data->errorValue = read_token(token);
+                data->errorValue = read_token(token);
                 checkError(data);
 
-                 fType(token, state, data);
+                fType(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
-
 
                     //ocakavam argument <params_n>
-               data->errorValue = read_token(token);
+                data->errorValue = read_token(token);
                 checkError(data);
 
-                 fParams_n(token, state, data);
+                fParams_n(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);            
-
             }
             else{
                 printf("Error in state %d, fParams_n\n", *state);
                 data->errorValue = 2;
                 checkError(data);
-                
             }
         }
         else{
             printf("Error in state %d, fParams_n\n", *state);
             data->errorValue = 2;
             checkError(data);
-            
         }
-       
     }
     else {
         printf("Error in state %d, fParams_n\n", *state);
         data->errorValue = 2;
         checkError(data);
-        
     }
 }
 
 
 
+/**
+ * @brief Function for nondeterminal Params in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fParams(Token *token, enum STATE *state, Data_t *data){    
 
     if(!strcmp(token->name,")")){
         //Narazil som na EPSILON prechod
-        
     }
     else if(!strcmp(token->name,"identifier")){
-        //ocakavam argument ':'
-       data->errorValue = read_token(token);
+            //ocakavam argument ':'
+        data->errorValue = read_token(token);
         checkError(data);
 
         if(!strcmp(token->name,":")){
                 //ocakavam argument <type>
-           data->errorValue = read_token(token);
+            data->errorValue = read_token(token);
             checkError(data);
 
-             fType(token, state, data);
+            fType(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
 
                 //ocakavam argument <params_n>
-           data->errorValue = read_token(token);
+            data->errorValue = read_token(token);
             checkError(data);
 
-             fParams_n(token, state, data);
+            fParams_n(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
@@ -922,15 +912,12 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
             printf("Error in state %d, fParams\n", *state);
             data->errorValue = 2;
             checkError(data);
-            
         }
-        
     }
     else{
         printf("Error in state %d, fParams\n", *state);
         data->errorValue = 2;
         checkError(data);
-        
     }
 }
 
@@ -938,22 +925,20 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
     
     if(!strcmp(token->name,")")){
         //Narazil som na EPSILON prechod
-        
     }
     else if(!strcmp(token->name,",")){
 
-        //ocakavam argument <arg>
-       data->errorValue = read_token(token);
+            //ocakavam argument <arg>
+        data->errorValue = read_token(token);
         checkError(data);
 
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-
-        //Nesmusim nacitat dalsi token, pretoze precedencna analyza v <exp> fExp nacita token, a podla neho sa rozhodne ci ma prestat nacitavat vyraz
-        // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
-        //Token vrati precedencna analyza v premennej 'token'
+            //Nesmusim nacitat dalsi token, pretoze precedencna analyza v <exp> fExp nacita token, a podla neho sa rozhodne ci ma prestat nacitavat vyraz
+            // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
+            //Token vrati precedencna analyza v premennej 'token'
         fArgs(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
@@ -961,35 +946,39 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
     else{
         printf("Error in state %d, fArgs\n", *state);
         data->errorValue = 2;
-        checkError(data);
-        
+        checkError(data);    
     }
 }
 
+
+
+/**
+ * @brief Function for nondeterminal Arg in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
 
 void fArg(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,")")){
         //nacitali sme EPSILON
         //Nacitane: ID ()
-        
     }
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
 
-        //Ocakavam argument <arg>
-         fExp(token, state, data);
+            //Ocakavam argument <arg>
+        fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
-
-     
        
-        //Nesmusim nacitat dalsi token, pretoze precedencna analyza v <exp> fExp nacita token, a podla neho sa rozhodne ci ma prestat nacitavat vyraz
-        // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
-        //Token vrati precedencna analyza v premennej 'token'
+            //Nesmusim nacitat dalsi token, pretoze precedencna analyza v <exp> fExp nacita token, a podla neho sa rozhodne ci ma prestat nacitavat vyraz
+            // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
+            //Token vrati precedencna analyza v premennej 'token'
         fArgs(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(data);
-        
+        checkError(data); 
     }
     else{
         printf("Error in state %d, fArg\n", *state);
@@ -998,34 +987,41 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
     }
 }
 
+
+/**
+ * @brief Function for nondeterminal Ret-type in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fRet_type(Token *token, enum STATE *state, Data_t *data){
     
     if(!strcmp(token->name,":")){
-    //Nacitane: global ID : function(<par-type>) : 
+        //Nacitane: global ID : function(<par-type>) : 
        
-        //ocakavam <type>
-       data->errorValue = read_token(token);
+            //ocakavam <type>
+        data->errorValue = read_token(token);
         checkError(data);
-        //Zanorenie sa do fType
+            //Zanorenie sa do fType
 
-         fType(token, state, data);
-         //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+        fType(token, state, data);
+            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
-        //Nacitane: global ID : function(<par-type>) : integer
+            //Nacitane: global ID : function(<par-type>) : integer
         
-
-         //ocakavam <types>
-       data->errorValue = read_token(token);
+            //ocakavam <types>
+        data->errorValue = read_token(token);
         checkError(data);
         
-        //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
-        //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
-         fTypes(token, state, data);
+            //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
+            //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
+        fTypes(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-        //Nacitane: global ID : function(<par-type>) : integer, string
-    
+            //Nacitane: global ID : function(<par-type>) : integer, string
     }
     else if(((!strcmp(token->name,"keyword") && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))) || !strcmp(token->name,"identifier")) && *state == ret_type){
         //Znaci EPSILON prechod do <prog_con>, pravidlo 3., 4. a 5. 
@@ -1045,10 +1041,18 @@ void fRet_type(Token *token, enum STATE *state, Data_t *data){
         printf("Error in state %d, fRet_type\n", *state);
         data->errorValue = 2;
         checkError(data);
-        
     }
 }
 
+
+
+/**
+ * @brief Function for nondeterminal Type in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
 
 void fType(Token *token, enum STATE *state, Data_t *data){
     
@@ -1065,6 +1069,14 @@ void fType(Token *token, enum STATE *state, Data_t *data){
 
 
 
+/**
+ * @brief Function for nondeterminal Types in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fTypes(Token *token, enum STATE *state, Data_t *data){
     
         if(!strcmp(token->name,")") && *state == par_type){
@@ -1075,29 +1087,28 @@ void fTypes(Token *token, enum STATE *state, Data_t *data){
             
         }
         else if(!strcmp(token->name,",")){
-            //Nacitane: global ID : function (string, 
-             //ocakavam <type>
-           data->errorValue = read_token(token);
+                //Nacitane: global ID : function (string, 
+                //ocakavam <type>
+            data->errorValue = read_token(token);
             checkError(data);
 
-            //Zanorenie sa do fType
-             fType(token, state, data);
+                //Zanorenie sa do fType
+            fType(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-            //Nacitane: global ID : function (string, integer  / global ID : function (string,integer) : integer, integer
+                //Nacitane: global ID : function (string, integer  / global ID : function (string,integer) : integer, integer
 
-
-             //ocakavam <types>
-           data->errorValue = read_token(token);
+                //ocakavam <types>
+            data->errorValue = read_token(token);
             checkError(data);
 
-            
-            //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
-            //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
+
+                //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
+                //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
              fTypes(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-            //Nacitane: global ID : function (string, integer,number, / global ID : function (string,integer) : integer, integer, string, 
+                //Nacitane: global ID : function (string, integer,number, / global ID : function (string,integer) : integer, integer, string, 
         }
         else if((*state == ret_type && !strcmp(token->name,"keyword")) && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))){
             //Znaci EPSILON prechod od <prog_con>, pravidlo 3. a 4.
@@ -1106,7 +1117,6 @@ void fTypes(Token *token, enum STATE *state, Data_t *data){
 
              //TODO vratit TOKEN, treba nejako
 
-            
         }
         else if(*state == ret_type && !strcmp(token->name,"identifier")){
             //Znaci EPSILON prechod od <prog_con>, pravidlo 5. 
@@ -1128,6 +1138,14 @@ void fTypes(Token *token, enum STATE *state, Data_t *data){
 }
 
 
+/**
+ * @brief Function for nondeterminal Par-type in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 
 void fPar_type(Token *token, enum STATE *state, Data_t *data){
    // printf("name : %s\n", token->name);
@@ -1139,17 +1157,17 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
             
         }
         else if(!strcmp(token->name,"keyword") && (!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")) ){
-            //parameter je jeden z datovych typov
+                //parameter je jeden z datovych typov
 
-            //ocakavam <types>
-           data->errorValue = read_token(token);
+                //ocakavam <types>
+            data->errorValue = read_token(token);
             checkError(data);
 
-            //Zanorenie sa do funkcie fTypes, kde budem riesit datove typy
-             fTypes(token, state, data);
+                //Zanorenie sa do funkcie fTypes, kde budem riesit datove typy
+            fTypes(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-            //Nacitane: global ID : function (string, integer)
+                //Nacitane: global ID : function (string, integer)
         }
         else{
             printf("Error in state %d, fPar_type\n", *state);
@@ -1159,17 +1177,25 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
 }
 
 
+/**
+ * @brief Function for nondeterminal Prog-con in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fProg_con(Token *token, enum STATE *state, Data_t *data){
     
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"global")){
         //Riesime pravidlo 3. kedy ideme inizializovat globalnu funkciu
         //nacitane: global, pravidlo 3.
               
-            //nacitanie ID funkcie
-            //TODO pridaj do tabulky symbolov
-           data->errorValue = read_token(token);
+                //nacitanie ID funkcie
+                //TODO pridaj do tabulky symbolov
+            data->errorValue = read_token(token);
             checkError(data);
-            //nacitane: global ID
+                //nacitane: global ID
 
              //printf("name : %s\n", token->name);
              //printf("value : %s\n", token->value);
@@ -1181,57 +1207,59 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 
             }
 
-            //ocakavanie dvojbodky
-           data->errorValue = read_token(token);
+                //ocakavanie dvojbodky
+            data->errorValue = read_token(token);
             checkError(data);
 
             if(!strcmp(token->name, ":")){
-            //nacitane: global ID :
-                //Ocakavam klucove slovo 'function'
-               data->errorValue = read_token(token);
+                //nacitane: global ID :
+                    
+                    //Ocakavam klucove slovo 'function'
+                data->errorValue = read_token(token);
                 checkError(data);
 
                 if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
-                //Nacitane: global ID : function
-                    //Ocakavam '('
-                   data->errorValue = read_token(token);
+                    //Nacitane: global ID : function
+                    
+                        //Ocakavam '('
+                    data->errorValue = read_token(token);
                     checkError(data);
 
                     if(!strcmp(token->name,"(")){
-                    //Nacitane: global ID : function (
+                        //Nacitane: global ID : function (
                         
-                        //Ocakavam <par-type>
-                       data->errorValue = read_token(token);
+                            //Ocakavam <par-type>
+                        data->errorValue = read_token(token);
                         checkError(data);
                         
-                        //Zmena stavu
+                            //Zmena stavu
                         *state = par_type;
-                         fPar_type(token, state, data);
+                        fPar_type(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-                         checkError(data);
-                        //Nacitane: global ID : function(<par-type>)
+                        checkError(data);
+                            //Nacitane: global ID : function(<par-type>)
 
 
-                        //Ocakavam <ret-type>
-                       data->errorValue = read_token(token);
+                            //Ocakavam <ret-type>
+                        data->errorValue = read_token(token);
                         checkError(data);
                         
-                        //Zmena stavu
+                            //Zmena stavu
                         *state = ret_type;
-                        //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
-                         fRet_type(token, state, data);
+                            //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
+                        fRet_type(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-                         checkError(data);
-                        //Nacitane: global ID : function(<par-type>)<ret-type>
+                        checkError(data);
+                            //Nacitane: global ID : function(<par-type>)<ret-type>
 
 
-                        //Ocakavam <prog_con>                        
-                        //Zmena stavu
+                            //Ocakavam <prog_con>                        
+                            //Zmena stavu
                         *state = prog_con;
-                        //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
-                         fProg_con(token, state, data);
+                            //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
+                        fProg_con(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-                         checkError(data);
+                        checkError(data);
                         //Nacitane: global ID : function(<par-type>)<ret-type><prog-con>
                         
                     }
@@ -1239,9 +1267,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                         printf("Error in state %d, \'(\' not included\n", *state);
                         data->errorValue = 2;
                         checkError(data);
-                        
                     }
-
                 }
                 else{
                     printf("Error in state %d, function keyword not included\n", *state);
@@ -1253,22 +1279,20 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 printf("Error in state %d, : not included\n", *state);
                 data->errorValue = 2;
                 checkError(data);
-                
             }
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
         //Nacitane: function, pravidlo 4.
 
             //Ocakavam ID
-       data->errorValue = read_token(token);
+        data->errorValue = read_token(token);
         checkError(data);
 
             //nacitane: function ID
         if(strcmp(token->name,"identifier")){
             printf("Error in state %d, ID not included\n", *state);
             data->errorValue = 2;
-            checkError(data);
-            
+            checkError(data);    
         }
 
             //Ocakavam '('
@@ -1280,32 +1304,32 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //*state = params;
 
                 //Ocakavam <params>
-           data->errorValue = read_token(token);
+            data->errorValue = read_token(token);
             checkError(data);
 
-             fParams(token, state, data);
+            fParams(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
-            //TU JE ZOZNAM PARAMETROV
+                //TU JE ZOZNAM PARAMETROV
 
-            //Tento stav simuluje pravidlo 4., teda definiciu funkcie aj s telom
-            //Stav je tu preto, aby som v <ret-type> dokazal rozoznat EPSILON prechod do <st-list>
+                //Tento stav simuluje pravidlo 4., teda definiciu funkcie aj s telom
+                //Stav je tu preto, aby som v <ret-type> dokazal rozoznat EPSILON prechod do <st-list>
             *state = params;
 
                 //Ocakavam <ret-type>
-           data->errorValue = read_token(token);
+            data->errorValue = read_token(token);
             checkError(data);
 
-             fRet_type(token, state, data);
+            fRet_type(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
 
-            //ZOZNAM RETURN TYPOV
+                //ZOZNAM RETURN TYPOV
             
             *state = st_list;
-            //Token mam nacitany z fRet_type, na zaklane neho som urcoval EPSILON prechod
+                //Token mam nacitany z fRet_type, na zaklane neho som urcoval EPSILON prechod
              fSt_list(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
@@ -1313,12 +1337,12 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //Zaver
             *state = prog_con;
 
-            //Ocakavam <prog_con>, musim nacitat token lebo <st-list> konicl v EPSILON prechode a tym bol keyword 'end' danej funkcie
-           data->errorValue = read_token(token);
+                //Ocakavam <prog_con>, musim nacitat token lebo <st-list> konicl v EPSILON prechode a tym bol keyword 'end' danej funkcie
+            data->errorValue = read_token(token);
             checkError(data);
 
-             fProg_con(token, state, data);
-            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            fProg_con(token, state, data);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
         }
         else{
@@ -1331,30 +1355,30 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
         //Nacitane: ID, pravidlo 5.
         //TODO zistit ci je funkcia aspon deklarovana
 
-        //Ocakavam '('
-       data->errorValue = read_token(token);
+            //Ocakavam '('
+        data->errorValue = read_token(token);
         checkError(data);
         
         if(!strcmp(token->name,"(")){
-        //Nacitane: ID (
+            //Nacitane: ID (
 
-           data->errorValue = read_token(token);
+            data->errorValue = read_token(token);
             checkError(data);
 
             *state = arg;
-            //Ocakavam argument
+                //Ocakavam argument
 
-             fArg(token, state, data);
-            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            fArg(token, state, data);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
-            // pokracovanie do prog_con
+                // pokracovanie do prog_con
             *state = prog_con;    
             data->errorValue = read_token(token);
             checkError(data);
 
-             fProg_con(token, state, data);
-            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            fProg_con(token, state, data);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);        
         }
         else{
@@ -1371,15 +1395,23 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
         printf("Error in state %d, fProg_con\n", *state);
         data->errorValue = 2;
         checkError(data);
-        
     }
 }
 
 
 
+
+/**
+ * @brief Function for nondeterminal Exp in LL gramar
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void fExp(Token *token, enum STATE *state, Data_t *data){
-    //TODO CALL precedencnu analyzu
-    //TODO check token in symtable
+        //TODO CALL precedencnu analyzu
+        //TODO check token in symtable
 
     if(*state == prog){
         if(!strcmp(token->name,"string") && !strcmp(token->value,"ifj21")){
@@ -1404,7 +1436,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
 
     }
     else if(*state == arg && !strcmp(token->name,")")){
-        //situacia, ak by som v argumetne dostal nedokonceny argument, takze napr: (x,5,), to znamena ze by to koncilo ciarkou co je semanticka chyba
+            //situacia, ak by som v argumetne dostal nedokonceny argument, takze napr: (x,5,), to znamena ze by to koncilo ciarkou co je semanticka chyba
         printf("Error in state %d, fExp\n", *state);
         data->errorValue = 2;
         checkError(data);
@@ -1415,13 +1447,24 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
 }
 
 
+
+
+/**
+ * @brief Function synAnalys, which start complilation of code
+ *        Load require "ifj21"
+ * 
+ * @param token Pointer to token
+ * @param state Pointer to Enum of states
+ * @param data Pointer to data structure
+ */
+
 void synAnalys(Token *token, enum STATE *state, Data_t *data){
     
-    //STRCMP -> ak sa stringy rovnaju, tak je return 0, preto v podmienkach !
-    //Inizializovany stav, state->prog
+        //STRCMP -> ak sa stringy rovnaju, tak je return 0, preto v podmienkach !
+        //Inizializovany stav, state->prog
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"require")){
-        //nacitanie dalsieho tokenu
-       data->errorValue = read_token(token);
+            //nacitanie dalsieho tokenu
+        data->errorValue = read_token(token);
         checkError(data);
     
         fExp(token, state, data);
@@ -1429,11 +1472,11 @@ void synAnalys(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
             
 
-        //Natahanie dalsieho tokenu
-       data->errorValue = read_token(token);
+            //Natahanie dalsieho tokenu
+        data->errorValue = read_token(token);
         checkError(data);
 
-        //Zmena stavu a rekurzovne zanorenie
+            //Zmena stavu a rekurzovne zanorenie
         *state = prog_con;
          fProg_con(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
