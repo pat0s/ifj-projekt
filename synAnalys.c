@@ -1,8 +1,12 @@
+
+//TODO pridaj do fexp podmienku pre vsetky znaky ako su napriklad #, .., ()
+
+
 #include<stdlib.h>
 #include<stdio.h>
 #include<stdbool.h>
 #include<string.h>
-#include"scanner.c"
+#include"scanner.h"
 #include"synAnalys.h"
 #include"error.h"
 
@@ -109,7 +113,7 @@ void checkError(Data_t *data){
 void fValues(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,",")){
-        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
+        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
             if(!strcmp(token->name,"identifier") && isFunction(token)){
                 printf("Error in state %d, fValues, Function instead of variable\n", *state);
                 data->errorValue = 2;
@@ -147,7 +151,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
 
 void fValue(Token *token, enum STATE *state, Data_t *data){
 
-    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
+    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ){
         if(!strcmp(token->name,"identifier")){
             if(isFunction(token)){
                     //je to ID funkcie
@@ -255,7 +259,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
@@ -323,13 +327,18 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
             //Ak je to int, float alebo string, volame <exp>
 
             //Osetrenie, ci je token int, float, string alebo ID
-        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
+        if(!strcmp(token->name,"identifier")){
                 //Osetrenie, aby ID bolo ID premennej a nie funkcie
             if(isFunction(token)){
                 printf("Error in state %d, fAssigns, ID of function in <assigns>\n", *state);
                 data->errorValue = 2;
                 checkError(data);
             }
+        }
+        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+            //Naschval prazdne, pre jednoduchost tu nechavam tuto podmienku
+
+
         }
         else{
             printf("Error in state %d, fAssigns,unexpected token type\n", *state);
@@ -407,7 +416,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
 
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -966,8 +975,16 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
         //nacitali sme EPSILON
         //Nacitane: ID ()
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
 
+        if(!strcmp(token->name,"identifier")){
+            if(isFunction(token)){
+                printf("Error in state %d, fArg, ID of function in <arg>\n", *state);
+                data->errorValue = 2;
+                checkError(data);
+
+            }
+        }
             //Ocakavam argument <arg>
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -1423,7 +1440,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             checkError(data);   
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
         //TODO ALL
             //TODO treba do podmienky zahrnut NIL
             //Check if is Expression

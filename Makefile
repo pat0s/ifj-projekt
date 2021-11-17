@@ -1,14 +1,24 @@
 EXECUTABLE = main
-CFLAGS = -g -Wall -Wextra -Werror --std=c99
+CFLAGS = -g -Wall -Wextra  --std=c99
 
-.PHONY = clean
+.PHONY = clean all
 
 
-$(EXECUTABLE): scanner.o
+$(EXECUTABLE): scanner.o synAnalys.o
 	gcc $(CFLAGS) -o $@ $^ 
 
-scanner.o: scanner.c scanner.h
+scanner.o: scanner.c scanner.h error.h 
 	gcc $(CFLAGS) -c $<
+
+
+synAnalys.o: synAnalys.c scanner.o  
+	gcc $(CFLAGS) -c scanner.o synAnalys.c
+
+
+#Nedavam, lebo je tam nejaky erro a teraz to nie je dolezite
+#symtable.o: symtable.c error.h
+#	gcc $(CFLAGS) -c $<
+
 
 
 clean:
