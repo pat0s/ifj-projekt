@@ -17,3 +17,10 @@ $(EXECUTABLE): scanner.o synAnalys.o #symtable.o
 
 clean:
 	rm  -f *.o
+
+exp:
+	gcc $(CFLAGS) -c expressions.c
+	gcc $(CFLAGS) -o exp expressions.o
+	rm expressions.o
+expc: 
+	rm exp
