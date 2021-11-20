@@ -13,6 +13,9 @@
 
 
 bool isFunction(Token *token){
+    if(!strcmp(token->name,"identifier")){
+
+    }
     //check if token is function or variable
     return true;
 }
