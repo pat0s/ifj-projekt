@@ -1,3 +1,14 @@
+/**
+ * @file symtable.c
+ * @author Ivo Procházka
+ * @brief 
+ * @version 0.1
+ * @date 2021-11-13
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -7,7 +18,7 @@
 
 #define LENGTH(a) (sizeof(a) / sizeof(*a)) // simple macro, counts length of an array
 
-// Abstract data type structures
+// symtable structures
 
 /**
  * @brief holds information about node that is variable
@@ -54,8 +65,7 @@ typedef struct tnode
     struct tnode *rPtr;
 } TNode;
 
-
-// user functions
+// user functions for symtable
 
 TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_occur);
 TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_length, int *given_rt, int rt_length, int *error_occur);
@@ -64,16 +74,20 @@ int dispose(TNode **rootPtr);
 TNode *search(TNode *rootPtr, char *k);
 bool isFunction(TNode *rootPtr, char *k);
 
-// other functions
+// other functions for symtable
 
 TNode *inner_insert(TNode *rootPtr, char *k, TNode *d, int *error_occur);
 TNode *bvsMin(TNode *rootPtr);
 TNode *bvsDelete(TNode *rootPtr, char *k);
 TNode *inner_dispose(TNode *rootPtr, int *error_occur);
 
-// testing functions
+// testing functions for symtable
 
 void inOrder(TNode *rootPtr);
+
+
+
+// list of symtable functions definition
 
 /**
  * @brief Create a Var Node object, returns fully prepared node
@@ -91,7 +105,7 @@ TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_o
     TNode *newPtr = (TNode *)malloc(sizeof(TNode));
     if (newPtr == NULL)
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
         exit(1);
     }
 
@@ -100,7 +114,7 @@ TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_o
     char *newID = (char *)malloc(sizeof(char) * strlen(given_id));
     if (newID == NULL)
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
         exit(1);
     }
 
@@ -112,7 +126,7 @@ TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_o
     TVar *newVar = (TVar *)malloc(sizeof(TVar));
     if (newVar == NULL)
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
         exit(1);
     }
 
@@ -121,7 +135,7 @@ TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_o
     char *newVal = (char *)malloc(sizeof(char)*strlen(given_val));
     if (newVal == NULL)
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
         exit(1);
     }
 
@@ -158,7 +172,7 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
     TNode *newPtr = (TNode *)malloc(sizeof(TNode));
     if (newPtr == NULL)
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
         exit(1);
     }
 
@@ -167,7 +181,7 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
     char *newID = (char *)malloc(sizeof(char) * strlen(given_id));
     if (newID == NULL)
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
         exit(1);
     }
 
@@ -180,7 +194,7 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
     TFunc *newFunc = (TFunc *)malloc(sizeof(TFunc));
     if (newFunc == NULL)
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
         exit(1);
     }
 
@@ -189,7 +203,7 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
     int *newPt = (int *)malloc(sizeof(int) * pt_length);
     if (newPt == NULL)
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
         exit(1);
     }
 
@@ -202,7 +216,7 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
     int *newRt = (int *)malloc(sizeof(int) * rt_length);
     if (newRt == NULL)
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
         exit(1);
     }
 
@@ -238,7 +252,7 @@ TNode *inner_insert(TNode *rootPtr, char *k, TNode *d, int *error_occur)
     }
     else if (!strcmp(rootPtr->ID, k))
     {
-        *error_occur = 1; // INTERNAL_ERROR
+        *error_occur = INTERNAL_ERROR; 
     }
     else if (strcmp(rootPtr->ID, k) > 0)
     {
@@ -261,7 +275,7 @@ TNode *inner_insert(TNode *rootPtr, char *k, TNode *d, int *error_occur)
  */
 int insert(TNode **rootPtr, TNode *newNode)
 {
-    int error_occur = 0; // INTERNAL_ERROR
+    int error_occur = 0;
     *rootPtr = inner_insert(*rootPtr, newNode->ID, newNode, &error_occur);
     return error_occur;
 }
@@ -320,6 +334,15 @@ TNode *bvsDelete(TNode *rootPtr, char *k)
     {
         if (rootPtr->lPtr == NULL && rootPtr->rPtr == NULL)
         {
+            free(rootPtr->ID);
+            if (rootPtr->function)
+            {
+                free(rootPtr->func->param_types);
+                free(rootPtr->func->ret_types);
+            }else{
+                free(rootPtr->var->value);
+            }
+
             free(rootPtr);
             return NULL;
         }
@@ -346,6 +369,18 @@ TNode *bvsDelete(TNode *rootPtr, char *k)
             {
                 onlyChild = rootPtr->lPtr;
             }
+
+            free(rootPtr->ID);
+            if (rootPtr->function)
+            {
+                free(rootPtr->func->param_types);
+                free(rootPtr->func->ret_types);
+            }
+            else
+            {
+                free(rootPtr->var->value);
+            }
+
             free(rootPtr);
             return onlyChild;
         }
@@ -387,7 +422,7 @@ TNode *inner_dispose(TNode *rootPtr, int *error_occur)
  */
 int dispose(TNode **rootPtr)
 {
-    int error_occur = 1; // INTERNAL_ERROR
+    int error_occur = INTERNAL_ERROR; 
     *rootPtr = inner_dispose(*rootPtr, &error_occur);
     return error_occur;
 }
@@ -434,13 +469,113 @@ bool isFunction(TNode *rootPtr, char *k)
     return result->function;
 }
 
+// end of list of symtable functions definition
+
+
+
+// symtable list structures
+
+/**
+ * @brief list of symtables
+ * , var func_body: if this node belongs to a function(it can belong to if while etc.)
+ * , pointer rootPtr: points at symtable
+ * , pointer next: points at symtable node list deeper in the code
+ */
+typedef struct tframe
+{
+    bool func_body;
+    TNode *rootPtr;
+    struct tframe *next;
+} Tframe;
+
+/**
+ * @brief points at first and last symtable list node
+ * , pointer first: points at first symtable list node
+ * , pointer last: points at last symtable node
+ */
+typedef struct tframe_list
+{
+    Tframe *first;
+    Tframe *last;
+} Tframe_list;
+
+
+
+// list of symtable list functions definition
+
+/**
+ * @brief initialise the whole symtable list
+ * 
+ * @param l preferably pointing at NULL
+ */
+void initList(Tframe_list *l)
+{
+    l->first = NULL;
+    l->last = NULL;
+}
+
+/**
+ * @brief inserts symtable list node at first position
+ * 
+ * @param l symtable list
+ * @param fb if this node belongs to a function
+ * @param rootPtr pointer at root of a symtable
+ * @return int 
+ */
+int insertFirst(Tframe_list *l, bool fb, TNode *rootPtr)
+{
+    Tframe *newElemPtr = (Tframe *)malloc(sizeof(Tframe));
+    if (newElemPtr == NULL)
+    {
+        return INTERNAL_ERROR;
+    }
+
+    newElemPtr->func_body = fb;
+    newElemPtr->rootPtr = rootPtr;
+    newElemPtr->next = l->first;
+
+    if (l->first == NULL)
+    {
+        l->last = newElemPtr;
+    }
+    l->first = newElemPtr;
+
+    return 0;
+}
+
+/**
+ * @brief searches the whole symtable list and finds, using ID, correct variable, returns TNode variable or NULL
+ * 
+ * @param l symtable list
+ * @param k ID
+ * @return TNode* 
+ */
+TNode *searchFrames(Tframe_list *l, char *k)
+{
+   TNode *result;
+   Tframe *tmp = l->first;
+
+   result = search(tmp->rootPtr, k);
+   while (result == NULL && tmp->func_body == false)
+   {
+       tmp = tmp->next;
+       result = search(tmp->rootPtr, k);
+   }
+
+   return result;
+}
+
 int main()
 {
     TNode *rootPtr = NULL;    
     int error_c;
     int error_i;
+
     int array_pt[] = {1, 2, 3, 4};
-    int array_rt[] = {1, 2, 3};    
+    int array_rt[] = {1, 2, 3};
+
+    // insert
+    error_i = insert(&rootPtr, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
     error_i = insert(&rootPtr, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
     error_i = insert(&rootPtr, createVarNode("prom", 0, "69", &error_c));
     error_i = insert(&rootPtr, createFuncNode("a", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
@@ -449,21 +584,105 @@ int main()
     error_i = insert(&rootPtr, createVarNode("d", 0, "69", &error_c));
     error_i = insert(&rootPtr, createFuncNode("akat", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
     error_i = insert(&rootPtr, createVarNode("hovno", 0, "69", &error_c));
+    error_i = insert(&rootPtr, createVarNode("d", 0, "69", &error_c));
     error_i = insert(&rootPtr, createFuncNode("vut", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
     error_i = insert(&rootPtr, createFuncNode("g", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
 
     inOrder(rootPtr);
     puts("");
 
+    /*// delete a node
     rootPtr = bvsDelete(rootPtr, "hovno");
+    rootPtr = bvsDelete(rootPtr, "g");
 
+    inOrder(rootPtr);
+    puts("");
+    
+    // search a node
+    TNode *fnPtr = search(rootPtr, "akat");
+    fnPtr = search(rootPtr, "vut");
+    fnPtr = search(rootPtr, "b");
+
+    // if a node is function
+    bool res = isFunction(rootPtr, "vut");
+    res = isFunction(rootPtr, "d");*/
+
+    TNode *rootPtr2 = NULL;
+
+    error_i = insert(&rootPtr2, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createVarNode("prom", 0, "69", &error_c));
+    error_i = insert(&rootPtr2, createFuncNode("a", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createVarNode("b", 0, "69", &error_c));
+    error_i = insert(&rootPtr2, createFuncNode("c", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));    
+    error_i = insert(&rootPtr2, createFuncNode("akat", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createVarNode("hovno", 0, "69", &error_c));    
+    error_i = insert(&rootPtr2, createFuncNode("vut", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createFuncNode("g", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+
+    TNode *rootPtr3 = NULL;
+
+    error_i = insert(&rootPtr3, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createVarNode("prom", 0, "69", &error_c));
+    error_i = insert(&rootPtr3, createFuncNode("a", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createVarNode("b", 0, "69", &error_c));
+    error_i = insert(&rootPtr3, createFuncNode("c", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));    
+    error_i = insert(&rootPtr3, createFuncNode("akat", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createVarNode("hovno", 0, "69", &error_c));    
+    error_i = insert(&rootPtr3, createFuncNode("vut", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createFuncNode("g", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+
+    // frames tests
+    Tframe_list frames;
+    initList(&frames);
+
+    insertFirst(&frames, true, rootPtr);
+    insertFirst(&frames, false, rootPtr2);
+    insertFirst(&frames, false, rootPtr3);
+
+    TNode *vysl = NULL;
+    vysl = searchFrames(&frames, "d");
+
+    /*// testing delete
+    puts("starts here");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
     inOrder(rootPtr);
     puts("");
 
     dispose(&rootPtr);
 
     inOrder(rootPtr);
-    puts("");
+    puts("");*/
 
     return 0;
 }
