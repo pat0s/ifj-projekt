@@ -1,3 +1,7 @@
+
+#ifndef SYMTABLE_H
+#define SYMTABLE_H
+
 #define LENGTH(a) (sizeof(a) / sizeof(*a)) // simple macro, counts length of an array
 
 /**
@@ -96,4 +100,4 @@ void initList(Tframe_list *l);
 int insertFirst(Tframe_list *l, bool fb, TNode *rootPtr);
 TNode *searchFrames(Tframe_list *l, char *k);
 
-
+#endif
