@@ -396,7 +396,14 @@ bool isFunction(TNode *rootPtr, char *k)
 {
     TNode *result;    
     result = search(rootPtr, k);
-    return result->function;
+    if(result == NULL)
+    {
+        return false;
+    }
+    else
+    {
+        return result->function;
+    }    
 }
 
 // end of list of symtable functions definition
