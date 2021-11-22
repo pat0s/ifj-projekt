@@ -1,11 +1,11 @@
 EXECUTABLE = IFJ21
-CFLAGS = -g -Wall -Wextra -Werror -lm
+CFLAGS = -g -Wall -Wextra -lm #-Wextra -Werror -lm
 
 .PHONY = clean all
 
 all: $(EXECUTABLE)
 
-$(EXECUTABLE): scanner.o synAnalys.o #symtable.o
+$(EXECUTABLE): scanner.o synAnalys.o symtable.o expressions.o expressions_stack.o
 	gcc $(CFLAGS) $^ -o $@
 	 
 
@@ -16,12 +16,10 @@ $(EXECUTABLE): scanner.o synAnalys.o #symtable.o
 
 
 clean:
-	rm  -f *.o
+	rm $(EXECUTABLE) *.o
 
-exp:
-	gcc $(CFLAGS) -c expressions.c
-	gcc $(CFLAGS) -o exp expressions.o
-	rm expressions.o
+exp: scanner.o symtable.o expressions.o expressions_stack.o
+	gcc $(CFLAGS) $^ -o $@
 expc: 
 	rm exp
 

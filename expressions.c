@@ -1,7 +1,5 @@
-#include "expressions_stack.c"
 #include "expressions.h"
-#include "scanner.c"
-//#include "symtable.c"
+#include <string.h>
 
 int precence_table[TABLE_SIZE][TABLE_SIZE] =
 {
@@ -404,7 +402,7 @@ Token *exp_analysator(Token*token){
     destroy(s);
     return token;
 }
-
+/*
 int main(){
     Token *token = malloc(sizeof(Token));
     strcpy(token->name,"int");
@@ -414,6 +412,6 @@ int main(){
     token= exp_analysator(token);
     free(token);
     return 0;
-}
+}*/
 
 /* End of file expressions.c */

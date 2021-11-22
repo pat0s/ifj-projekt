@@ -6,7 +6,9 @@
  * @author Dovhalenko Dmytro, xdovha00
  */
 #include "scanner.h"
-#include "symtable.c"
+#include "symtable.h"
+#include "expressions_stack.h"
+
 #ifndef _EXPRESSIONS_H_
 #define _EXPRESSIONS_H_
 

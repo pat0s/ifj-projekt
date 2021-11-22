@@ -17,7 +17,6 @@ typedef struct sData{
 
 
 
-bool isFunction(Token *token);
 void fValues(Token *token, enum STATE *state, Data_t *data);
 void fValue(Token *token, enum STATE *state, Data_t *data);
 void fInit_value(Token *token, enum STATE *state, Data_t *data);

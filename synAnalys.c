@@ -2,23 +2,17 @@
 //TODO pridaj do fexp podmienku pre vsetky znaky ako su napriklad #, .., ()
 
 
-#include<stdlib.h>
-#include<stdio.h>
-#include<stdbool.h>
-#include<string.h>
-#include"synAnalys.h"
-#include"error.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+#include "synAnalys.h"
+#include "error.h"
+#include "expressions.h"
+#include "symtable.h"
 
 
 
-
-bool isFunction(Token *token){
-    if(!strcmp(token->name,"identifier")){
-
-    }
-    //check if token is function or variable
-    return true;
-}
 
 
 /**
@@ -116,7 +110,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,",")){
         if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
-            if(!strcmp(token->name,"identifier") && isFunction(token)){
+            if(!strcmp(token->name,"identifier") && isFunction(NULL, token->value)){
                 printf("Error in state %d, fValues, Function instead of variable\n", *state);
                 data->errorValue = 2;
                 checkError(data);
@@ -155,7 +149,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ){
         if(!strcmp(token->name,"identifier")){
-            if(isFunction(token)){
+            if(isFunction(NULL, token->value)){
                     //je to ID funkcie
                     //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
@@ -227,7 +221,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
 void fInit_value(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"identifier")){
-        if(isFunction(token)){
+        if(isFunction(NULL, token->value)){
                 //je to ID funkcie
                 //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
@@ -331,7 +325,7 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
             //Osetrenie, ci je token int, float, string alebo ID
         if(!strcmp(token->name,"identifier")){
                 //Osetrenie, aby ID bolo ID premennej a nie funkcie
-            if(isFunction(token)){
+            if(isFunction(NULL, token->value)){
                 printf("Error in state %d, fAssigns, ID of function in <assigns>\n", *state);
                 data->errorValue = 2;
                 checkError(data);
@@ -384,7 +378,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"identifier")){
             //TODO treba zistit ci je to identifikator funkcie alebo premennej, ak funkcie tak riesim (<arg>), ak premennej tak idem to <exp>
-        if(isFunction(token)){
+        if(isFunction(NULL, token->value)){
                 //TODO Zistit v symtable, ci je deklarovana, ak nie tak ERROR
                 //Nacitanie '('
             data->errorValue = read_token(token);
@@ -455,9 +449,9 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
-            //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction() zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
+            //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction(NULL, token->value) zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
         if(!strcmp(token->name,"identifier")){
-            if(!isFunction(token)){
+            if(!isFunction(NULL, token->value)){
                     //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
                 checkError(data);
@@ -548,9 +542,9 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
-            //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction() zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
+            //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction(NULL, token->value) zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
         if(!strcmp(token->name,"identifier")){
-            if(!isFunction(token)){
+            if(!isFunction(NULL, token->value)){
 
                     //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
@@ -602,7 +596,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         
             //Ak je nacitany token identifikator a je to ID funkcie, tak Error
         if(!strcmp(token->name,"identifier")){
-            if(isFunction(token)){
+            if(isFunction(NULL, token->value)){
                 printf("Error in state %d, fSt_list, ID of function in if statement as a condition\n", *state);
                 data->errorValue = 2;
                 checkError(data);
@@ -676,7 +670,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         
             //Ak je nacitany token identifikator a je to ID funkcie, tak Error
         if(!strcmp(token->name,"identifier")){
-            if(isFunction(token)){
+            if(isFunction(NULL, token->value)){
                 printf("Error in state %d, fSt_list, ID of function in while cycle as a condition\n", *state);
                 data->errorValue = 2;
                 checkError(data);
@@ -980,7 +974,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
 
         if(!strcmp(token->name,"identifier")){
-            if(isFunction(token)){
+            if(isFunction(NULL, token->value)){
                 printf("Error in state %d, fArg, ID of function in <arg>\n", *state);
                 data->errorValue = 2;
                 checkError(data);
