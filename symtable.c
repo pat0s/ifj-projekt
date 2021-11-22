@@ -467,7 +467,7 @@ TNode *searchFrames(Tframe_list *l, char *k)
 
 int main()
 {
-    TNode *rootPtr = NULL;    
+    /*TNode *rootPtr = NULL;    
     int error_c;
     int error_i;
 
@@ -491,7 +491,7 @@ int main()
     inOrder(rootPtr);
     puts("");
 
-    /*// delete a node
+    /* delete a node
     rootPtr = bvsDelete(rootPtr, "hovno");
     rootPtr = bvsDelete(rootPtr, "g");
 
@@ -507,7 +507,7 @@ int main()
     bool res = isFunction(rootPtr, "vut");
     res = isFunction(rootPtr, "d");*/
 
-    TNode *rootPtr2 = NULL;
+    /*TNode *rootPtr2 = NULL;
 
     error_i = insert(&rootPtr2, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
     error_i = insert(&rootPtr2, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
@@ -532,17 +532,17 @@ int main()
     error_i = insert(&rootPtr3, createVarNode("hovno", 0, "69", &error_c));    
     error_i = insert(&rootPtr3, createFuncNode("vut", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
     error_i = insert(&rootPtr3, createFuncNode("g", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
-
+    */
     // frames tests
-    Tframe_list frames;
+    /*Tframe_list frames;
     initList(&frames);
 
     insertFirst(&frames, true, rootPtr);
-    insertFirst(&frames, false, rootPtr2);
+    insertFirst(&frames, true, rootPtr2);
     insertFirst(&frames, false, rootPtr3);
 
     TNode *vysl = NULL;
-    vysl = searchFrames(&frames, "d");
+    vysl = searchFrames(&frames, "d");*/
 
     /*// testing delete
     puts("starts here");
@@ -583,6 +583,17 @@ int main()
 
     inOrder(rootPtr);
     puts("");*/
+
+    Tframe_list a;
+    initList(&a);
+
+    TNode *root_a = NULL;
+
+    insertFirst(&a, true, root_a);
+
+    int error_c;   
+
+    insert(&(a.first->rootPtr), createVarNode("prom", 0, "69", &error_c));
 
     return 0;
 }
