@@ -1,7 +1,7 @@
 #include "expressions_stack.c"
 #include "expressions.h"
 #include "scanner.c"
-
+//#include "symtable.c"
 
 int precence_table[TABLE_SIZE][TABLE_SIZE] =
 {
@@ -96,11 +96,28 @@ int zasobnikovy_znak(Stack*s){
  * 
  * 
  */
-void do_shift(Stack*s,Token*token,int vstup){
+void do_shift(Stack*s,Token*token,int vstup,TNode *rootPtr){
     char *type;
     if(vstup==4){
         if(!strcmp(token->name,"identifier")){
-            type="int"; //volani ts
+            TNode *node = search(rootPtr,token->value);
+            int idtype = node->var->data_type;
+            if(idtype==0){
+                type="int"; 
+                printf("idtype = int\n");
+            }
+            else if(idtype==1){
+                type="number"; 
+                printf("idtype = num\n");
+            }
+            else if(idtype==2){
+                type="string";
+                printf("idtype = string\n");
+            }
+            else {
+                type="nil";
+                printf("idtype = nil\n");
+            }
         }
         else{
             type=token->name;
@@ -145,6 +162,7 @@ int kontrola_typu(Stack *s){
         }
         else{
             return -1;
+            
         }
     }
     else if(!strcmp(top_type(s),"int")){
@@ -221,28 +239,48 @@ int do_reduc(Stack*s){
             }
         }
         else if(!strcmp(top1(s),"+")){                      //E -> E + E
-            kontrola_typu(s);
+            if(kontrola_typu(s)==0){
             //zavolat generovani +
+            }
+            else{
+                return -1;
+            }
             
         }
         else if(!strcmp(top1(s),"-")){                      //E -> E - E
-            kontrola_typu(s);
+            if(kontrola_typu(s)==0){
             //zavolat generovani -
+            }
+            else{
+                return -1;
+            }
         }
         else if(!strcmp(top1(s),"*")){                      //E -> E * E
-            kontrola_typu(s);
+            if(kontrola_typu(s)==0){
             //zavolat generovani *
+            }
+            else{
+                return -1;
+            }
         }
         else if(!strcmp(top1(s),"/")){                      //E -> E / E
-            kontrola_typu(s);
+            if(kontrola_typu(s)==0){
             //zavolat generovani /
+            }
+            else{
+                return -1;
+            }
         }
         else if(!strcmp(top1(s),"//")){                     //E -> E // E
-            kontrola_typu(s);
+            if(kontrola_typu(s)==0){
             change_top_type(s,"int");
             //zavolat zmenu typu na int
             //zavolat generovani //
             //???
+            }
+            else{
+                return -1;
+            }
         }
         else if(!strcmp(top1(s),"<")){                      //E -> E > E
             kontrola_typu(s);
@@ -295,7 +333,18 @@ return 0;
 Token *exp_analysator(Token*token){
     Stack * s=(Stack *)malloc(sizeof(Stack));
     init_stack(s);
-    //push(s,token->name,"int");
+
+//Token *token = sData->token;
+//TNode *rootPtr= sData->rootPtr;
+
+//Vymazat
+    TNode *rootPtr = NULL;    
+    int error_c;
+    insert(&rootPtr, createVarNode("a", 0, "32", &error_c));
+    insert(&rootPtr, createVarNode("b", 1, "33", &error_c));
+    insert(&rootPtr, createVarNode("c", 2, "34", &error_c));
+//
+
     int error=0;
     int i,j;
     i=zasobnikovy_znak(s);
@@ -303,7 +352,7 @@ Token *exp_analysator(Token*token){
     while(i!=8 || j!=8){
 
 //Vypis stavu zasobniku pro debug
-/*
+
     char*print=top(s);
     char*print2=top1(s);
     printf("Vrchol zasobniku: %s%s\n",print2,print);
@@ -315,11 +364,11 @@ Token *exp_analysator(Token*token){
 
     printf("Index tabulky:(%i, %i) \n",i,j);
     printf("Pravidlo tabulky: %i\n",precence_table[i][j]);
-*/
+
 ///////////////////////////////////////////////////////////////    
     
         if(precence_table[i][j]==0&&error!=-1){         //SHIFT
-                do_shift(s,token,j);
+                do_shift(s,token,j,rootPtr);
                 read_token(token);
             }                                           
         else if(precence_table[i][j]==1&&error!=-1){    //EQUAL
@@ -330,25 +379,26 @@ Token *exp_analysator(Token*token){
                 error = do_reduc(s);
             }                                           
         else if(precence_table[i][j]==3||error==-1){    //Prazdny zasobnik a vstup je prazdny nebo ')'
-                if(i==8 && (j==7||j==8)){   
-                    destroy(s);            
-                    return token;
-                }
-                else{                                  //EMPTY
+                if(error==-1){
                     printf("Chyba syntaktickeho analyzatoru zdola nahoru\n");
                     destroy(s);
                     free(token);
+                    dispose(&rootPtr);
                     exit(1);//chyba
+                }
+                else if(i==8 && (j==7||j==8)){   
+                    destroy(s);            
+                    return token;
                 }
             }                                           
 //Vypis stavu zasobniku po provedeni operace
-/*   
+  
     print=top(s);
     print2=top1(s);
     printf("Vrchol zasobniku: %s%s\n",print2,print);
     print=top_type(s);
     printf("Type: %s\n\n",print);
-*/
+
 ///////////////////////////////////////////////////////////
     }
     destroy(s);
@@ -359,6 +409,8 @@ int main(){
     Token *token = malloc(sizeof(Token));
     strcpy(token->name,"int");
     token->value="sfd";
+
+    
     token= exp_analysator(token);
     free(token);
     return 0;
