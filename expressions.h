@@ -14,6 +14,23 @@
 
 #define TABLE_SIZE 9 
 
+typedef struct sVariable{
+    char *ID;
+    int   dataType;
+    char *value;
+
+}Variable_t;
+
+
+typedef struct sFunction{
+    char *ID;
+    int  *param_types;
+    int  param_length;
+    int  *ret_types;
+    int  ret_length;
+
+}Function_t;
+
 typedef struct sData{
     
     bool isError;
@@ -25,6 +42,8 @@ typedef struct sData{
     int arrayType[20];
     bool checkDataType;
 
+    Function_t *funkcia;
+    Variable_t *premenna;
 
 } Data_t;
 

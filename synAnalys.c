@@ -249,7 +249,7 @@ int createInbuildFunctions(Data_t *data){
 void fValues(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,",")){
-        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
             if(!strcmp(token->name,"identifier") && isFunction(NULL, token->value)){
                 printf("Error in state %d, fValues, Function instead of variable\n", *state);
                 data->errorValue = 2;
@@ -287,7 +287,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
 
 void fValue(Token *token, enum STATE *state, Data_t *data){
 
-    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ){
+    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ){
         if(!strcmp(token->name,"identifier")){
             if(isFunction(NULL, token->value)){
                     //je to ID funkcie
@@ -330,7 +330,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
             }
         }
         else{
-                //Token je string, float lebo int
+                //Token je string, number lebo int
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
@@ -395,7 +395,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
@@ -430,7 +430,7 @@ void fInit(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
             //WARNING -> postaraj sa o to, aby bol v tokene nacitany <st-list>, pri vynoreni s tym pocitas
-            //          - Pre string, int a float je to ZABEZPECENE
+            //          - Pre string, int a number je to ZABEZPECENE
             //          - Pre ID premennej je to ZABEZPECENE
             //          - Pre ID funkcie je to ZABEZPECENE
     }
@@ -460,9 +460,9 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
             //TODO treba zistit ci je to identifikator funkcie alebo premennej
             //Ak je ID funkcie, tak problem, lebo je vo viacnasobnom priradeni ID funkcia, ktora vracia hodnotu
             //Ak je ID premennej, idem do funkcie <exp>
-            //Ak je to int, float alebo string, volame <exp>
+            //Ak je to int, number alebo string, volame <exp>
 
-            //Osetrenie, ci je token int, float, string alebo ID
+            //Osetrenie, ci je token int, number, string alebo ID
         if(!strcmp(token->name,"identifier")){
                 //Osetrenie, aby ID bolo ID premennej a nie funkcie
             if(isFunction(NULL, token->value)){
@@ -471,7 +471,7 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
         }
-        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
             //Naschval prazdne, pre jednoduchost tu nechavam tuto podmienku
 
 
@@ -552,7 +552,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
 
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -1111,7 +1111,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
         //nacitali sme EPSILON
         //Nacitane: ID ()
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
 
         if(!strcmp(token->name,"identifier")){
             if(isFunction(NULL, token->value)){
@@ -1178,16 +1178,24 @@ void fRet_type(Token *token, enum STATE *state, Data_t *data){
     }
     else if(((!strcmp(token->name,"keyword") && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))) || !strcmp(token->name,"identifier")) && *state == ret_type){
         //Znaci EPSILON prechod do <prog_con>, pravidlo 3., 4. a 5. 
-        
+        free(data->funkcia->ret_types);
+        data->funkcia->ret_types = NULL;
+        data->funkcia->ret_length = 0;
 
         
     }
     else if(!strcmp(token->name,"-1") && *state == ret_type){
         //Znaci EPSILON prechod do <prog_con>, pravidlo 2. 
+        free(data->funkcia->ret_types);
+        data->funkcia->ret_types = NULL;
+        data->funkcia->ret_length = 0;
         
     }
     else if(*state == params && (!strcmp(token->name,"identifier") || (!strcmp(token->name,"keyword") && (!strcmp(token->value,"if") || !strcmp(token->value,"while") || !strcmp(token->value,"local") || !strcmp(token->value,"return") || !strcmp(token->value,"end"))))){
         //Znaci EPSILON prechod do <st-list>, pravidlo 4.
+        free(data->funkcia->ret_types);
+        data->funkcia->ret_types = NULL;
+        data->funkcia->ret_length = 0;
         
     }
     else{
@@ -1210,7 +1218,25 @@ void fRet_type(Token *token, enum STATE *state, Data_t *data){
 void fType(Token *token, enum STATE *state, Data_t *data){
     
     if(!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")){
-            
+            if(*state == par_type){
+                if(!strcmp(token->value,"integer"))
+                    data->funkcia->param_types[data->funkcia->param_length] = 0;
+                else if (!strcmp(token->value,"number"))
+                    data->funkcia->param_types[data->funkcia->param_length] = 1;
+                else if (!strcmp(token->value,"string"))
+                    data->funkcia->param_types[data->funkcia->param_length] = 2;
+                data->funkcia->param_length++;
+                //TODO realloc
+            }else if(*state == ret_type){
+                if(!strcmp(token->value,"integer"))
+                    data->funkcia->ret_types[data->funkcia->ret_length] = 0;
+                else if (!strcmp(token->value,"number"))
+                    data->funkcia->ret_types[data->funkcia->ret_length] = 1;
+                else if (!strcmp(token->value,"string"))
+                    data->funkcia->ret_types[data->funkcia->ret_length] = 2;
+                data->funkcia->ret_length++;
+                //TODO realloc
+            }
     }
     else{
         printf("Error in state %d, fType\n", *state);
@@ -1268,7 +1294,7 @@ void fTypes(Token *token, enum STATE *state, Data_t *data){
             // printf("name : %s\n", token->name);
             // printf("value : %s\n", token->value);
 
-             //TODO vratit TOKEN, treba nejako
+            
 
         }
         else if(*state == ret_type && !strcmp(token->name,"identifier")){
@@ -1307,10 +1333,29 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
      if(!strcmp(token->name,")")){
             //Nacitane: global ID : function ()
             //parameter funkcie je prazdny, nie je tam nic 
+            free(data->funkcia->param_types);
+            data->funkcia->param_types = NULL;
+            data->funkcia->param_length = 0;
+
             
-        }
-        else if(!strcmp(token->name,"keyword") && (!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")) ){
+    }
+    else if(!strcmp(token->name,"keyword") && (!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")) ){
                 //parameter je jeden z datovych typov
+            if(!strcmp(token->value,"integer"))
+                data->funkcia->param_types[data->funkcia->param_length] = 0;
+            else if (!strcmp(token->value,"number"))
+                data->funkcia->param_types[data->funkcia->param_length] = 1;
+            else if (!strcmp(token->value,"string"))
+                data->funkcia->param_types[data->funkcia->param_length] = 2;
+
+            data->funkcia->param_length++;
+            //TODO realloc
+
+            //if(funkcia->param_length == LENGTH(funkcia->param_types)){
+             //   printf("HELLO\n");
+            //}
+
+
 
                 //ocakavam <types>
             data->errorValue = read_token(token);
@@ -1321,12 +1366,12 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
                 //Nacitane: global ID : function (string, integer)
-        }
-        else{
+    }
+    else{
             printf("Error in state %d, fPar_type\n", *state);
             data->errorValue = 2;
             checkError(data);   
-        }
+    }
 }
 
 
@@ -1346,9 +1391,13 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
               
                 //nacitanie ID funkcie
                 //TODO pridaj do tabulky symbolov
+
+            
             data->errorValue = read_token(token);
             checkError(data);
-                //nacitane: global ID
+                
+                
+
 
              //printf("name : %s\n", token->name);
              //printf("value : %s\n", token->value);
@@ -1359,6 +1408,27 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
                 
             }
+
+                //zistenie, ci sa dane ID uz vyskytuje v tabulke alebo nie
+            if (searchFrames(data->list, token->value) != NULL){
+                data->errorValue = 3;
+                checkError(data);
+            }
+                //nacitane: global ID
+
+            Function_t *funkcia = malloc(sizeof(Function_t));
+            data->funkcia = funkcia;
+            funkcia->ID = malloc(sizeof(char)*strlen(token->value));
+            memset(funkcia->ID, '\0',strlen(token->value));
+            if(funkcia->ID == NULL){
+                data->errorValue = 3;
+                checkError(data);
+            }
+            funkcia->ID = token->value;
+            //printf("token: %s\n", token->value);
+            //printf("funkcia: %s\n", funkcia->ID);
+            
+
 
                 //ocakavanie dvojbodky
             data->errorValue = read_token(token);
@@ -1381,6 +1451,17 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                     if(!strcmp(token->name,"(")){
                         //Nacitane: global ID : function (
                         
+                        funkcia->param_types = malloc(sizeof(int)*15);
+                        if(funkcia->param_types == NULL){
+                            free(funkcia->ID);
+                            free(funkcia);
+                            data->funkcia = NULL;
+                            data->errorValue = 3;
+                            checkError(data);
+                        }
+
+                        funkcia->param_length = 0;
+
                             //Ocakavam <par-type>
                         data->errorValue = read_token(token);
                         checkError(data);
@@ -1396,6 +1477,19 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                             //Ocakavam <ret-type>
                         data->errorValue = read_token(token);
                         checkError(data);
+
+
+                        funkcia->ret_types = malloc(sizeof(int)*15);
+                        if(funkcia->ret_types == NULL){
+                            free(funkcia->param_types);
+                            free(funkcia->ID);
+                            free(funkcia);
+                            data->funkcia = NULL;
+                            data->errorValue = 3;
+                            checkError(data);
+                        }
+
+                        funkcia->ret_length = 0;
                         
                             //Zmena stavu
                         *state = ret_type;
@@ -1404,6 +1498,21 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                         checkError(data);
                             //Nacitane: global ID : function(<par-type>)<ret-type>
+
+                        //Tu by mala byt data->funkcia naplnena vsetkym co potrebujem pre vytvorenie FunNode
+                        //Vytvaranie FunNode
+                        TNode * newLeaf = createFuncNode(data->funkcia->ID, false, data->funkcia->param_types, data->funkcia->param_length, data->funkcia->ret_types, data->funkcia->ret_length, &(data->errorValue));
+                        insert(&(data->list->first->rootPtr), newLeaf);
+                        
+                        
+                        //TODO GENEROVANIE KODU
+
+
+                        //Uvolnenie alokovanej premennej
+                        free(funkcia->ID);
+                        free(funkcia->param_types);
+                        free(funkcia->ret_types);
+                        free(funkcia);
 
 
                             //Ocakavam <prog_con>                        
@@ -1576,7 +1685,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             checkError(data);   
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"float") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
         //TODO ALL
             //TODO treba do podmienky zahrnut NIL
             //Check if is Expression

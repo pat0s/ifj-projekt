@@ -1,6 +1,5 @@
-require "ifj21" global asdf : function(string) : integer
-global fsdfas:function(string)
-global sdads : function(): string, integer
-main(sdfasd)
+require "ifj21" 
+global writnee : function(string) : integer
+
 
 
