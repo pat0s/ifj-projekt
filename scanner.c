@@ -474,7 +474,7 @@ int read_token(Token *token)
             else
             {
                 ungetc(symbol, stdin);
-                strcpy(token->name, "float");
+                strcpy(token->name, "number");
                 return 0;
             }
         }
@@ -501,7 +501,7 @@ int read_token(Token *token)
             else
             {
                 ungetc(symbol, stdin);
-                strcpy(token->name, "exponent");
+                strcpy(token->name, "number");
                 return 0;
             }
         }
