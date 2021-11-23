@@ -41,7 +41,7 @@ TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_o
 
     newPtr->function = false;
 
-    char *newID = (char *)malloc(sizeof(char) * strlen(given_id));
+    char *newID = (char *)malloc(sizeof(char) * (strlen(given_id)+1));
     if (newID == NULL)
     {
         *error_occur = INTERNAL_ERROR; 
@@ -51,6 +51,7 @@ TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_o
     for (unsigned int i = 0; i < strlen(given_id);i++){
         newID[i] = given_id[i];
     }
+    newID[strlen(given_id)] = '\0';
     newPtr->ID = newID;
 
     TVar *newVar = (TVar *)malloc(sizeof(TVar));
@@ -108,7 +109,7 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
 
     newPtr->function = true;
 
-    char *newID = (char *)malloc(sizeof(char) * strlen(given_id));
+    char *newID = (char *)malloc(sizeof(char) * (strlen(given_id)+1));
     if (newID == NULL)
     {
         *error_occur = INTERNAL_ERROR; 
@@ -119,6 +120,7 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
     {
         newID[i] = given_id[i];
     }
+    newID[strlen(given_id)] = '\0';
     newPtr->ID = newID;
 
     TFunc *newFunc = (TFunc *)malloc(sizeof(TFunc));
