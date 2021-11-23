@@ -502,7 +502,7 @@ void deleteFirst(Tframe_list *frames)
     }
 
     frames->first = frames->first->next;
-    free(tmp);
+    //free(tmp); DORESIT
 }
 
 
