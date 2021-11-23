@@ -4,6 +4,8 @@
 
 #define LENGTH(a) (sizeof(a) / sizeof(*a)) // simple macro, counts length of an array
 
+enum dataTypes{INTEGER = 0, NUMBER = 1, STRING = 2};
+
 /**
  * @brief holds information about node that is variable
  * , var data_type: data_type of a variable

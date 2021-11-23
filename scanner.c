@@ -99,6 +99,7 @@ int read_token(Token *token)
     do
     {
         // Read char from stdin
+        
         symbol = getchar();
 
         if (!strcmp(state, "s"))

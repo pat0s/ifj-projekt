@@ -472,9 +472,10 @@ TNode *searchFrames(Tframe_list *l, char *k)
    return result;
 }
 
+/*
 int main()
 {
-    /*TNode *rootPtr = NULL;    
+    TNode *rootPtr = NULL;    
     int error_c;
     int error_i;
 
@@ -496,7 +497,7 @@ int main()
     inOrder(rootPtr);
     puts("");
 
-    /* delete a node
+     delete a node
     rootPtr = bvsDelete(rootPtr, "hovno");
     rootPtr = bvsDelete(rootPtr, "g");
 
@@ -589,7 +590,7 @@ int main()
     inOrder(rootPtr);
     puts("");*/
 
-    Tframe_list a;
+   /* Tframe_list a;
     initList(&a);
 
     TNode *root_a = NULL;
@@ -601,4 +602,4 @@ int main()
     insert(&(a.first->rootPtr), createVarNode("prom", 0, "69", &error_c));
 
     return 0;
-}
+}*/

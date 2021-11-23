@@ -99,6 +99,146 @@ void checkError(Data_t *data){
 
 
 /**
+ * @brief Create a Inbuild Functions object
+ * 
+ * @param data 
+ * @return int 
+ */
+
+int createInbuildFunctions(Data_t *data){
+    Function_t funkcia;
+        //pridavanie funkcie write() do tabulky symbolov
+    funkcia.ID = malloc(sizeof(char)*11);
+    if(funkcia.ID == NULL)
+        return 99;
+    memset(funkcia.ID, '\0', 11);
+    funkcia.ID = "write";    
+    funkcia.param_types = NULL;
+    funkcia.param_length = 0;
+    funkcia.ret_types = NULL;
+    funkcia.ret_length = 0;
+    TNode *newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    insert(&(data->list->first->rootPtr), newLeaf);
+
+        //pridanie funkcie tointeger(n: number): integer
+    funkcia.ID = "tointeger";
+    funkcia.param_types = malloc(sizeof(int));
+    if(funkcia.param_types == NULL)
+        return 99;
+    funkcia.param_types[0] = 1;
+    funkcia.param_length = 1;
+    funkcia.ret_types = malloc(sizeof(int));
+    if(funkcia.ret_types == NULL)
+        return 99;
+    funkcia.ret_types[0] = 0;
+    funkcia.ret_length = 1;
+    newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    insert(&(data->list->first->rootPtr), newLeaf);
+    
+        //pridanie funkcie substr(s:string, i:number, : number): string
+    funkcia.ID = "substr";
+    free(funkcia.param_types);
+    funkcia.param_types = malloc(sizeof(int)*3);
+    if(funkcia.param_types == NULL)
+        return 99;
+    funkcia.param_types[0] = 2;
+    funkcia.param_types[1] = 1;
+    funkcia.param_types[2] = 1;
+    funkcia.param_length = 3;
+    free(funkcia.ret_types);
+    funkcia.ret_types = malloc(sizeof(int));
+    if(funkcia.ret_types == NULL)
+        return 99;
+    funkcia.ret_types[0] = 2;
+    funkcia.ret_length = 1;
+    newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    insert(&(data->list->first->rootPtr), newLeaf);
+
+
+        //pridanie funkcie ord(s: string, i: integer): integer
+    funkcia.ID = "ord";
+    free(funkcia.param_types);
+    funkcia.param_types = malloc(sizeof(int)*2);
+    if(funkcia.param_types == NULL)
+        return 99;
+    funkcia.param_types[0] = 2;
+    funkcia.param_types[1] = 0;
+    funkcia.param_length = 2;
+    free(funkcia.ret_types);
+    funkcia.ret_types = malloc(sizeof(int));
+    if(funkcia.ret_types == NULL)
+        return 99;
+    funkcia.ret_types[0] = 0;
+    funkcia.ret_length = 1;
+    newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    insert(&(data->list->first->rootPtr), newLeaf);
+
+        //pridanie funkcie chr(i: integer): string
+    funkcia.ID = "chr";
+    free(funkcia.param_types);
+    funkcia.param_types = malloc(sizeof(int));
+    if(funkcia.param_types == NULL)
+        return 99;
+    funkcia.param_types[0] = 0;
+    funkcia.param_length = 1;
+    free(funkcia.ret_types);
+    funkcia.ret_types = malloc(sizeof(int));
+    if(funkcia.ret_types == NULL)
+        return 99;
+    funkcia.ret_types[0] = 2;
+    funkcia.ret_length = 1;
+    newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    insert(&(data->list->first->rootPtr), newLeaf);
+    
+
+        //pridanie funkcie reads():string
+    funkcia.ID = "reads";
+    free(funkcia.param_types);
+    funkcia.param_types = NULL;
+    funkcia.param_length = 0;
+    free(funkcia.ret_types);
+    funkcia.ret_types = malloc(sizeof(int));
+    if(funkcia.ret_types == NULL)
+        return 99;
+    funkcia.ret_types[0] = 2;
+    funkcia.ret_length = 1;
+    newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    insert(&(data->list->first->rootPtr), newLeaf);
+
+        //pridanie funkcie readi():integer
+    funkcia.ID = "readi";
+    free(funkcia.param_types);
+    funkcia.param_types = NULL;
+    funkcia.param_length = 0;
+    free(funkcia.ret_types);
+    funkcia.ret_types = malloc(sizeof(int));
+    if(funkcia.ret_types == NULL)
+        return 99;
+    funkcia.ret_types[0] = 0;
+    funkcia.ret_length = 1;
+    newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    insert(&(data->list->first->rootPtr), newLeaf);
+
+
+        //pridanie funkcie readn():number
+    funkcia.ID = "readn";
+    free(funkcia.param_types);
+    funkcia.param_types = NULL;
+    funkcia.param_length = 0;
+    free(funkcia.ret_types);
+    funkcia.ret_types = malloc(sizeof(int));
+    if(funkcia.ret_types == NULL)
+        return 99;
+    funkcia.ret_types[0] = 1;
+    funkcia.ret_length = 1;
+    newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    insert(&(data->list->first->rootPtr), newLeaf);
+
+    return 0;
+}
+
+
+/**
  * @brief Function for nondeterminal Values in LL gramar
  * 
  * @param token Pointer to token
@@ -1508,14 +1648,29 @@ void synAnalys(Token *token, enum STATE *state, Data_t *data){
 
 int main(){
 
-    enum STATE state = prog;
-    //Osetrenie chyby mallocu
-
+    
     Data_t *data = malloc(sizeof(Data_t));
     //osetrenie chyby mallocu
     
     data->errorValue = 0;
     data->isError = false;  
+
+    Tframe_list *frames = malloc(sizeof(Tframe_list));
+    initList(frames);
+    TNode *rootPtr = NULL;
+    insertFirst(frames, true, rootPtr);
+
+    data->list = frames;
+
+
+        //Idem vytvarat a vkladat vestavene funkce
+    data->errorValue = createInbuildFunctions(data);
+    checkError(data);
+    
+    
+    enum STATE state = prog;
+    //Osetrenie chyby mallocu
+
 
 
     Token *token = malloc(sizeof(Token));

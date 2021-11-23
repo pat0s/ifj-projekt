@@ -7,6 +7,22 @@
 
 enum STATE {assign, assigns, arg, args, exp, ifStatement, item, item_n, init, init_value, prog, prog_con, par_type, ret_val, ret_type, st_list, type, types, value, values, params, params_n};
 
+typedef struct sVariable{
+    char *ID;
+    int   dataType;
+    char *value;
+
+}Variable_t;
+
+
+typedef struct sFunction{
+    char *ID;
+    int  *param_types;
+    int  param_length;
+    int  *ret_types;
+    int  ret_length;
+
+}Function_t;
 
 
 

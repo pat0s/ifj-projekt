@@ -5,7 +5,7 @@ CFLAGS = -g -Wall -Wextra -lm #-Wextra -Werror -lm
 
 all: $(EXECUTABLE)
 
-$(EXECUTABLE): scanner.o synAnalys.o symtable.o expressions.o expressions_stack.o
+$(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stack.o
 	gcc $(CFLAGS) $^ -o $@
 	 
 
