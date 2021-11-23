@@ -1,0 +1,6 @@
+require "ifj21"
+
+global foo : function(string) : string
+
+function foo (param:string):string
+end

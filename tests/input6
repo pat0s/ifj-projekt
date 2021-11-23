@@ -1,0 +1,7 @@
+require "ifj21"
+
+function swap (x1:integer,    x2: integer) : integer
+ local tmp : integer
+ tmp = x1 x1 = x2 x2 = tmp
+return 1
+end
