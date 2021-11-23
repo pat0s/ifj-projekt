@@ -110,7 +110,7 @@ int createInbuildFunctions(Data_t *data){
         //pridavanie funkcie write() do tabulky symbolov
     funkcia.ID = malloc(sizeof(char)*11);
     if(funkcia.ID == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     memset(funkcia.ID, '\0', 11);
     funkcia.ID = "write";    
     funkcia.param_types = NULL;
@@ -124,12 +124,12 @@ int createInbuildFunctions(Data_t *data){
     funkcia.ID = "tointeger";
     funkcia.param_types = malloc(sizeof(int));
     if(funkcia.param_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.param_types[0] = 1;
     funkcia.param_length = 1;
     funkcia.ret_types = malloc(sizeof(int));
     if(funkcia.ret_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.ret_types[0] = 0;
     funkcia.ret_length = 1;
     newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
@@ -140,7 +140,7 @@ int createInbuildFunctions(Data_t *data){
     free(funkcia.param_types);
     funkcia.param_types = malloc(sizeof(int)*3);
     if(funkcia.param_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.param_types[0] = 2;
     funkcia.param_types[1] = 1;
     funkcia.param_types[2] = 1;
@@ -148,7 +148,7 @@ int createInbuildFunctions(Data_t *data){
     free(funkcia.ret_types);
     funkcia.ret_types = malloc(sizeof(int));
     if(funkcia.ret_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.ret_types[0] = 2;
     funkcia.ret_length = 1;
     newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
@@ -160,14 +160,14 @@ int createInbuildFunctions(Data_t *data){
     free(funkcia.param_types);
     funkcia.param_types = malloc(sizeof(int)*2);
     if(funkcia.param_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.param_types[0] = 2;
     funkcia.param_types[1] = 0;
     funkcia.param_length = 2;
     free(funkcia.ret_types);
     funkcia.ret_types = malloc(sizeof(int));
     if(funkcia.ret_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.ret_types[0] = 0;
     funkcia.ret_length = 1;
     newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
@@ -178,13 +178,13 @@ int createInbuildFunctions(Data_t *data){
     free(funkcia.param_types);
     funkcia.param_types = malloc(sizeof(int));
     if(funkcia.param_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.param_types[0] = 0;
     funkcia.param_length = 1;
     free(funkcia.ret_types);
     funkcia.ret_types = malloc(sizeof(int));
     if(funkcia.ret_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.ret_types[0] = 2;
     funkcia.ret_length = 1;
     newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
@@ -199,7 +199,7 @@ int createInbuildFunctions(Data_t *data){
     free(funkcia.ret_types);
     funkcia.ret_types = malloc(sizeof(int));
     if(funkcia.ret_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.ret_types[0] = 2;
     funkcia.ret_length = 1;
     newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
@@ -213,7 +213,7 @@ int createInbuildFunctions(Data_t *data){
     free(funkcia.ret_types);
     funkcia.ret_types = malloc(sizeof(int));
     if(funkcia.ret_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.ret_types[0] = 0;
     funkcia.ret_length = 1;
     newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
@@ -228,7 +228,7 @@ int createInbuildFunctions(Data_t *data){
     free(funkcia.ret_types);
     funkcia.ret_types = malloc(sizeof(int));
     if(funkcia.ret_types == NULL)
-        return 99;
+        return INTERNAL_ERROR;
     funkcia.ret_types[0] = 1;
     funkcia.ret_length = 1;
     newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));

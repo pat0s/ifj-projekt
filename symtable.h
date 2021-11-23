@@ -6,10 +6,10 @@
 
 enum TYPES
 {
-    INTEGER,
-    NUMBER,
-    STRING,
-    NIL
+    INTEGER = 0,
+    NUMBER = 1,
+    STRING = 2,
+    NIL = 3
 };
 
 /**
