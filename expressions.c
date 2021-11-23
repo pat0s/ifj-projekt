@@ -1,7 +1,5 @@
-#include "expressions_stack.c"
 #include "expressions.h"
-#include "scanner.c"
-//#include "symtable.c"
+#include <string.h>
 
 int precence_table[TABLE_SIZE][TABLE_SIZE] =
 {
@@ -96,11 +94,11 @@ int zasobnikovy_znak(Stack*s){
  * 
  * 
  */
-void do_shift(Stack*s,Token*token,int vstup,TNode *rootPtr){
+void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
     char *type;
     if(vstup==4){
         if(!strcmp(token->name,"identifier")){
-            TNode *node = search(rootPtr,token->value);
+            TNode *node = searchFrames(frames,token->value);
             int idtype = node->var->data_type;
             if(idtype==0){
                 type="int"; 
@@ -120,7 +118,21 @@ void do_shift(Stack*s,Token*token,int vstup,TNode *rootPtr){
             }
         }
         else{
-            type=token->name;
+            if(!strcmp(token->value,"0")||!strcmp(token->value,"0.0")){
+                if(!strcmp(top(s),"/")||!strcmp(top(s),"//")){
+                    //chyba deleni nulou;
+                    //while(frames!=NULL){
+                       // deleteFirst(frames);
+                    //}                  
+                    printf("Deleni 0\n");
+                    free(token);
+                    free(data);
+                    exit(9);
+                }
+            }
+            else{
+                type=token->name;
+            }
         }
     }
     else{
@@ -276,8 +288,7 @@ int do_reduc(Stack*s){
             change_top_type(s,"int");
             //zavolat zmenu typu na int
             //zavolat generovani //
-            //???
-            }
+                }
             else{
                 return -1;
             }
@@ -330,19 +341,21 @@ int do_reduc(Stack*s){
 return 0;
 }
 
-Token *exp_analysator(Token*token){
+void *exp_analysator(Data_t *data){
     Stack * s=(Stack *)malloc(sizeof(Stack));
     init_stack(s);
 
-//Token *token = sData->token;
-//TNode *rootPtr= sData->rootPtr;
+    Token *token = data->token;
+    Tframe_list *frames= data->list;
 
 //Vymazat
+/*
     TNode *rootPtr = NULL;    
     int error_c;
     insert(&rootPtr, createVarNode("a", 0, "32", &error_c));
     insert(&rootPtr, createVarNode("b", 1, "33", &error_c));
     insert(&rootPtr, createVarNode("c", 2, "34", &error_c));
+    */
 //
 
     int error=0;
@@ -368,7 +381,7 @@ Token *exp_analysator(Token*token){
 ///////////////////////////////////////////////////////////////    
     
         if(precence_table[i][j]==0&&error!=-1){         //SHIFT
-                do_shift(s,token,j,rootPtr);
+                do_shift(s,data,token,j,frames);
                 read_token(token);
             }                                           
         else if(precence_table[i][j]==1&&error!=-1){    //EQUAL
@@ -379,16 +392,24 @@ Token *exp_analysator(Token*token){
                 error = do_reduc(s);
             }                                           
         else if(precence_table[i][j]==3||error==-1){    //Prazdny zasobnik a vstup je prazdny nebo ')'
-                if(error==-1){
+                if(error!=-1){
+                   if((i==8 && (j==7||j==8)) ||(i==4&&j==4) ){   
+                    destroy(s);  
+                    //data->token = token; 
+                    printf("Return token %s\n",data->token->name);         
+                    return 0;
+                    }
+                }
+                else{
                     printf("Chyba syntaktickeho analyzatoru zdola nahoru\n");
                     destroy(s);
+                    /*while(frames!=NULL){
+                        deleteFirst(frames); 
+                        } 
+                        */
                     free(token);
-                    dispose(&rootPtr);
-                    exit(1);//chyba
-                }
-                else if(i==8 && (j==7||j==8)){   
-                    destroy(s);            
-                    return token;
+                    free(data);
+                    exit(6);//chyba
                 }
             }                                           
 //Vypis stavu zasobniku po provedeni operace
@@ -402,9 +423,10 @@ Token *exp_analysator(Token*token){
 ///////////////////////////////////////////////////////////
     }
     destroy(s);
-    return token;
+    printf("Return token %s\n",data->token->name);
+    return 0;
 }
-
+/*
 int main(){
     Token *token = malloc(sizeof(Token));
     strcpy(token->name,"int");
@@ -414,6 +436,6 @@ int main(){
     token= exp_analysator(token);
     free(token);
     return 0;
-}
+}*/
 
 /* End of file expressions.c */
