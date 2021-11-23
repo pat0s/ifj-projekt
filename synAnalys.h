@@ -2,18 +2,13 @@
 #define SYNANALYS_H
 
 #include"scanner.h"
+#include "expressions.h"
 
 
 enum STATE {assign, assigns, arg, args, exp, ifStatement, item, item_n, init, init_value, prog, prog_con, par_type, ret_val, ret_type, st_list, type, types, value, values, params, params_n};
 
 
-typedef struct sData{
-    
-    bool isError;
-    int errorValue;
-    Token *token;
 
-} Data_t;
 
 
 

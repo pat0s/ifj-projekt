@@ -14,6 +14,21 @@
 
 #define TABLE_SIZE 9 
 
+typedef struct sData{
+    
+    bool isError;
+    int errorValue;
+    Token *token;
+    Tframe_list *list;
+    
+    int indexType;
+    int arrayType[20];
+    bool checkDataType;
+
+
+} Data_t;
+
+
 
 typedef enum 
 {
@@ -30,7 +45,7 @@ void do_shift(Stack*s,Token*token,int vstup,TNode *rootPtr);
 void do_equal(Stack*s);
 int kontrola_typu(Stack *s);
 int do_reduc(Stack *s);
-Token *exp_analysator(Token*token);
+Token *exp_analysator(Data_t *data);
 
 // Rules
 /*

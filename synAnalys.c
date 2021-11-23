@@ -8,7 +8,7 @@
 #include <string.h>
 #include "synAnalys.h"
 #include "error.h"
-#include "expressions.h"
+
 #include "symtable.h"
 
 
@@ -1446,7 +1446,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             
             //TODO treba sa dohodnut na returnoch, precedencna analyza by mala nacitat dalsi token a podla abecedy usudit, kedy treba prestat nacitavat
             //TODO Parser uz nenacitava dalsi token, funkcie pocitaju s tym, ze sa z precedencnej analyzi vrati v premennej 'token' dalsi nacitany token
-
+        exp_analysator(data);
     }
     else if(*state == arg && !strcmp(token->name,")")){
             //situacia, ak by som v argumetne dostal nedokonceny argument, takze napr: (x,5,), to znamena ze by to koncilo ciarkou co je semanticka chyba

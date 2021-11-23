@@ -328,12 +328,12 @@ int do_reduc(Stack*s){
 return 0;
 }
 
-Token *exp_analysator(Token*token){
+Token *exp_analysator(Data_t *data){
     Stack * s=(Stack *)malloc(sizeof(Stack));
     init_stack(s);
 
-//Token *token = sData->token;
-//TNode *rootPtr= sData->rootPtr;
+    Token *token = data->token;
+    //Tframe_list *frames= data->list;
 
 //Vymazat
     TNode *rootPtr = NULL;    
@@ -385,7 +385,8 @@ Token *exp_analysator(Token*token){
                     exit(1);//chyba
                 }
                 else if(i==8 && (j==7||j==8)){   
-                    destroy(s);            
+                    destroy(s);  
+                    data->token = token;          
                     return token;
                 }
             }                                           
@@ -400,6 +401,7 @@ Token *exp_analysator(Token*token){
 ///////////////////////////////////////////////////////////
     }
     destroy(s);
+    data->token = token;
     return token;
 }
 /*
