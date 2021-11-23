@@ -396,7 +396,14 @@ bool isFunction(TNode *rootPtr, char *k)
 {
     TNode *result;    
     result = search(rootPtr, k);
-    return result->function;
+    if(result == NULL)
+    {
+        return false;
+    }
+    else
+    {
+        return result->function;
+    }    
 }
 
 // end of list of symtable functions definition
@@ -465,4 +472,133 @@ TNode *searchFrames(Tframe_list *l, char *k)
    return result;
 }
 
+int main()
+{
+    /*TNode *rootPtr = NULL;    
+    int error_c;
+    int error_i;
 
+
+    // insert
+    error_i = insert(&rootPtr, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr, createVarNode("prom", 0, "69", &error_c));
+    error_i = insert(&rootPtr, createFuncNode("a", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr, createVarNode("b", 0, "69", &error_c));
+    error_i = insert(&rootPtr, createFuncNode("c", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr, createVarNode("d", 0, "69", &error_c));
+    error_i = insert(&rootPtr, createFuncNode("akat", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr, createVarNode("hovno", 0, "69", &error_c));
+    error_i = insert(&rootPtr, createVarNode("d", 0, "69", &error_c));
+    error_i = insert(&rootPtr, createFuncNode("vut", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr, createFuncNode("g", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+
+    inOrder(rootPtr);
+    puts("");
+
+    /* delete a node
+    rootPtr = bvsDelete(rootPtr, "hovno");
+    rootPtr = bvsDelete(rootPtr, "g");
+
+    inOrder(rootPtr);
+    puts("");
+    
+    // search a node
+    TNode *fnPtr = search(rootPtr, "akat");
+    fnPtr = search(rootPtr, "vut");
+    fnPtr = search(rootPtr, "b");
+
+    // if a node is function
+    bool res = isFunction(rootPtr, "vut");
+    res = isFunction(rootPtr, "d");*/
+
+    /*TNode *rootPtr2 = NULL;
+
+    error_i = insert(&rootPtr2, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createVarNode("prom", 0, "69", &error_c));
+    error_i = insert(&rootPtr2, createFuncNode("a", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createVarNode("b", 0, "69", &error_c));
+    error_i = insert(&rootPtr2, createFuncNode("c", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));    
+    error_i = insert(&rootPtr2, createFuncNode("akat", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createVarNode("hovno", 0, "69", &error_c));    
+    error_i = insert(&rootPtr2, createFuncNode("vut", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr2, createFuncNode("g", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+
+    TNode *rootPtr3 = NULL;
+
+    error_i = insert(&rootPtr3, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createVarNode("prom", 0, "69", &error_c));
+    error_i = insert(&rootPtr3, createFuncNode("a", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createVarNode("b", 0, "69", &error_c));
+    error_i = insert(&rootPtr3, createFuncNode("c", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));    
+    error_i = insert(&rootPtr3, createFuncNode("akat", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createVarNode("hovno", 0, "69", &error_c));    
+    error_i = insert(&rootPtr3, createFuncNode("vut", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&rootPtr3, createFuncNode("g", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    */
+    // frames tests
+    /*Tframe_list frames;
+    initList(&frames);
+
+    insertFirst(&frames, true, rootPtr);
+    insertFirst(&frames, true, rootPtr2);
+    insertFirst(&frames, false, rootPtr3);
+
+    TNode *vysl = NULL;
+    vysl = searchFrames(&frames, "d");*/
+
+    /*// testing delete
+    puts("starts here");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    rootPtr = bvsDelete(rootPtr, rootPtr->ID);
+    inOrder(rootPtr);
+    puts("");
+
+    dispose(&rootPtr);
+
+    inOrder(rootPtr);
+    puts("");*/
+
+    Tframe_list a;
+    initList(&a);
+
+    TNode *root_a = NULL;
+
+    insertFirst(&a, true, root_a);
+
+    int error_c;   
+
+    insert(&(a.first->rootPtr), createVarNode("prom", 0, "69", &error_c));
+
+    return 0;
+}
