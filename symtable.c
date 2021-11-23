@@ -129,32 +129,46 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
     }
 
     newFunc->defined = given_def;
-    
-    int *newPt = (int *)malloc(sizeof(int) * pt_length);
-    if (newPt == NULL)
+
+    if(given_pt == NULL)
     {
-        *error_occur = INTERNAL_ERROR; 
-        exit(1);
+        newFunc->param_types = NULL;
+    }
+    else
+    {
+        int *newPt = (int *)malloc(sizeof(int) * pt_length);
+        if (newPt == NULL)
+        {
+            *error_occur = INTERNAL_ERROR;
+            exit(1);
+        }
+
+        for (int i = 0; i < pt_length; i++)
+        {
+            newPt[i] = given_pt[i];
+        }
+        newFunc->param_types = newPt;
     }
 
-    for (int i = 0; i < pt_length; i++)
+    if (given_rt == NULL)
     {
-        newPt[i] = given_pt[i];
+        newFunc->ret_types = NULL;
     }
-    newFunc->param_types = newPt;
-    
-    int *newRt = (int *)malloc(sizeof(int) * rt_length);
-    if (newRt == NULL)
+    else
     {
-        *error_occur = INTERNAL_ERROR; 
-        exit(1);
-    }
+        int *newRt = (int *)malloc(sizeof(int) * rt_length);
+        if (newRt == NULL)
+        {
+            *error_occur = INTERNAL_ERROR;
+            exit(1);
+        }
 
-    for (int i = 0; i < rt_length; i++)
-    {
-        newRt[i] = given_rt[i];
-    }
-    newFunc->ret_types = newRt;
+        for (int i = 0; i < rt_length; i++)
+        {
+            newRt[i] = given_rt[i];
+        }
+        newFunc->ret_types = newRt;
+    }  
 
     newPtr->var = NULL;
     newPtr->func = newFunc;
@@ -472,6 +486,25 @@ TNode *searchFrames(Tframe_list *l, char *k)
    return result;
 }
 
+/**
+ * @brief function deletes first frame in structure of frames Tframe_list, returns void
+ * 
+ * @param frames list of frames Tframe_list
+ */
+void deleteFirst(Tframe_list *frames)
+{   
+    Tframe *tmp = frames->first;
+    dispose(&(frames->first->rootPtr));
+    if (frames->first == frames->last)
+    {
+        free(frames->last);
+        frames->last = NULL;
+    }
+
+    frames->first = frames->first->next;
+    free(tmp);
+}
+
 int main()
 {
     /*TNode *rootPtr = NULL;    
@@ -591,16 +624,23 @@ int main()
     inOrder(rootPtr);
     puts("");*/
 
-    Tframe_list a;
-    initList(&a);
+    Tframe_list *a = malloc(sizeof(Tframe_list));
+    initList(a);
 
     TNode *root_a = NULL;
 
-    insertFirst(&a, true, root_a);
+    insertFirst(a, true, root_a);
 
-    int error_c;   
+    int error_c;
 
-    insert(&(a.first->rootPtr), createVarNode("prom", 0, "69", &error_c));
+    int array_pt[] = {1, 2, 3, 4};
+    int array_rt[] = {1, 2, 3};
+
+    insert(&(a->first->rootPtr), createVarNode("prom", 0, "69", &error_c));
+    insert(&(a->first->rootPtr), createFuncNode("akat", true, NULL, 0, NULL, 0, &error_c));
+    insert(&(a->first->rootPtr), createFuncNode("func", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+
+    deleteFirst(a);
 
     return 0;
 }
