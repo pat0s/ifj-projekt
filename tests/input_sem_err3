@@ -1,0 +1,7 @@
+require "ifj21"
+
+global foo : function (integer) : integer
+
+function foo (a:integer) : integer
+ main()
+end

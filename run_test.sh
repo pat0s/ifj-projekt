@@ -8,6 +8,7 @@ fi
 BASIC_TESTS="tests/input"
 IFJ_TESTS="tests/input_ifj"
 SYN_ERR_TESTS="tests/input_syn_err"
+SEM_ERR_TESTS="tests/input_sem_err"
 LOG="tests/tests_output.log"
 rm $LOG
 touch $LOG
@@ -79,7 +80,7 @@ function check_error_code()
 to_file ""
 to_file "------------ Basic testy ------------"
 to_file "Vsetky by mali skoncit s chybovym kodom 0!"
-for i in `seq 1 13`; do
+for i in `seq 1 14`; do
 	./$EXECUTABLE < $BASIC_TESTS$i
 	check_error_code $? 0 $i
 done
@@ -90,6 +91,13 @@ to_file "Vsetky by mali skoncit s chybovym kodom 2!"
 for i in `seq 1 10`; do
 	./$EXECUTABLE < $SYN_ERR_TESTS$i	
 	check_error_code $? 2 $i
+done
+
+to_file ""
+to_file "---------- Testy semantickych chyb (3)----------"
+for i in `seq 1 8`; do
+	./$EXECUTABLE < $SEM_ERR_TESTS$i	
+	check_error_code $? 3 $i
 done
 
 to_file ""

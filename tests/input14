@@ -1,0 +1,4 @@
+require "ifj21"
+
+global foo : function() : integer
+global FOO : function() : integer
