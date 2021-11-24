@@ -44,6 +44,8 @@ typedef struct sData{
 
     Function_t *funkcia;
     Variable_t *premenna;
+    TNode *leaf;
+    char *tokenValue;
 
 } Data_t;
 

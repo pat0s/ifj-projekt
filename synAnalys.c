@@ -653,6 +653,13 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
 void fItem(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"(")){
+        TNode * element = search(data->list->last->rootPtr, data->tokenValue);
+        if(element == NULL){
+            printf("\nERROR - volanie neexistujucej funkcie\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
+
             //Ide argumnet funkcie, dany identifikator by mal patrit funkcii
 
             //TODO treba skontrolovat, ci je funkcia aspon deklarovana
@@ -671,6 +678,12 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //Teraz som nacital dalsi token, v ktorom ocakavam <st-list>, spravil som to preto tu, pretoze musim pocitat situaciu spojenu s pravidlo 16. kde priradzujem a musim rozpoznat EPSILON prechod
     }
     else if(!strcmp(token->name,"=")){
+        TNode * element = searchFrames(data->list, data->tokenValue);
+        if(element == NULL){
+            printf("\nERROR - volanie nedefinovanej premennej\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
             //Prikaz priradenia, dany identifikator by mal byt premenna
 
             //Ocakavam bud ID funkcie alebo <exp>(<exp> moze byt aj nazov premennej, treba zistit v symtable)
@@ -685,6 +698,12 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //Token so <st-list> som nacital vo fAssign()
     }
     else if(!strcmp(token->name,",")){
+        TNode * element = searchFrames(data->list, data->tokenValue);
+        if(element == NULL){
+            printf("\nERROR - volanie nedefinovanej premennej\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
             //prikaz priradenia, viacnasobne priradenie
 
             //ocakavam ID premennej
@@ -961,6 +980,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
     }
     else if(!strcmp(token->name,"identifier")){
 
+        data->tokenValue = token->value;
             //Ocakavam <item>
         data->errorValue = read_token(token);
         checkError(data);
@@ -970,6 +990,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         fItem(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+
+        data->tokenValue = NULL;
+
+        
 
             //Ak som mal ID funkcie, tak v tokene je ')', musim  teda nacitat za tejto podmienky dalsi token a prejst do <st-list>
         if(!strcmp(token->name,")")){
