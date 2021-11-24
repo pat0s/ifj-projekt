@@ -60,11 +60,11 @@ typedef enum
 int rozpoznani_znaku(char*znak);
 int vstupni_znak(Token* token);
 int zasobnikovy_znak(Stack *s);
-void do_shift(Stack*s,Token*token,int vstup,TNode *rootPtr);
+void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames);
 void do_equal(Stack*s);
 int kontrola_typu(Stack *s);
 int do_reduc(Stack *s);
-Token *exp_analysator(Data_t *data);
+void *exp_analysator(Data_t *data);
 
 // Rules
 /*
