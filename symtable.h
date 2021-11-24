@@ -107,5 +107,6 @@ typedef struct tframe_list
 void initList(Tframe_list *l);
 int insertFirst(Tframe_list *l, bool fb, TNode *rootPtr);
 TNode *searchFrames(Tframe_list *l, char *k);
+void deleteFirst(Tframe_list *frames);
 
 #endif

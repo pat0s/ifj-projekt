@@ -254,7 +254,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
         if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
-            if(!strcmp(token->name,"identifier") && isFunction(NULL, token->value)){
+            if(!strcmp(token->name,"identifier") && isFunction(data->list->last->rootPtr, token->value)){
                 printf("Error in state %d, fValues, Function instead of variable\n", *state);
                 data->errorValue = 2;
                 checkError(data);
@@ -297,7 +297,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ){
         if(!strcmp(token->name,"identifier")){
-            if(isFunction(NULL, token->value)){
+            if(isFunction(data->list->last->rootPtr, token->value)){
                     //je to ID funkcie
                     //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
@@ -369,7 +369,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
 void fInit_value(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"identifier")){
-        if(isFunction(NULL, token->value)){
+        if(isFunction(data->list->last->rootPtr, token->value)){
                 //je to ID funkcie
                 //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
@@ -473,7 +473,7 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
             //Osetrenie, ci je token int, number, string alebo ID
         if(!strcmp(token->name,"identifier")){
                 //Osetrenie, aby ID bolo ID premennej a nie funkcie
-            if(isFunction(NULL, token->value)){
+            if(isFunction(data->list->last->rootPtr, token->value)){
                 printf("Error in state %d, fAssigns, ID of function in <assigns>\n", *state);
                 data->errorValue = 2;
                 checkError(data);
@@ -526,7 +526,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"identifier")){
             //TODO treba zistit ci je to identifikator funkcie alebo premennej, ak funkcie tak riesim (<arg>), ak premennej tak idem to <exp>
-        if(isFunction(NULL, token->value)){
+        if(isFunction(data->list->last->rootPtr, token->value)){
                 //TODO Zistit v symtable, ci je deklarovana, ak nie tak ERROR
                 //Nacitanie '('
             data->errorValue = read_token(token);
@@ -599,7 +599,7 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
 
             //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction(NULL, token->value) zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
         if(!strcmp(token->name,"identifier")){
-            if(!isFunction(NULL, token->value)){
+            if(!isFunction(data->list->last->rootPtr, token->value)){
                     //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
                 checkError(data);
@@ -692,7 +692,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
 
             //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction(NULL, token->value) zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
         if(!strcmp(token->name,"identifier")){
-            if(!isFunction(NULL, token->value)){
+            if(!isFunction(data->list->last->rootPtr, token->value)){
 
                     //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
@@ -744,7 +744,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         
             //Ak je nacitany token identifikator a je to ID funkcie, tak Error
         if(!strcmp(token->name,"identifier")){
-            if(isFunction(NULL, token->value)){
+            if(isFunction(data->list->last->rootPtr, token->value)){
                 printf("Error in state %d, fSt_list, ID of function in if statement as a condition\n", *state);
                 data->errorValue = 2;
                 checkError(data);
@@ -818,7 +818,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         
             //Ak je nacitany token identifikator a je to ID funkcie, tak Error
         if(!strcmp(token->name,"identifier")){
-            if(isFunction(NULL, token->value)){
+            if(isFunction(data->list->last->rootPtr, token->value)){
                 printf("Error in state %d, fSt_list, ID of function in while cycle as a condition\n", *state);
                 data->errorValue = 2;
                 checkError(data);
@@ -1209,7 +1209,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
 
         if(!strcmp(token->name,"identifier")){
-            if(isFunction(NULL, token->value)){
+            if(isFunction(data->list->last->rootPtr, token->value)){
                 printf("Error in state %d, fArg, ID of function in <arg>\n", *state);
                 data->errorValue = 2;
                 checkError(data);
@@ -1763,6 +1763,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
+
+            //deleteFirst(data->list);
                 //Zaver
             *state = prog_con;
 
