@@ -1,9 +1,12 @@
-
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
 #define LENGTH(a) (sizeof(a) / sizeof(*a)) // simple macro, counts length of an array
 
+/**
+ * @brief enum of types
+ * 
+ */
 enum TYPES
 {
     INTEGER = 0,
@@ -11,6 +14,10 @@ enum TYPES
     STRING = 2,
     NIL = 3
 };
+
+
+
+
 
 /**
  * @brief holds information about node that is variable
@@ -78,6 +85,9 @@ TNode *inner_dispose(TNode *rootPtr, int *error_occur);
 void inOrder(TNode *rootPtr);
 
 
+
+
+
 // symtable list structures
 
 /**
@@ -103,6 +113,9 @@ typedef struct tframe_list
     Tframe *first;
     Tframe *last;
 } Tframe_list;
+
+
+// user functions for frame list
 
 void initList(Tframe_list *l);
 int insertFirst(Tframe_list *l, bool fb, TNode *rootPtr);
