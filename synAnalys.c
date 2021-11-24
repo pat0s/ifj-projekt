@@ -1285,7 +1285,7 @@ void fRet_type(Token *token, enum STATE *state, Data_t *data){
     }
     else if(((!strcmp(token->name,"keyword") && (!strcmp(token->value,"global") || !strcmp(token->value,"function"))) || !strcmp(token->name,"identifier")) && *state == ret_type){
         //Znaci EPSILON prechod do <prog_con>, pravidlo 3., 4. a 5. 
-        free(data->funkcia->ret_types);
+        //free(data->funkcia->ret_types);
         data->funkcia->ret_types = NULL;
         data->funkcia->ret_length = 0;
 
@@ -1293,14 +1293,14 @@ void fRet_type(Token *token, enum STATE *state, Data_t *data){
     }
     else if(!strcmp(token->name,"-1") && *state == ret_type){
         //Znaci EPSILON prechod do <prog_con>, pravidlo 2. 
-        free(data->funkcia->ret_types);
+        //free(data->funkcia->ret_types);
         data->funkcia->ret_types = NULL;
         data->funkcia->ret_length = 0;
         
     }
     else if(*state == params_n && (!strcmp(token->name,"identifier") || (!strcmp(token->name,"keyword") && (!strcmp(token->value,"if") || !strcmp(token->value,"while") || !strcmp(token->value,"local") || !strcmp(token->value,"return") || !strcmp(token->value,"end"))))){
         //Znaci EPSILON prechod do <st-list>, pravidlo 4.
-        free(data->funkcia->ret_types);
+        //free(data->funkcia->ret_types);
         data->funkcia->ret_types = NULL;
         data->funkcia->ret_length = 0;
         
@@ -1395,7 +1395,6 @@ void fTypes(Token *token, enum STATE *state, Data_t *data){
                 //ocakavam <types>
             data->errorValue = read_token(token);
             checkError(data);
-
 
                 //Zanorenie do stavu fTypes, rekurzivne volanie sameho seba
                 //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)

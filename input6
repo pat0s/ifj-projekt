@@ -1,0 +1,6 @@
+require "ifj21"
+
+function foo ()
+ local tmp : integer = 10
+ local tmp2 : string
+end
