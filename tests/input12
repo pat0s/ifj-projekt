@@ -1,0 +1,17 @@
+require "ifj21"
+
+global foo : function() : integer, number, string, string
+
+function main()
+ local i : integer
+ local d : number
+ local s1 : string local s2:string
+
+ i,d,s1,s2 =foo()
+end
+
+function foo() : integer, number, string, string
+ return 10, 10.0, "string", "string/n"
+end
+
+main()

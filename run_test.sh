@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#//set -e
-
 EXECUTABLE=$1 
 if [ $2 == "yes" ]; then 
 	make
@@ -10,10 +8,10 @@ fi
 BASIC_TESTS="tests/input"
 IFJ_TESTS="tests/input_ifj"
 
-echo "------------ Basic testy ------------"
-echo "Vsetky by mali skoncit s chybovym kodom 1!"
+echo "------------ LEX testy ------------"
 echo ""
-lines=("%Ahoj" "&Ahoj" "89e" "89e+" "89-a" "8a9")
+lines=("%Ahoj" "&Ahoj" "89e" "89e+" "89e-" "8ea9")
+LEX_OK=("ahoj" "_cau" "AhoK_d" "ahoj_98" "98" "08.0" "98.0") 
 for each in "${lines[@]}"; do
 	echo "Vstup: $each"
 	echo $each |./$EXECUTABLE
@@ -24,11 +22,23 @@ for each in "${lines[@]}"; do
 		echo "vas chybovy kod: $?"
 	fi
 done
+for each in "${LEX_OK[@]}"; do
+	echo "Vstup: $each"
+	echo $each |./$EXECUTABLE
+	if [ $? -eq 2 ]; then
+		echo "Chybovy kod - OK"
+	else
+		echo "Chybovy kod - X"
+		echo "vas chybovy kod: $?"
+	fi
+done
 
+
+echo ""
 echo "------------ Basic testy ------------"
 echo "Vsetky by mali skoncit s chybovym kodom 0!"
 echo ""
-for i in `seq 1 10`; do
+for i in `seq 1 12`; do
 	./$EXECUTABLE < $BASIC_TESTS$i
 	if [ $? -eq 0 ]; then
 		echo "-- test c.$i - OK"
@@ -38,7 +48,8 @@ for i in `seq 1 10`; do
 	fi
 done
 
-echo "Testy zo zadania ifj projektu"
+echo ""
+echo "---------- Testy zo zadania ifj projektu ----------"
 echo "Vsetky by mali skoncit s chybovym kodom 0!"
 echo ""
 #for i in `seq 1 5`; do
