@@ -38,49 +38,49 @@ void checkError(Data_t *data){
 
         }
         else if(data->errorValue == 3){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error - definition/redefinition problem\n");
             free(data->token);
             free(data);
             exit(3);
 
         }
         else if(data->errorValue == 4){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error\n");
             free(data->token);
             free(data);
             exit(4);
 
         }
         else if(data->errorValue == 5){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error - bad number of data type, type incompatibility\n");
             free(data->token);
             free(data);
             exit(5);
 
         }
         else if(data->errorValue == 6){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error\n");
             free(data->token);
             free(data);
             exit(6);
 
         }
         else if(data->errorValue == 7){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Other semantic Error\n");
             free(data->token);
             free(data);
             exit(7);
 
         }
         else if(data->errorValue == 8){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Runtime Error - Unexpected nil value\n");
             free(data->token);
             free(data);
             exit(8);
 
         }
         else if(data->errorValue == 9){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Runtime Error - Dividing by zero\n");
             free(data->token);
             free(data);
             exit(9);
@@ -886,7 +886,8 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
-        if(search(data->list->first->rootPtr, token->value) != NULL){
+        TNode * element = search(data->list->first->rootPtr, token->value);
+        if(element != NULL){
             data->errorValue = 3;
             printf("Redefinicia premennej\n");
             checkError(data);
@@ -1572,8 +1573,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                         
                         funkcia->param_types = malloc(sizeof(int)*15);
                         if(funkcia->param_types == NULL){
-                            free(funkcia->ID);
-                            free(funkcia);
+                            //free(funkcia->ID);
+                            //free(funkcia);
                             data->funkcia = NULL;
                             data->errorValue = 99;
                             checkError(data);
@@ -1600,9 +1601,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
                         funkcia->ret_types = malloc(sizeof(int)*15);
                         if(funkcia->ret_types == NULL){
-                            free(funkcia->param_types);
-                            free(funkcia->ID);
-                            free(funkcia);
+                            //free(funkcia->param_types);
+                            //free(funkcia->ID);
+                            //free(funkcia);
                             data->funkcia = NULL;
                             data->errorValue = 99;
                             checkError(data);
@@ -1628,10 +1629,10 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
 
                         //Uvolnenie alokovanej premennej
-                        free(funkcia->ID);
-                        free(funkcia->param_types);
-                        free(funkcia->ret_types);
-                        free(funkcia);
+                        //free(funkcia->ID);
+                        //free(funkcia->param_types);
+                        //free(funkcia->ret_types);
+                        //free(funkcia);
                         data->funkcia = NULL;
 
 
@@ -1736,9 +1737,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             data->funkcia->ret_types = malloc(sizeof(int)*15);
             if(data->funkcia->ret_types == NULL){
-                free(data->funkcia->param_types);
-                free(data->funkcia->ID);
-                free(data->funkcia);
+                //free(data->funkcia->param_types);
+                //free(data->funkcia->ID);
+                //free(data->funkcia);
                 data->funkcia = NULL;
                 data->errorValue = 99;
                 checkError(data);
@@ -1800,6 +1801,14 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
     else if(!strcmp(token->name,"identifier")){
         //Nacitane: ID, pravidlo 5.
         //TODO zistit ci je funkcia aspon deklarovana
+
+
+        TNode * element = search(data->list->last->rootPtr, token->value);
+        if(element == NULL){
+            printf("\nERROR - volanie neexistujucej funkcie\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
 
             //Ocakavam '('
         data->errorValue = read_token(token);
