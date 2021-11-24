@@ -531,7 +531,7 @@ int read_token(Token *token)
         }
         else if (!strcmp(state, "p7"))
         {
-            if (symbol == '\n' || symbol == '\t' || symbol == '\"' || symbol == '\\')
+            if (symbol == 'n' || symbol == 't' || symbol == '\"' || symbol == '\\')
             {
                 if (!add_symbol(token, symbol))
                     return INTERNAL_ERROR;
