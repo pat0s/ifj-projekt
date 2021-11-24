@@ -108,10 +108,10 @@ void checkError(Data_t *data){
 int createInbuildFunctions(Data_t *data){
     Function_t funkcia;
         //pridavanie funkcie write() do tabulky symbolov
-    funkcia.ID = malloc(sizeof(char)*11);
+    funkcia.ID = malloc(sizeof(char)*10);
     if(funkcia.ID == NULL)
         return INTERNAL_ERROR;
-    memset(funkcia.ID, '\0', 11);
+    memset(funkcia.ID, '\0', 10);
     funkcia.ID = "write";    
     funkcia.param_types = NULL;
     funkcia.param_length = 0;
@@ -881,6 +881,16 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
+        if(search(data->list->first->rootPtr, token->value) != NULL){
+            data->errorValue = 3;
+            printf("Redefinicia premennej\n");
+            checkError(data);
+        }
+
+        Variable_t variable;
+        data->premenna = &variable;
+        data->premenna->ID = token->value;
+
             //TODO zistit ci sa dane ID vyskytuje v tomto frame v symtable, ak ano tak error, ak nie tak treba nasledne vlozit do symtable tuto premennu
 
             //Ocakavam ':'
@@ -898,10 +908,20 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
+        enum STATE helpState = *state;
+        *state = params;
         fType(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+        state = &helpState;
 
+
+            //insert do symtable
+        char pole[]="";
+        insert(&(data->list->first->rootPtr), createVarNode(data->premenna->ID, data->premenna->dataType, pole, &(data->errorValue)));
+        checkError(data);
+
+        data->premenna = NULL;
 
             //Ocakavam <init>
         data->errorValue = read_token(token);
@@ -1504,12 +1524,12 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             Function_t *funkcia = malloc(sizeof(Function_t));
             data->funkcia = funkcia;
-            funkcia->ID = malloc(sizeof(char)*strlen(token->value));
+            /*funkcia->ID = malloc(sizeof(char)*strlen(token->value));
             if(funkcia->ID == NULL){
                 data->errorValue = 99;
                 checkError(data);
             }
-            memset(funkcia->ID, '\0',strlen(token->value));
+            memset(funkcia->ID, '\0',strlen(token->value));*/
             funkcia->ID = token->value;
             //printf("token: %s\n", token->value);
             //printf("funkcia: %s\n", funkcia->ID);
@@ -1660,15 +1680,15 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
         Function_t funkcia;
         data->funkcia = &funkcia;
-        data->funkcia->ID = malloc(sizeof(char)*strlen(token->value));
+        /*data->funkcia->ID = malloc(sizeof(char)*strlen(token->value));
         if(data->funkcia->ID == NULL){
             data->errorValue = 99;
             checkError(data);
-        }
+        }*/
 
+        data->funkcia->ID = token->value;
 
-
-
+    
 
             //Ocakavam '('
         data->errorValue = read_token(token);
