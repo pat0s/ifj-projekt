@@ -9,7 +9,7 @@ local sda:integer = 10
 return 
 end
 
-function foo2(param:integer, automatika: string): integer, string, number
+function foo(param:integer, automatika: string): integer, string, number
 local foo2:integer = 10
 local params:integer = 10
 return

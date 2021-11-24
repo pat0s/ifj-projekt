@@ -1530,7 +1530,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //zistenie, ci sa dane ID uz vyskytuje v tabulke alebo nie
             if (search(data->list->last->rootPtr, token->value) != NULL){
                 data->errorValue = 3;
-                printf("rovnake meno funkcie\n");
+                printf("ERROR - Rovnake meno funkcie\n");
                 checkError(data);
             }
                 //nacitane: global ID
@@ -1681,10 +1681,12 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
         TNode * element = search(data->list->last->rootPtr, token->value);
         if (element != NULL){
             if(!(element->function)){
+                printf("ERROR - Existujuca ina premenna\n");
                 data->errorValue = 3;
                 checkError(data);
             }
             else if((element->func->defined)){
+                printf("ERROR - Funkcia je uz definovana\n");
                 data->errorValue = 3;
                 checkError(data);
             }
