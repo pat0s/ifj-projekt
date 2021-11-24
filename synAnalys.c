@@ -705,7 +705,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
     if(!strcmp(token->name,"(")){
         TNode * element = search(data->list->last->rootPtr, data->tokenValue);
         if(element == NULL){
-            printf("\nERROR - volanie neexistujucej funkcie\n");
+            printf("\nERROR - volanie neexistujucej funkcie1\n");
             data->errorValue = 3;
             checkError(data);
         }
@@ -1907,7 +1907,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
         TNode * element = search(data->list->last->rootPtr, token->value);
         if(element == NULL){
-            printf("\nERROR - volanie neexistujucej funkcie\n");
+            printf("\nERROR - volanie neexistujucej funkcie2\n");
             data->errorValue = 3;
             checkError(data);
         }
