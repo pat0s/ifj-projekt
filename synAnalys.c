@@ -38,49 +38,49 @@ void checkError(Data_t *data){
 
         }
         else if(data->errorValue == 3){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error - definition/redefinition problem\n");
             free(data->token);
             free(data);
             exit(3);
 
         }
         else if(data->errorValue == 4){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error\n");
             free(data->token);
             free(data);
             exit(4);
 
         }
         else if(data->errorValue == 5){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error - bad number of data type, type incompatibility\n");
             free(data->token);
             free(data);
             exit(5);
 
         }
         else if(data->errorValue == 6){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error\n");
             free(data->token);
             free(data);
             exit(6);
 
         }
         else if(data->errorValue == 7){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Other semantic Error\n");
             free(data->token);
             free(data);
             exit(7);
 
         }
         else if(data->errorValue == 8){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Runtime Error - Unexpected nil value\n");
             free(data->token);
             free(data);
             exit(8);
 
         }
         else if(data->errorValue == 9){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Runtime Error - Dividing by zero\n");
             free(data->token);
             free(data);
             exit(9);
@@ -594,6 +594,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
 void fItem_n(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,",")){
+
             //Ocakavam ID premennej
         data->errorValue = read_token(token);
         checkError(data);
@@ -601,6 +602,16 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
             //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction(NULL, token->value) zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
         if(!strcmp(token->name,"identifier")){
             if(!isFunction(data->list->last->rootPtr, token->value)){
+                printf("\ntoken->value: %s\n", token->value);
+                    //kontrola ci je token->value v symtable
+                TNode * element = searchFrames(data->list, token->value);
+                if(element == NULL){
+                    printf("\nERROR - volanie neexistujucej funkcie\n");
+                    data->errorValue = 3;
+                    checkError(data);
+                }
+                
+                
                     //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
                 checkError(data);
@@ -653,6 +664,13 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
 void fItem(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"(")){
+        TNode * element = search(data->list->last->rootPtr, data->tokenValue);
+        if(element == NULL){
+            printf("\nERROR - volanie neexistujucej funkcie\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
+
             //Ide argumnet funkcie, dany identifikator by mal patrit funkcii
 
             //TODO treba skontrolovat, ci je funkcia aspon deklarovana
@@ -671,6 +689,12 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //Teraz som nacital dalsi token, v ktorom ocakavam <st-list>, spravil som to preto tu, pretoze musim pocitat situaciu spojenu s pravidlo 16. kde priradzujem a musim rozpoznat EPSILON prechod
     }
     else if(!strcmp(token->name,"=")){
+        TNode * element = searchFrames(data->list, data->tokenValue);
+        if(element == NULL){
+            printf("\nERROR - volanie nedefinovanej premennej\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
             //Prikaz priradenia, dany identifikator by mal byt premenna
 
             //Ocakavam bud ID funkcie alebo <exp>(<exp> moze byt aj nazov premennej, treba zistit v symtable)
@@ -685,6 +709,12 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //Token so <st-list> som nacital vo fAssign()
     }
     else if(!strcmp(token->name,",")){
+        TNode * element = searchFrames(data->list, data->tokenValue);
+        if(element == NULL){
+            printf("\nERROR - volanie nedefinovanej premennej\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
             //prikaz priradenia, viacnasobne priradenie
 
             //ocakavam ID premennej
@@ -694,6 +724,13 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction(NULL, token->value) zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
         if(!strcmp(token->name,"identifier")){
             if(!isFunction(data->list->last->rootPtr, token->value)){
+                    //test ci je premenna v symtable
+                element = searchFrames(data->list, token->value);
+                if(element == NULL){
+                    printf("\nERROR - volanie nedefinovanej premennej\n");
+                    data->errorValue = 3;
+                    checkError(data);
+                }
 
                     //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
@@ -766,9 +803,13 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = read_token(token);
             checkError(data);
 
-            fSt_list(token, state, data);
-                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(data);
+            //if(!strcmp(token->name,"keyword") && strcmp(token->value,"else")){
+                fSt_list(token, state, data);
+                    //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                checkError(data);
+
+            //}            
+
 
                 //Teraz by sa v tokene mal nachadza 'else', otestujem to a pokracujem v behu
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else")){
@@ -882,7 +923,8 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
-        if(search(data->list->first->rootPtr, token->value) != NULL){
+        TNode * element = search(data->list->first->rootPtr, token->value);
+        if(element != NULL){
             data->errorValue = 3;
             printf("Redefinicia premennej\n");
             checkError(data);
@@ -956,6 +998,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
     }
     else if(!strcmp(token->name,"identifier")){
 
+        data->tokenValue = token->value;
             //Ocakavam <item>
         data->errorValue = read_token(token);
         checkError(data);
@@ -965,6 +1008,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         fItem(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+
+        data->tokenValue = NULL;
+
+        
 
             //Ak som mal ID funkcie, tak v tokene je ')', musim  teda nacitat za tejto podmienky dalsi token a prejst do <st-list>
         if(!strcmp(token->name,")")){
@@ -1049,7 +1096,7 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
 
                     //Vlozenie do symtable
                 insert(&(data->list->first->rootPtr), variable);
-                free(variable);
+                //free(variable);
 
 
 
@@ -1146,7 +1193,7 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
 
                 //Vlozenie do symtable
             insert(&(data->list->first->rootPtr), variable);
-            free(variable);
+            //free(variable);
 
 
                 //ocakavam argument <params_n>
@@ -1156,7 +1203,7 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
             fParams_n(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-            free(data->premenna);
+            data->premenna = NULL;
 
         }else{
             printf("Error in state %d, fParams\n", *state);
@@ -1447,7 +1494,7 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
      if(!strcmp(token->name,")")){
             //Nacitane: global ID : function ()
             //parameter funkcie je prazdny, nie je tam nic 
-            free(data->funkcia->param_types);
+            //free(data->funkcia->param_types);
             data->funkcia->param_types = NULL;
             data->funkcia->param_length = 0;
 
@@ -1526,7 +1573,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //zistenie, ci sa dane ID uz vyskytuje v tabulke alebo nie
             if (search(data->list->last->rootPtr, token->value) != NULL){
                 data->errorValue = 3;
-                printf("rovnake meno funkcie\n");
+                printf("ERROR - Rovnake meno funkcie\n");
                 checkError(data);
             }
                 //nacitane: global ID
@@ -1568,8 +1615,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                         
                         funkcia->param_types = malloc(sizeof(int)*15);
                         if(funkcia->param_types == NULL){
-                            free(funkcia->ID);
-                            free(funkcia);
+                            //free(funkcia->ID);
+                            //free(funkcia);
                             data->funkcia = NULL;
                             data->errorValue = 99;
                             checkError(data);
@@ -1596,9 +1643,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
                         funkcia->ret_types = malloc(sizeof(int)*15);
                         if(funkcia->ret_types == NULL){
-                            free(funkcia->param_types);
-                            free(funkcia->ID);
-                            free(funkcia);
+                            //free(funkcia->param_types);
+                            //free(funkcia->ID);
+                            //free(funkcia);
                             data->funkcia = NULL;
                             data->errorValue = 99;
                             checkError(data);
@@ -1624,10 +1671,10 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
 
                         //Uvolnenie alokovanej premennej
-                        free(funkcia->ID);
-                        free(funkcia->param_types);
-                        free(funkcia->ret_types);
-                        free(funkcia);
+                        //free(funkcia->ID);
+                        //free(funkcia->param_types);
+                        //free(funkcia->ret_types);
+                        //free(funkcia);
                         data->funkcia = NULL;
 
 
@@ -1677,18 +1724,20 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
         TNode * element = search(data->list->last->rootPtr, token->value);
         if (element != NULL){
             if(!(element->function)){
+                printf("ERROR - Existujuca ina premenna\n");
                 data->errorValue = 3;
                 checkError(data);
             }
             else if((element->func->defined)){
+                printf("ERROR - Funkcia je uz definovana\n");
                 data->errorValue = 3;
                 checkError(data);
             }
         }
 
 
-        Function_t funkcia;
-        data->funkcia = &funkcia;
+        Function_t *funkcia = malloc(sizeof(Function_t));
+        data->funkcia = funkcia;
         /*data->funkcia->ID = malloc(sizeof(char)*strlen(token->value));
         if(data->funkcia->ID == NULL){
             data->errorValue = 99;
@@ -1730,9 +1779,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             data->funkcia->ret_types = malloc(sizeof(int)*15);
             if(data->funkcia->ret_types == NULL){
-                free(data->funkcia->param_types);
-                free(data->funkcia->ID);
-                free(data->funkcia);
+                //free(data->funkcia->param_types);
+                //free(data->funkcia->ID);
+                //free(data->funkcia);
                 data->funkcia = NULL;
                 data->errorValue = 99;
                 checkError(data);
@@ -1772,8 +1821,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
-
-            //deleteFirst(data->list);
+            
+            deleteFirst(data->list);
                 //Zaver
             *state = prog_con;
 
@@ -1794,6 +1843,14 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
     else if(!strcmp(token->name,"identifier")){
         //Nacitane: ID, pravidlo 5.
         //TODO zistit ci je funkcia aspon deklarovana
+
+
+        TNode * element = search(data->list->last->rootPtr, token->value);
+        if(element == NULL){
+            printf("\nERROR - volanie neexistujucej funkcie\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
 
             //Ocakavam '('
         data->errorValue = read_token(token);
@@ -1942,14 +1999,24 @@ int main(){
     data->errorValue = 0;
     data->isError = false;  
 
-    Tframe_list *frames = malloc(sizeof(Tframe_list));
+    Tframe_list *frames = (Tframe_list*)malloc(sizeof(Tframe_list));
     initList(frames);
     TNode *rootPtr = NULL;
     insertFirst(frames, true, rootPtr);
 
     data->list = frames;
 
+    //insertFirst(frames, true, rootPtr);
+    //deleteFirst(data->list);
 
+
+
+
+
+
+
+
+    
         //Idem vytvarat a vkladat vestavene funkce
     data->errorValue = createInbuildFunctions(data);
     checkError(data);

@@ -1,6 +1,6 @@
 require "ifj21"
 
-function foo ()
- local tmp : integer = 10
- local tmp2 : string
+function foo (autobus: integer)
+ local tmp : integer = autobus
+ local tmp2 : string = tmp
 end

@@ -1,8 +1,10 @@
 require "ifj21"
 
 function foo (a : string)
- if 6 > 5 then
-  write("Dlzka retazca je vacsia ako 5 znakov")
-  else
-  end
+ if #a > 5 then
+  local sdfasdfasdfasdf:integer  
+  --write("Dlzka retazca je vacsia ako 5 znakov\n")
+ else
+ local sdfasdf:integer 
+ end--write("Prilis kratky retazec\n")end
 end
