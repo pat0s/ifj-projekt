@@ -297,7 +297,10 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ){
         if(!strcmp(token->name,"identifier")){
+            
+                //TODO tu to padalo na segmentation fault ak funkcia neexistovala -> preslo to do fexp a padlo
             if(isFunction(data->list->last->rootPtr, token->value)){
+                                  
                     //je to ID funkcie
                     //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
@@ -323,6 +326,13 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
             else{
+                TNode * element = searchFrames(data->list, token->value);
+                if(element == NULL){
+                    printf("\nERROR - volanie neexistujuceho identifikatoru\n");
+                    data->errorValue = 3;
+                    checkError(data);
+                }
+                
                     //Token je ID premennej
                     //TODO treba zistit zo symtable, ci je ID premenna inicializovana
                     //je to ID premennej, idem do <exp> fExp

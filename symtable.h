@@ -65,7 +65,7 @@ int insert(TNode **rootPtr, TNode *newNode);
 int dispose(TNode **rootPtr);
 TNode *search(TNode *rootPtr, char *k);
 bool isFunction(TNode *rootPtr, char *k);
-
+TNode *deleteNode(TNode *rootPtr);
 // other functions for symtable
 
 TNode *inner_insert(TNode *rootPtr, char *k, TNode *d, int *error_occur);
