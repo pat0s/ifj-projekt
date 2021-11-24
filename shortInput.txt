@@ -1,5 +1,6 @@
 require "ifj21" 
-global writnee : function(string) : integer
+global sdfasdf(integer):string
 
-
-
+function bar(param : string, kara: integer):integer, string
+return
+end

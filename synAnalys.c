@@ -26,6 +26,12 @@ void checkError(Data_t *data){
         if(data->errorValue == 1){
             fprintf(stderr, "Lexical analysis Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(1);
 
@@ -33,6 +39,12 @@ void checkError(Data_t *data){
         else if(data->errorValue == 2){
             fprintf(stderr, "Syntax Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(2);
 
@@ -40,6 +52,12 @@ void checkError(Data_t *data){
         else if(data->errorValue == 3){
             fprintf(stderr, "Syntax Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(3);
 
@@ -47,6 +65,12 @@ void checkError(Data_t *data){
         else if(data->errorValue == 4){
             fprintf(stderr, "Syntax Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(4);
 
@@ -54,6 +78,12 @@ void checkError(Data_t *data){
         else if(data->errorValue == 5){
             fprintf(stderr, "Syntax Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(5);
 
@@ -61,6 +91,12 @@ void checkError(Data_t *data){
         else if(data->errorValue == 6){
             fprintf(stderr, "Syntax Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(6);
 
@@ -68,6 +104,12 @@ void checkError(Data_t *data){
         else if(data->errorValue == 7){
             fprintf(stderr, "Syntax Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(7);
 
@@ -75,6 +117,12 @@ void checkError(Data_t *data){
         else if(data->errorValue == 8){
             fprintf(stderr, "Syntax Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(8);
 
@@ -82,6 +130,12 @@ void checkError(Data_t *data){
         else if(data->errorValue == 9){
             fprintf(stderr, "Syntax Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(9);
 
@@ -89,6 +143,12 @@ void checkError(Data_t *data){
         else if (data->errorValue == 99){
             fprintf(stderr, "Internal Error\n");
             free(data->token);
+            if(data->funkcia != NULL){
+                free(data->funkcia);
+            }
+            if(data->premenna != NULL){
+                free(data->premenna);
+            }
             free(data);
             exit(99);
 
@@ -108,19 +168,21 @@ void checkError(Data_t *data){
 int createInbuildFunctions(Data_t *data){
     Function_t funkcia;
         //pridavanie funkcie write() do tabulky symbolov
-    funkcia.ID = malloc(sizeof(char)*11);
+    funkcia.ID = malloc(sizeof(char)*10);
     if(funkcia.ID == NULL)
         return INTERNAL_ERROR;
-    memset(funkcia.ID, '\0', 11);
+    memset(funkcia.ID, '\0', 10);
     funkcia.ID = "write";    
     funkcia.param_types = NULL;
     funkcia.param_length = 0;
     funkcia.ret_types = NULL;
     funkcia.ret_length = 0;
     TNode *newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    printf("%s\n",newLeaf->ID);
     insert(&(data->list->first->rootPtr), newLeaf);
 
         //pridanie funkcie tointeger(n: number): integer
+    
     funkcia.ID = "tointeger";
     funkcia.param_types = malloc(sizeof(int));
     if(funkcia.param_types == NULL)
@@ -133,6 +195,7 @@ int createInbuildFunctions(Data_t *data){
     funkcia.ret_types[0] = 0;
     funkcia.ret_length = 1;
     newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    printf("%s\n",newLeaf->ID);
     insert(&(data->list->first->rootPtr), newLeaf);
     
         //pridanie funkcie substr(s:string, i:number, : number): string
@@ -152,6 +215,7 @@ int createInbuildFunctions(Data_t *data){
     funkcia.ret_types[0] = 2;
     funkcia.ret_length = 1;
     newLeaf = createFuncNode(funkcia.ID, true, funkcia.param_types, funkcia.param_length, funkcia.ret_types, funkcia.ret_length, &(data->errorValue));
+    printf("%s\n",newLeaf->ID);
     insert(&(data->list->first->rootPtr), newLeaf);
 
 
@@ -881,7 +945,20 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
-            //TODO zistit ci sa dane ID vyskytuje v tomto frame v symtable, ak ano tak error, ak nie tak treba nasledne vlozit do symtable tuto premennu
+        if(searchFrames(data->list, token->value) != NULL){
+            printf("Double variable refference\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
+        
+
+        printf("token ID: %s\n", token->value);
+        
+        char pole[] = "";
+        TNode *variable =  createVarNode(token->value, 0, pole, &(data->errorValue));
+        checkError(data);
+            
+        printf("1.variable ID: %s\n", variable->ID);
 
             //Ocakavam ':'
         data->errorValue = read_token(token);
@@ -897,10 +974,27 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //Ocakavam <type>
         data->errorValue = read_token(token);
         checkError(data);
+        
 
+        data->leaf = variable;
+
+        enum STATE stateHelp = *state;
+        *state = local;
         fType(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+        state = &stateHelp;
+
+            //vlozenie do symtable
+        
+        
+        //insert(&(data->list->first->rootPtr), data->leaf);
+
+            //uvolnenie alokovanych zdrojov
+        free(variable->var);
+        free(variable);
+        data->leaf = NULL;
+        
 
 
             //Ocakavam <init>
@@ -989,11 +1083,12 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
                 data->errorValue = 3;
                 checkError(data);
             }
-
+                printf("token value: %s\n", token->value);
             //search ci sa nenachadza v symtable
             char pole[] = "";
             TNode *variable = createVarNode(token->value, 0, pole, &(data->errorValue));
             checkError(data);
+                printf("variable: %s\n", variable->ID);
 
             //Ocakavam ':'
             data->errorValue = read_token(token);
@@ -1019,6 +1114,7 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
 
                     //Vlozenie do symtable
                 insert(&(data->list->first->rootPtr), variable);
+                free(variable->var);
                 free(variable);
 
 
@@ -1065,6 +1161,7 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,")")){
         //Narazil som na EPSILON prechod
+        free(data->funkcia->param_types);
         data->funkcia->param_types = NULL;
         data->funkcia->param_length = 0;
 
@@ -1082,15 +1179,13 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
+
+        printf("token value: %s\n", token->value);
         TNode *variable = createVarNode(token->value, 0, pole, &(data->errorValue));
         checkError(data);
+        printf("variable: %s\n", variable->ID);
 
-        data->funkcia->param_types = malloc(sizeof(int)*15);
-        if(data->funkcia->param_types == NULL){
-            data->errorValue = 99;
-            checkError(data);
-        }
-        data->funkcia->param_length = 0;
+        
         
 
             //ocakavam argument ':'
@@ -1116,6 +1211,7 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
 
                 //Vlozenie do symtable
             insert(&(data->list->first->rootPtr), variable);
+            free(variable->var);
             free(variable);
 
 
@@ -1321,6 +1417,14 @@ void fType(Token *token, enum STATE *state, Data_t *data){
                 else if (!strcmp(token->value,"string"))
                     data->premenna->dataType = 2;
 
+            }else if(*state == local){
+                if(!strcmp(token->value,"integer"))
+                    data->leaf->var->data_type = 0;
+                else if (!strcmp(token->value,"number"))
+                    data->leaf->var->data_type = 1;
+                else if (!strcmp(token->value,"string"))
+                    data->leaf->var->data_type = 2;
+
             }
     }
     else{
@@ -1504,12 +1608,13 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             Function_t *funkcia = malloc(sizeof(Function_t));
             data->funkcia = funkcia;
-            funkcia->ID = malloc(sizeof(char)*strlen(token->value));
+            /*funkcia->ID = malloc(sizeof(char)*(strlen(token->value)+1));
             if(funkcia->ID == NULL){
                 data->errorValue = 99;
                 checkError(data);
             }
-            memset(funkcia->ID, '\0',strlen(token->value));
+            memset(funkcia->ID, '\0',strlen(token->value));*/
+
             funkcia->ID = token->value;
             //printf("token: %s\n", token->value);
             //printf("funkcia: %s\n", funkcia->ID);
@@ -1587,7 +1692,11 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
                         //Tu by mala byt data->funkcia naplnena vsetkym co potrebujem pre vytvorenie FunNode
                         //Vytvaranie FunNode
+                        
+                        printf("before: %s\n", data->funkcia->ID);
                         TNode * newLeaf = createFuncNode(data->funkcia->ID, false, data->funkcia->param_types, data->funkcia->param_length, data->funkcia->ret_types, data->funkcia->ret_length, &(data->errorValue));
+                        printf("after: %s\n", newLeaf->ID);
+                        
                         insert(&(data->list->first->rootPtr), newLeaf);
                         
                         
@@ -1660,12 +1769,13 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
         Function_t funkcia;
         data->funkcia = &funkcia;
-        data->funkcia->ID = malloc(sizeof(char)*strlen(token->value));
+        /*data->funkcia->ID = malloc(sizeof(char)*strlen(token->value));
         if(data->funkcia->ID == NULL){
             data->errorValue = 99;
             checkError(data);
         }
 
+        memset(data->funkcia->ID, '\0', strlen(token->value));*/
 
 
 
@@ -1685,6 +1795,13 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //Ocakavam <params>
             data->errorValue = read_token(token);
             checkError(data);
+
+            data->funkcia->param_types = malloc(sizeof(int)*15);
+            if(data->funkcia->param_types == NULL){
+                data->errorValue = 99;
+                checkError(data);
+            }
+            data->funkcia->param_length = 0;
 
             fParams(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -1731,8 +1848,13 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             }
 
 
-
-            //Vkladanie Function_t do symtable
+            //uvolnenie vsetkeho
+            
+            free(leaf);
+            free(data->funkcia->param_types);
+            free(data->funkcia->ID);
+            free(data->funkcia->ret_types);
+            data->funkcia = NULL;
 
 
                 //ZOZNAM RETURN TYPOV

@@ -1,0 +1,10 @@
+require "ifj21"
+
+global foo : function(string) : string
+
+function foo (param:string, pasdf: string):string
+return
+end
+
+function foo2(params:string)
+end

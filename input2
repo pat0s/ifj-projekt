@@ -1,0 +1,9 @@
+require "ifj21"
+
+global foo : function(string) : string
+
+function foo (param:string, pasdf: string):string
+local atram: integer = 4
+local atram:integer
+return
+end
