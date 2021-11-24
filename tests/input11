@@ -1,6 +1,6 @@
 require "ifj21"
 
-global foo : function(integer, string, number. number)
+global foo : function(integer, string, number, number)
 
 function main()
  foo(10, "cau", 45.0, 40E-2)

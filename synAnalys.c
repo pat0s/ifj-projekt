@@ -1049,7 +1049,7 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
 
                     //Vlozenie do symtable
                 insert(&(data->list->first->rootPtr), variable);
-                free(variable);
+                //free(variable);
 
 
 
@@ -1146,7 +1146,7 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
 
                 //Vlozenie do symtable
             insert(&(data->list->first->rootPtr), variable);
-            free(variable);
+            //free(variable);
 
 
                 //ocakavam argument <params_n>
