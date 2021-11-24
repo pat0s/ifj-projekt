@@ -15,10 +15,6 @@ enum TYPES
     NIL = 3
 };
 
-
-
-
-
 /**
  * @brief holds information about node that is variable
  * , var data_type: data_type of a variable
@@ -83,7 +79,6 @@ TNode *inner_dispose(TNode *rootPtr, int *error_occur);
 // testing functions for symtable
 
 void inOrder(TNode *rootPtr);
-
 
 
 
