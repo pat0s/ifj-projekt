@@ -886,7 +886,8 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
-        if(search(data->list->first->rootPtr, token->value) != NULL){
+        TNode * element = search(data->list->first->rootPtr, token->value);
+        if(element != NULL){
             data->errorValue = 3;
             printf("Redefinicia premennej\n");
             checkError(data);
@@ -1572,8 +1573,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                         
                         funkcia->param_types = malloc(sizeof(int)*15);
                         if(funkcia->param_types == NULL){
-                            free(funkcia->ID);
-                            free(funkcia);
+                            //free(funkcia->ID);
+                            //free(funkcia);
                             data->funkcia = NULL;
                             data->errorValue = 99;
                             checkError(data);
@@ -1600,9 +1601,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
                         funkcia->ret_types = malloc(sizeof(int)*15);
                         if(funkcia->ret_types == NULL){
-                            free(funkcia->param_types);
-                            free(funkcia->ID);
-                            free(funkcia);
+                            //free(funkcia->param_types);
+                            //free(funkcia->ID);
+                            //free(funkcia);
                             data->funkcia = NULL;
                             data->errorValue = 99;
                             checkError(data);
@@ -1628,10 +1629,10 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
 
                         //Uvolnenie alokovanej premennej
-                        free(funkcia->ID);
-                        free(funkcia->param_types);
-                        free(funkcia->ret_types);
-                        free(funkcia);
+                        //free(funkcia->ID);
+                        //free(funkcia->param_types);
+                        //free(funkcia->ret_types);
+                        //free(funkcia);
                         data->funkcia = NULL;
 
 
@@ -1736,9 +1737,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             data->funkcia->ret_types = malloc(sizeof(int)*15);
             if(data->funkcia->ret_types == NULL){
-                free(data->funkcia->param_types);
-                free(data->funkcia->ID);
-                free(data->funkcia);
+                //free(data->funkcia->param_types);
+                //free(data->funkcia->ID);
+                //free(data->funkcia);
                 data->funkcia = NULL;
                 data->errorValue = 99;
                 checkError(data);
@@ -1801,7 +1802,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
         //Nacitane: ID, pravidlo 5.
         //TODO zistit ci je funkcia aspon deklarovana
 
-        if(search(data->list->last->rootPtr, token->name) == NULL){
+
+        TNode * element = search(data->list->last->rootPtr, token->value);
+        if(element == NULL){
             printf("\nERROR - volanie neexistujucej funkcie\n");
             data->errorValue = 3;
             checkError(data);
