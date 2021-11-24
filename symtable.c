@@ -335,23 +335,21 @@ TNode *bvsDelete(TNode *rootPtr, char *k)
     }
 }
 
-/**
- * @brief deletes a node
- * 
- * @param rootPtr root of a symtable
- * @param k ID of a node
- * @return TNode* 
- */
-TNode *deleteNode(TNode *rootPtr, char *k){
+
+TNode *deleteNode(TNode *rootPtr){
     if(rootPtr == NULL){
         return;
     }
-
-    deleteNode(rootPtr->lPtr, k);
-    deleteNode(rootPtr->rPtr, k);
-    free(rootPtr);
-    rootPtr = NULL;
-
+    else{
+        if(rootPtr->lPtr != NULL){
+           deleteNode(rootPtr->lPtr);
+        }
+        if(rootPtr->rPtr != NULL){
+            deleteNode(rootPtr->rPtr);
+        }
+        free(rootPtr);
+        rootPtr = NULL;
+   }
 }
 
 /**
@@ -365,7 +363,7 @@ TNode *inner_dispose(TNode *rootPtr, int *error_occur)
 {
     //while (rootPtr != NULL)
     //{
-        rootPtr = deleteNode(rootPtr, rootPtr->ID);
+        rootPtr = deleteNode(rootPtr);
     //}
     *error_occur = 0;
     return rootPtr;
@@ -381,7 +379,7 @@ int dispose(TNode **rootPtr)
 {
     
     int error_occur = INTERNAL_ERROR; 
-    *rootPtr = inner_dispose(*rootPtr, &error_occur);
+    *rootPtr = deleteNode(*rootPtr);
     return error_occur;
 }
 
