@@ -551,7 +551,6 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-
                 //nemusim nacitavat dalsi token, lebo mi to precedencna analyza vrati v ukazatali a premennej 'token'
                 //precedencna analyza sa musi zastavit v momente, kedy narazi na ',' alebo EPSILON PRECHOD, v tomto pripade <st-list>
                 //Az vo funkcii fAssings() zistim, ci sa jednalo o EPSILON prechod alebo o ',' a teda dalsie hodnoty do priradenia
@@ -562,9 +561,11 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
     }
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
 
+            //printf("\n\ntoken pred fExp: %s\n\n\n", token->value);
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+            //printf("\n\ntoken po fExp: %s\n\n\n", token->value);
 
             //nemusim nacitavat dalsi token, lebo mi to precedencna analyza vrati v ukazatali a premennej 'token'
             //precedencna analyza sa musi zastavit v momente, kedy narazi na ',' alebo EPSILON PRECHOD, v tomto pripade <st-list>
@@ -676,7 +677,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //TODO zistit v symtable
         data->errorValue = read_token(token);
         checkError(data);
-
+        //printf("\n\nin ITEM\n\n");
         fAssign(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
@@ -869,7 +870,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         }
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"local")){
-
+        //printf("\nHERE in local\n\n");
             //Ocakavam ID
         data->errorValue = read_token(token);
         checkError(data);
@@ -934,6 +935,8 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
             //Nacitanie som spravil v fInit() v epsilon prechode alebo vo <init-value>
 
+        //printf("\n\n\ntoken: %s\n\n\n\n", token->value);
+
         *state = st_list;
         fSt_list(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -957,6 +960,8 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
+       // printf("token: %s\n", token->value);
+
         fItem(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
@@ -968,6 +973,11 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
+       // printf("\n\ntoken identif: %s\n\n\n", token->value);
+    //docasne
+        //data->errorValue = read_token(token);
+        //checkError(data);
+    //docasne
             //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
             //Token som nacital preto dopredu, lebo pri pravidle 16. musim rozpoznat EPSILON prechod a to tak, ze tam nacitam token, vynorim sa az sem a v 
             //dalsom zanoreni skontrolujem ci je tancitany token <st-list>
