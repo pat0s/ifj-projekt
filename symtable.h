@@ -114,7 +114,6 @@ typedef struct tframe_list
     Tframe *last;
 } Tframe_list;
 
-
 // user functions for frame list
 
 void initList(Tframe_list *l);
