@@ -7,13 +7,12 @@ all: $(EXECUTABLE)
 
 $(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stack.o
 	gcc $(CFLAGS) $^ -o $@
-	 
-
 
 %.o: %.c
 	gcc $(CFLAGS) -c $^ -o $@
 
-
+test: clean
+	./run_test.sh IFJ21 yes
 
 clean:
 	rm $(EXECUTABLE) *.o
