@@ -6,6 +6,9 @@ global foo2:function()
 function foo (param:string):string
 local sa:integer = 10
 local sda:integer = 10
+local ahojky :integer = sda
+foo2("dsfasd")
+sa,sda, ahojky,sda,sa= 10
 return 
 end
 
@@ -15,7 +18,7 @@ local params:integer = 10
 return
 end
 
-foo(100)
+foo(100, 100, 200)
 
 function fsd(param:integer):integer
 return
