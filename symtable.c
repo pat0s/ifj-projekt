@@ -343,6 +343,19 @@ TNode *bvsDelete(TNode *rootPtr, char *k)
     }
 }
 
+
+TNode *deleteNode(TNode *rootPtr, char *k){
+    if(rootPtr == NULL){
+        return;
+    }
+
+    deleteNode(rootPtr->lPtr, k);
+    deleteNode(rootPtr->rPtr, k);
+    free(rootPtr);
+    rootPtr = NULL;
+
+}
+
 /**
  * @brief deletes/disposes whole BTS, calls bvsDelete function
  * 
@@ -352,10 +365,10 @@ TNode *bvsDelete(TNode *rootPtr, char *k)
  */
 TNode *inner_dispose(TNode *rootPtr, int *error_occur)
 {
-    while (rootPtr != NULL)
-    {
-        rootPtr = bvsDelete(rootPtr, rootPtr->ID);
-    }
+    //while (rootPtr != NULL)
+    //{
+        rootPtr = deleteNode(rootPtr, rootPtr->ID);
+    //}
     *error_occur = 0;
     return rootPtr;
 }
@@ -368,6 +381,7 @@ TNode *inner_dispose(TNode *rootPtr, int *error_occur)
  */
 int dispose(TNode **rootPtr)
 {
+    
     int error_occur = INTERNAL_ERROR; 
     *rootPtr = inner_dispose(*rootPtr, &error_occur);
     return error_occur;
@@ -496,7 +510,9 @@ TNode *searchFrames(Tframe_list *l, char *k)
 void deleteFirst(Tframe_list *frames)
 {   
     Tframe *tmp = frames->first;
-    dispose(&(frames->first->rootPtr));
+    int error = 0;
+    error=dispose(&(frames->first->rootPtr));
+    
     if (frames->first == frames->last)
     {
         free(frames->last);

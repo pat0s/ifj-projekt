@@ -37,16 +37,17 @@ Vsetky by mali skoncit s chybovym kodom 0!
 -- test c.5 - OK
 -- test c.6 - OK
 -- test c.7 - OK
--- test c.8 - X (SIGSEGV)
--- test c.9 - X (SIGSEGV)
--- test c.10 - X (SIGSEGV)
--- test c.11 - X
-ocakavany vystup: 0, vas vystup: 1
+-- test c.8 - OK
+-- test c.9 - X
+ocakavany vystup: 0, vas vystup: 2
+-- test c.10 - OK
+-- test c.11 - OK
 -- test c.12 - OK
 
 ---------- Testy zo zadania ifj projektu ----------
 Vsetky by mali skoncit s chybovym kodom 0!
 
--- test c.1 - X (SIGSEGV)
--- test c.2 - X (SIGSEGV)
--- test c.3 - X (SIGSEGV)
+-- test c.1 - OK
+-- test c.2 - OK
+-- test c.3 - X
+ocakavany vystup: 0, vas vystup: 6

@@ -1,0 +1,13 @@
+require "ifj21"
+
+global foo : function(integer, string, number, number)
+
+function main()
+ foo(10, "cau", 45.0, 40E-2)
+end
+
+function foo(a : integer, b : string, c : number, d : number)
+ a, b, c, d = 10, "ahoj".." ako sa mas", d, c
+end
+
+main()

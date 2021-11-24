@@ -766,9 +766,13 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = read_token(token);
             checkError(data);
 
-            fSt_list(token, state, data);
-                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-            checkError(data);
+            //if(!strcmp(token->name,"keyword") && strcmp(token->value,"else")){
+                fSt_list(token, state, data);
+                    //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+                checkError(data);
+
+            //}            
+
 
                 //Teraz by sa v tokene mal nachadza 'else', otestujem to a pokracujem v behu
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else")){
@@ -1156,7 +1160,7 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
             fParams_n(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
-            free(data->premenna);
+            data->premenna = NULL;
 
         }else{
             printf("Error in state %d, fParams\n", *state);
@@ -1447,7 +1451,7 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
      if(!strcmp(token->name,")")){
             //Nacitane: global ID : function ()
             //parameter funkcie je prazdny, nie je tam nic 
-            free(data->funkcia->param_types);
+            //free(data->funkcia->param_types);
             data->funkcia->param_types = NULL;
             data->funkcia->param_length = 0;
 
@@ -1687,8 +1691,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
         }
 
 
-        Function_t funkcia;
-        data->funkcia = &funkcia;
+        Function_t *funkcia = malloc(sizeof(Function_t));
+        data->funkcia = funkcia;
         /*data->funkcia->ID = malloc(sizeof(char)*strlen(token->value));
         if(data->funkcia->ID == NULL){
             data->errorValue = 99;
@@ -1772,8 +1776,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
-
-            //deleteFirst(data->list);
+            
+            deleteFirst(data->list);
                 //Zaver
             *state = prog_con;
 
@@ -1942,14 +1946,24 @@ int main(){
     data->errorValue = 0;
     data->isError = false;  
 
-    Tframe_list *frames = malloc(sizeof(Tframe_list));
+    Tframe_list *frames = (Tframe_list*)malloc(sizeof(Tframe_list));
     initList(frames);
     TNode *rootPtr = NULL;
     insertFirst(frames, true, rootPtr);
 
     data->list = frames;
 
+    //insertFirst(frames, true, rootPtr);
+    //deleteFirst(data->list);
 
+
+
+
+
+
+
+
+    
         //Idem vytvarat a vkladat vestavene funkce
     data->errorValue = createInbuildFunctions(data);
     checkError(data);

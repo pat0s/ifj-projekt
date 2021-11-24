@@ -120,15 +120,18 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
         else{
             type=token->name;
             if(!strcmp(token->value,"0")||!strcmp(token->value,"0.0")){
-                if(!strcmp(top(s),"/")||!strcmp(top(s),"//")){
-                    //chyba deleni nulou;
-                    //while(frames!=NULL){
-                       // deleteFirst(frames);
-                    //}                  
-                    printf("Deleni 0\n");
-                    free(token);
-                    free(data);
-                    exit(9);
+                if (!is_empty(s)){
+
+                    if(!strcmp(top(s),"/")||!strcmp(top(s),"//")){
+                        //chyba deleni nulou;
+                        //while(frames!=NULL){
+                           // deleteFirst(frames);
+                        //}                  
+                        printf("ERROR - Deleni 0\n");
+                        free(token);
+                        free(data);
+                        exit(9);
+                    }
                 }
             }
         }
@@ -399,7 +402,7 @@ void *exp_analysator(Data_t *data){
                     }
                 }
                 else{
-                    printf("Chyba syntaktickeho analyzatoru zdola nahoru\n");
+                    printf("ERROR - Chyba syntaktickeho analyzatoru zdola nahoru\n");
                     destroy(s);
                     /*while(frames!=NULL){
                         deleteFirst(frames); 

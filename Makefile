@@ -11,7 +11,7 @@ $(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stac
 %.o: %.c
 	gcc $(CFLAGS) -c $^ -o $@
 
-test: clean
+test: 
 	./run_test.sh IFJ21 yes
 
 clean:
