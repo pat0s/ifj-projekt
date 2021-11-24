@@ -1,12 +1,28 @@
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
-#define LENGTH(a) (sizeof(a) / sizeof(*a)) // simple macro, counts length of an array
-
 /**
- * @brief enum of types
+ * @file symtable.h
+ * @author Ivo Procázka
+ * @brief 
+ * @version 0.1
+ * @date 2021-11-24
+ * 
+ * @copyright Copyright (c) 2021
  * 
  */
+
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "error.h"
+
+#define LENGTH(a) (sizeof(a) / sizeof(*a)) // simple macro, counts length of an array
+
+// enum of types
+
 enum TYPES
 {
     INTEGER = 0,
@@ -14,6 +30,8 @@ enum TYPES
     STRING = 2,
     NIL = 3
 };
+
+// symtable structures
 
 /**
  * @brief holds information about node that is variable
@@ -60,30 +78,7 @@ typedef struct tnode
     struct tnode *rPtr;
 } TNode;
 
-// user functions for symtable
-
-TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_occur);
-TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_length, int *given_rt, int rt_length, int *error_occur);
-int insert(TNode **rootPtr, TNode *newNode);
-int dispose(TNode **rootPtr);
-TNode *search(TNode *rootPtr, char *k);
-bool isFunction(TNode *rootPtr, char *k);
-
-// other functions for symtable
-
-TNode *inner_insert(TNode *rootPtr, char *k, TNode *d, int *error_occur);
-TNode *bvsMin(TNode *rootPtr);
-TNode *bvsDelete(TNode *rootPtr, char *k);
-TNode *inner_dispose(TNode *rootPtr, int *error_occur);
-
-// testing functions for symtable
-
-void inOrder(TNode *rootPtr);
-
-
-
-
-// symtable list structures
+// frame list structures
 
 /**
  * @brief list of symtables
@@ -108,6 +103,27 @@ typedef struct tframe_list
     Tframe *first;
     Tframe *last;
 } Tframe_list;
+
+// user functions for symtable
+
+TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_occur);
+TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_length, int *given_rt, int rt_length, int *error_occur);
+int insert(TNode **rootPtr, TNode *newNode);
+int dispose(TNode **rootPtr);
+TNode *search(TNode *rootPtr, char *k);
+bool isFunction(TNode *rootPtr, char *k);
+
+// other functions for symtable
+
+TNode *inner_insert(TNode *rootPtr, char *k, TNode *d, int *error_occur);
+TNode *bvsMin(TNode *rootPtr);
+TNode *bvsDelete(TNode *rootPtr, char *k);
+TNode *inner_dispose(TNode *rootPtr, int *error_occur);
+TNode *deleteNode(TNode *rootPtr, char *k);
+
+// testing functions for symtable
+
+void inOrder(TNode *rootPtr);
 
 // user functions for frame list
 
