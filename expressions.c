@@ -118,6 +118,7 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
             }
         }
         else{
+            type=token->name;
             if(!strcmp(token->value,"0")||!strcmp(token->value,"0.0")){
                 if(!strcmp(top(s),"/")||!strcmp(top(s),"//")){
                     //chyba deleni nulou;
@@ -129,9 +130,6 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
                     free(data);
                     exit(9);
                 }
-            }
-            else{
-                type=token->name;
             }
         }
     }
