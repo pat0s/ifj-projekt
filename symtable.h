@@ -119,7 +119,7 @@ TNode *inner_insert(TNode *rootPtr, char *k, TNode *d, int *error_occur);
 TNode *bvsMin(TNode *rootPtr);
 TNode *bvsDelete(TNode *rootPtr, char *k);
 TNode *inner_dispose(TNode *rootPtr, int *error_occur);
-TNode *deleteNode(TNode *rootPtr, char *k);
+TNode *deleteNode(TNode *rootPtr);
 
 // testing functions for symtable
 
