@@ -38,49 +38,49 @@ void checkError(Data_t *data){
 
         }
         else if(data->errorValue == 3){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error - definition/redefinition problem\n");
             free(data->token);
             free(data);
             exit(3);
 
         }
         else if(data->errorValue == 4){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error\n");
             free(data->token);
             free(data);
             exit(4);
 
         }
         else if(data->errorValue == 5){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error - bad number of data type, type incompatibility\n");
             free(data->token);
             free(data);
             exit(5);
 
         }
         else if(data->errorValue == 6){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Semantic Error\n");
             free(data->token);
             free(data);
             exit(6);
 
         }
         else if(data->errorValue == 7){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Other semantic Error\n");
             free(data->token);
             free(data);
             exit(7);
 
         }
         else if(data->errorValue == 8){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Runtime Error - Unexpected nil value\n");
             free(data->token);
             free(data);
             exit(8);
 
         }
         else if(data->errorValue == 9){
-            fprintf(stderr, "Syntax Error\n");
+            fprintf(stderr, "Runtime Error - Dividing by zero\n");
             free(data->token);
             free(data);
             exit(9);
@@ -1800,6 +1800,12 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
     else if(!strcmp(token->name,"identifier")){
         //Nacitane: ID, pravidlo 5.
         //TODO zistit ci je funkcia aspon deklarovana
+
+        if(search(data->list->last->rootPtr, token->name) == NULL){
+            printf("\nERROR - volanie neexistujucej funkcie\n");
+            data->errorValue = 3;
+            checkError(data);
+        }
 
             //Ocakavam '('
         data->errorValue = read_token(token);
