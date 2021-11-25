@@ -1,0 +1,25 @@
+require "ifj21"
+
+global foo : function(string) : string
+global foo2:function()
+
+function foo (param:string):string
+local sa:integer = 10
+local sda:integer = 10
+local ahojky :integer = sda
+foo2("dsfasd")
+sa,sda, ahojky,sda,sa= 10
+return 
+end
+
+function f2oo(param:integer, automatika: string): integer, string, number
+local foo2:integer = 10
+local params:integer = 10
+return
+end
+
+foo(100, 100, 200)
+
+function fsd(param:integer):integer
+return
+end

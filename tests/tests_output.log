@@ -1,0 +1,62 @@
+------------ LEX testy ------------
+
+Vstup: .=
+-- Chybovy kod - OK
+Vstup: %Ahoj
+-- Chybovy kod - OK
+Vstup: &Ahoj
+-- Chybovy kod - OK
+Vstup: 89e
+-- Chybovy kod - OK
+Vstup: 89e+
+-- Chybovy kod - OK
+Vstup: 89e-
+-- Chybovy kod - OK
+Vstup: 8ea9
+-- Chybovy kod - OK
+Vstup: ..
+Chybovy kod - OK
+Vstup: ==
+Chybovy kod - OK
+Vstup: ahoj
+Chybovy kod - OK
+Vstup: _cau
+Chybovy kod - OK
+Vstup: AhoK_d
+Chybovy kod - OK
+Vstup: ahoj_98
+Chybovy kod - OK
+Vstup: 98
+Chybovy kod - OK
+Vstup: 08.0
+Chybovy kod - OK
+Vstup: 98.0
+Chybovy kod - OK
+
+------------ Basic testy ------------
+Vsetky by mali skoncit s chybovym kodom 0!
+
+-- test c.1 - OK
+-- test c.2 - OK
+-- test c.3 - OK
+-- test c.4 - OK
+-- test c.5 - OK
+-- test c.6 - OK
+-- test c.7 - OK
+-- test c.8 - OK
+-- test c.9 - X (ocakavany vystup: 0, vas vystup: 2)
+-- test c.10 - OK
+-- test c.11 - OK
+-- test c.12 - OK
+
+---------- Testy zo zadania ifj projektu ----------
+Vsetky by mali skoncit s chybovym kodom 0!
+
+-- test c.1 - OK
+-- test c.2 - OK
+-- test c.3 - X
+ocakavany vystup: 0, vas vystup: 6
+-- test c.4 - X
+ocakavany vystup: 0, vas vystup: 2
+-- test c.5 - X
+ocakavany vystup: 0, vas vystup: 6

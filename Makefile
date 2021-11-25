@@ -1,22 +1,27 @@
-EXECUTABLE = main
-CFLAGS = -g -Wall -Wextra -Werror --std=c99
+EXECUTABLE = IFJ21
+CFLAGS = -g -Wall -Wextra -lm #-Wextra -Werror -lm
 
-.PHONY = clean
+.PHONY = clean all
 
+all: $(EXECUTABLE)
 
-$(EXECUTABLE): scanner.o
-	gcc $(CFLAGS) -o $@ $^ 
+$(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stack.o
+	gcc $(CFLAGS) $^ -o $@
 
-scanner.o: scanner.c scanner.h
-	gcc $(CFLAGS) -c $<
+%.o: %.c
+	gcc $(CFLAGS) -c $^ -o $@
 
+test: 
+	./run_test.sh IFJ21 yes
 
 clean:
-	rm  -f *.o
+	rm $(EXECUTABLE) *.o
 
-exp:
-	gcc $(CFLAGS) -c expressions.c
-	gcc $(CFLAGS) -o exp expressions.o
-	rm expressions.o
+exp: scanner.o symtable.o expressions.o expressions_stack.o
+	gcc $(CFLAGS) $^ -o $@
 expc: 
 	rm exp
+
+# potom vymazat
+symtable:
+	gcc -std=c99 -Wall -pedantic -g symtable.c -o symtable

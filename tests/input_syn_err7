@@ -1,0 +1,6 @@
+require "ifj21"
+
+function foo (integer) : integer
+  while 5 > 6 write("ahoj") end
+  return 1
+end

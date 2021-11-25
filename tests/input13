@@ -1,0 +1,6 @@
+require "ifj21"
+
+function foo (a : string)
+ if #a > 5 then
+  else write("Prilis kratky retazec\n")end
+end

@@ -9,6 +9,8 @@
 #include "error.h"
 #include <string.h>
 
+const char keywords[][9] = {"do", "else", "end", "function", "global", "if", "local", "nil", "require", "return", "then", "while", "string", "integer", "number"};
+
 
 /**
  * @brief Function for token initialisation
@@ -97,6 +99,7 @@ int read_token(Token *token)
     do
     {
         // Read char from stdin
+        
         symbol = getchar();
 
         if (!strcmp(state, "s"))
@@ -471,7 +474,7 @@ int read_token(Token *token)
             else
             {
                 ungetc(symbol, stdin);
-                strcpy(token->name, "float");
+                strcpy(token->name, "number");
                 return 0;
             }
         }
@@ -498,7 +501,7 @@ int read_token(Token *token)
             else
             {
                 ungetc(symbol, stdin);
-                strcpy(token->name, "exponent");
+                strcpy(token->name, "number");
                 return 0;
             }
         }
@@ -528,7 +531,7 @@ int read_token(Token *token)
         }
         else if (!strcmp(state, "p7"))
         {
-            if (symbol == '\n' || symbol == '\t' || symbol == '\"' || symbol == '\\')
+            if (symbol == 'n' || symbol == 't' || symbol == '\"' || symbol == '\\')
             {
                 if (!add_symbol(token, symbol))
                     return INTERNAL_ERROR;

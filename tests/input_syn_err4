@@ -1,0 +1,4 @@
+require "ifj21"
+
+function foo (integer) : integer
+return 1

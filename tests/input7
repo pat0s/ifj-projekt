@@ -1,0 +1,7 @@
+require "ifj21"
+
+function foo (x1:integer,  x2: integer) : integer
+  local tmp : string
+  local tmp2 : integer
+return 1
+end

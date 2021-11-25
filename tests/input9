@@ -1,0 +1,7 @@
+require "ifj21"
+
+function foo (a : string)
+ if #a > 5 then
+  write("Dlzka retazca je vacsia ako 5 znakov\n")
+ else write("Prilis kratky retazec\n")end
+end
