@@ -1,0 +1,8 @@
+require "ifj21"
+
+global foo : function (integer) : integer
+
+function foo (tmp:integer) : integer
+ local a : integer
+ a = b
+end

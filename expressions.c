@@ -1,5 +1,6 @@
 #include "expressions.h"
 #include <string.h>
+#include "error.h"
 
 int precence_table[TABLE_SIZE][TABLE_SIZE] =
 {
@@ -99,6 +100,16 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
     if(vstup==4){
         if(!strcmp(token->name,"identifier")){
             TNode *node = searchFrames(frames,token->value);
+            if(node==NULL){
+                //chyba nedefinovana premenna;
+                        //while(frames!=NULL){
+                           // deleteFirst(frames);
+                        //}                  
+                        printf("ERROR - undef var");
+                        free(token);
+                        free(data);
+                        exit(UNDEFINED_VAR);
+            }
             int idtype = node->var->data_type;
             if(idtype==0){
                 type="int"; 
@@ -130,7 +141,7 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
                         printf("ERROR - Deleni 0\n");
                         free(token);
                         free(data);
-                        exit(9);
+                        exit(DIVISION_BY_ZERO);
                     }
                 }
             }
@@ -296,26 +307,32 @@ int do_reduc(Stack*s){
         }
         else if(!strcmp(top1(s),"<")){                      //E -> E > E
             kontrola_typu(s);
+            change_top_type(s,"bool");
             //zavolat generovani >
         }
         else if(!strcmp(top1(s),">")){                      //E -> E < E
             kontrola_typu(s);
+            change_top_type(s,"bool");
             //zavolat generovani <
         }
         else if(!strcmp(top1(s),"<=")){                     //E -> E <= E
             kontrola_typu(s);
+            change_top_type(s,"bool");
             //zavolat generovani <=
         }
         else if(!strcmp(top1(s),">=")){                     //E -> E >= E
             kontrola_typu(s);
+            change_top_type(s,"bool");
             //zavolat generovani >=
         }
         else if(!strcmp(top1(s),"==")){                     //E -> E == E
             kontrola_typu(s);
+            change_top_type(s,"bool");
             //zavolat generovani ==
         }
         else if(!strcmp(top1(s),"~=")){                     //E -> E ~= E
             kontrola_typu(s);
+            change_top_type(s,"bool");
             //zavolat generovani ~=
         }
         else if(!strcmp(top1(s),"..")){                     //E -> E..E
@@ -394,14 +411,21 @@ void *exp_analysator(Data_t *data){
             }                                           
         else if(precence_table[i][j]==3||error==-1){    //Prazdny zasobnik a vstup je prazdny nebo ')'
                 if(error!=-1){
-                   if((i==8 && (j==7||j==8)) ||(i==4&&j==4) ){   
-                    destroy(s);  
-                    //data->token = token; 
-                    printf("Return token %s\n",data->token->name);         
-                    return 0;
+                   if((i==8 && (j==7||j==8)) ||(i==4&&j==4) ){ 
+                    if((i==4&&j==4)) {
+                        while(top1(s)!=NULL&&error!=-1){
+                            error=do_reduc(s);
+                        }
+                    } 
+                    if(error!=-1){
+                        destroy(s);  
+                        //data->token = token; 
+                        printf("Return token %s\n",data->token->name);         
+                        return 0;
+                        }
                     }
                 }
-                else{
+                if(precence_table[i][j]==3||error==-1){
                     printf("ERROR - Chyba syntaktickeho analyzatoru zdola nahoru\n");
                     destroy(s);
                     /*while(frames!=NULL){
@@ -410,7 +434,7 @@ void *exp_analysator(Data_t *data){
                         */
                     free(token);
                     free(data);
-                    exit(6);//chyba
+                    exit(INCOMPATIBLE_TYPES);//chyba
                 }
             }                                           
 //Vypis stavu zasobniku po provedeni operace
