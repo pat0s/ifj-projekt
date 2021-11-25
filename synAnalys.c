@@ -26,6 +26,10 @@ void checkError(Data_t *data){
         if(data->errorValue == 1){
             fprintf(stderr, "Lexical analysis Error\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(1);
 
@@ -33,6 +37,10 @@ void checkError(Data_t *data){
         else if(data->errorValue == 2){
             fprintf(stderr, "Syntax Error\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(2);
 
@@ -40,6 +48,10 @@ void checkError(Data_t *data){
         else if(data->errorValue == 3){
             fprintf(stderr, "Semantic Error - definition/redefinition problem\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(3);
 
@@ -47,6 +59,10 @@ void checkError(Data_t *data){
         else if(data->errorValue == 4){
             fprintf(stderr, "Semantic Error\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(4);
 
@@ -54,6 +70,10 @@ void checkError(Data_t *data){
         else if(data->errorValue == 5){
             fprintf(stderr, "Semantic Error - bad number of data type, type incompatibility\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(5);
 
@@ -61,6 +81,10 @@ void checkError(Data_t *data){
         else if(data->errorValue == 6){
             fprintf(stderr, "Semantic Error\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(6);
 
@@ -68,6 +92,10 @@ void checkError(Data_t *data){
         else if(data->errorValue == 7){
             fprintf(stderr, "Other semantic Error\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(7);
 
@@ -75,6 +103,10 @@ void checkError(Data_t *data){
         else if(data->errorValue == 8){
             fprintf(stderr, "Runtime Error - Unexpected nil value\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(8);
 
@@ -82,6 +114,10 @@ void checkError(Data_t *data){
         else if(data->errorValue == 9){
             fprintf(stderr, "Runtime Error - Dividing by zero\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(9);
 
@@ -89,6 +125,10 @@ void checkError(Data_t *data){
         else if (data->errorValue == 99){
             fprintf(stderr, "Internal Error\n");
             free(data->token);
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+                deleteFirst(data->list);
             free(data);
             exit(99);
 
@@ -819,6 +859,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         
     }else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else") && data->isIf){
             //Narazil som na EPSILON prechod
+            data->isIf--;
 
 
     }else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"if")){
@@ -862,14 +903,14 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
 
             if(strcmp(token->name,"keyword") ||(!strcmp(token->name,"keyword") && strcmp(token->value,"else"))){
-            
-                data->isIf = true;
+                    //priznak zanorenia v ife
+                data->isIf++;
                 //printf("\nSom pred st_list\n\n");
                 fSt_list(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
                 //printf("\nSom za st_list\n\n");
-                data->isIf = false;
+            
 
             }            
 
@@ -2099,7 +2140,7 @@ int main(){
     
     Data_t *data = malloc(sizeof(Data_t));
     //osetrenie chyby mallocu
-    data->isIf = false;
+    data->isIf = 0;
     
     data->errorValue = 0;
     data->isError = false;  
