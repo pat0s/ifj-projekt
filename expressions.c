@@ -113,19 +113,19 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
             int idtype = node->var->data_type;
             if(idtype==0){
                 type="int"; 
-                printf("idtype = int\n");
+                //printf("idtype = int\n");
             }
             else if(idtype==1){
                 type="number"; 
-                printf("idtype = num\n");
+                //printf("idtype = num\n");
             }
             else if(idtype==2){
                 type="string";
-                printf("idtype = string\n");
+                //printf("idtype = string\n");
             }
             else {
                 type="nil";
-                printf("idtype = nil\n");
+                //printf("idtype = nil\n");
             }
         }
         else{
@@ -383,7 +383,7 @@ void *exp_analysator(Data_t *data){
     while(i!=8 || j!=8){
 
 //Vypis stavu zasobniku pro debug
-
+/*
     char*print=top(s);
     char*print2=top1(s);
     printf("Vrchol zasobniku: %s%s\n",print2,print);
@@ -395,7 +395,7 @@ void *exp_analysator(Data_t *data){
 
     printf("Index tabulky:(%i, %i) \n",i,j);
     printf("Pravidlo tabulky: %i\n",precence_table[i][j]);
-
+*/
 ///////////////////////////////////////////////////////////////    
     
         if(precence_table[i][j]==0&&error!=-1){         //SHIFT
@@ -420,7 +420,7 @@ void *exp_analysator(Data_t *data){
                     if(error!=-1){
                         destroy(s);  
                         //data->token = token; 
-                        printf("Return token %s\n",data->token->name);         
+                        //printf("Return token %s\n",data->token->name);         
                         return 0;
                         }
                     }
@@ -438,17 +438,17 @@ void *exp_analysator(Data_t *data){
                 }
             }                                           
 //Vypis stavu zasobniku po provedeni operace
-  
+  /*
     print=top(s);
     print2=top1(s);
     printf("Vrchol zasobniku: %s%s\n",print2,print);
     print=top_type(s);
     printf("Type: %s\n\n",print);
-
+*/
 ///////////////////////////////////////////////////////////
     }
     destroy(s);
-    printf("Return token %s\n",data->token->name);
+    //printf("Return token %s\n",data->token->name);
     return 0;
 }
 /*
