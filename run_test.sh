@@ -95,10 +95,26 @@ done
 
 to_file ""
 to_file "---------- Testy semantickych chyb (3)----------"
-for i in `seq 1 8`; do
+for i in `seq 1 9`; do
 	./$EXECUTABLE < $SEM_ERR_TESTS$i	
 	check_error_code $? 3 $i
 done
+
+to_file ""
+to_file "---------- Testy semantickych chyb (6)----------"
+for i in `seq 10 13`; do
+	./$EXECUTABLE < $SEM_ERR_TESTS$i	
+	check_error_code $? 6 $i
+done
+
+to_file ""
+to_file "---------- Testy semantickych chyb (9)----------"
+to_file "Delenie nulou ako konstantou 0 a 0.0"
+i=0
+./$EXECUTABLE < $SEM_ERR_TESTS$i
+check_error_code $? 9 1
+./$EXECUTABLE < $SEM_ERR_TESTS$i$i
+check_error_code $? 9 2
 
 to_file ""
 to_file "---------- Testy zo zadania ifj projektu ----------"

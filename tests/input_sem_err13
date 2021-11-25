@@ -1,0 +1,6 @@
+require "ifj21"
+
+function func(str1 : string)
+	local n : number
+	n = (10+10)/20.0 + "ahoj".."cau"
+end

@@ -1,0 +1,11 @@
+require "ifj21"
+
+global func : fucntion(integer)
+
+function main()
+  local str1 : string = "ahoj"
+  func(10 + str1)
+end
+
+function func(str1 : integer)
+end

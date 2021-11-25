@@ -1,0 +1,5 @@
+require "ifj21"
+
+function main()
+  local a : number = 10 / 0.0
+end

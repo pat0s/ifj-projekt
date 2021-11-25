@@ -1,0 +1,5 @@
+require "ifj21"
+
+function func(str1 : string)
+	local n : integer = #"ahoj" / "ahoj"
+end
