@@ -105,7 +105,7 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
                         //while(frames!=NULL){
                            // deleteFirst(frames);
                         //}                  
-                        printf("ERROR - undef var");
+                        printf("ERROR - undef var\n");
                         free(token);
                         free(data);
                         exit(UNDEFINED_VAR);
@@ -389,10 +389,10 @@ void *exp_analysator(Data_t *data){
     printf("Vrchol zasobniku: %s%s\n",print2,print);
     print=token->name;
     printf("Vstupni znak: %s\n",print);
-
+*/
     i=zasobnikovy_znak(s);
     j=vstupni_znak(token);
-
+/*
     printf("Index tabulky:(%i, %i) \n",i,j);
     printf("Pravidlo tabulky: %i\n",precence_table[i][j]);
 */
