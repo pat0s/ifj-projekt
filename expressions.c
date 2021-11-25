@@ -29,7 +29,7 @@ int rozpoznani_znaku(char*znak){
     else if(!strcmp(znak,"#")){
         return 3;
     }
-    else if(!strcmp(znak,"identifier")||!strcmp(znak,"number")||!strcmp(znak,"int")||!strcmp(znak,"string")){
+    else if(!strcmp(znak,"identifier")||!strcmp(znak,"number")||!strcmp(znak,"int")||!strcmp(znak,"string")||!strcmp(znak,"nil")){
         return 4;
     }
     else if(!strcmp(znak,"<")||!strcmp(znak,">")||!strcmp(znak,"<=")||!strcmp(znak,">=")||!strcmp(znak,"==")||!strcmp(znak,"~=")){
@@ -53,6 +53,11 @@ int rozpoznani_znaku(char*znak){
  */
 
 int vstupni_znak(Token* token){
+    if(!strcmp(token->name,"keyword")){
+        if(!strcmp(token->value,"nil")){
+            strcpy(token->name,"nil");
+        }
+    }
     char*znak=token->name;
     int table_column = rozpoznani_znaku(znak);
     return table_column;
@@ -113,7 +118,7 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
             int idtype = node->var->data_type;
             if(idtype==0){
                 type="int"; 
-                //printf("idtype = int\n");
+               //printf("idtype = int\n");
             }
             else if(idtype==1){
                 type="number"; 
@@ -245,6 +250,10 @@ int do_reduc(Stack*s){
         pop(s);
         push(s,"E","number");
     }
+    else if(!strcmp(top(s),"nil")){                         //E -> nil
+        pop(s);
+        push(s,"E","nil");
+    }
     else if(!strcmp(top(s),"identifier")){                  //E -> id
         char type[7];
         strcpy(type,top_type(s));
@@ -326,12 +335,24 @@ int do_reduc(Stack*s){
             //zavolat generovani >=
         }
         else if(!strcmp(top1(s),"==")){                     //E -> E == E
-            kontrola_typu(s);
+            if(strcmp(top_type(s),"nil")){
+                if(kontrola_typu(s)==-1){
+                    if(strcmp(top_type(s),"nil")){
+                        return-1;
+                    }
+                }
+            }
             change_top_type(s,"bool");
             //zavolat generovani ==
         }
         else if(!strcmp(top1(s),"~=")){                     //E -> E ~= E
-            kontrola_typu(s);
+            if(strcmp(top_type(s),"nil")){
+                if(kontrola_typu(s)==-1){
+                    if(strcmp(top_type(s),"nil")){
+                        return-1;
+                    }
+                }
+            }
             change_top_type(s,"bool");
             //zavolat generovani ~=
         }
