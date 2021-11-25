@@ -75,7 +75,7 @@ Vsetky by mali skoncit s chybovym kodom 2!
 ---------- Testy semantickych chyb (6)----------
 -- test c.10 - OK
 -- test c.11 - OK
--- test c.12 - X (ocakavany vystup: 6, vas vystup: 2)
+-- test c.12 - OK
 -- test c.13 - OK
 
 ---------- Testy semantickych chyb (9)----------

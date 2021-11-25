@@ -1,6 +1,6 @@
 require "ifj21"
 
-global func : fucntion(integer)
+global func : function(integer)
 
 function main()
   local str1 : string = "ahoj"
