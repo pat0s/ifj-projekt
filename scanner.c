@@ -204,7 +204,7 @@ int read_token(Token *token)
             {
                 strcpy(state, "p6");
             }
-            else if (symbol == ' ' || symbol == '\n')
+            else if (symbol == ' ' || symbol == '\n' || symbol == '\t')
             {
                 strcpy(state, "s");
             }
