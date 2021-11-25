@@ -387,6 +387,8 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
  */
 
 void fInit_value(Token *token, enum STATE *state, Data_t *data){
+    //printf("name: %s, value: %s\n", token->name, token->value);
+
 
     if(!strcmp(token->name,"identifier")){
         if(isFunction(data->list->last->rootPtr, token->value)){
@@ -429,11 +431,14 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
-        fExp(token, state, data);
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+       
+       fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
             //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
+        //data->errorValue = read_token(token);
+        //checkError(data);
     }
     else{
         printf("Error in state %d, fInit_value\n", *state);
@@ -512,7 +517,7 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
         }
-        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
             //Naschval prazdne, pre jednoduchost tu nechavam tuto podmienku
 
 
@@ -598,7 +603,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
 
             //printf("\n\ntoken pred fExp: %s\n\n\n", token->value);
         fExp(token, state, data);
@@ -837,6 +842,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
         }
+            //create frame
+        TNode *rootPtr = NULL;
+        insertFirst(data->list, false, rootPtr);
+
 
             //precedencna analyza by sa mala zastavit po nacitany klucoveho slova 'then', netreba to teda potom nacitavat
         fExp(token, state, data);
@@ -868,6 +877,13 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             
                 //Teraz by sa v tokene mal nachadza 'else', otestujem to a pokracujem v behu
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else")){
+                    //vymazanie if framu z tabulky symbolov
+                deleteFirst(data->list);
+                    //tabulka frame v tabulke symbolov pre else
+                TNode *rootPtr = NULL;
+                insertFirst(data->list, false, rootPtr);
+
+
                     //Ocakavam <st-list>
                 //printf("\nSom v else\n\n");
                 data->errorValue = read_token(token);
@@ -880,7 +896,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                     //v Tokene by sa mal nachadza 'end', idem to otestovat a pokracujem v behu programu uz mimo if statement
                 if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
                         //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo if statement
-
+                    
+                        //odstranenie vrchneho framu v symtable
+                    deleteFirst(data->list);
                         //Ocakavam <st-list>
                     data->errorValue = read_token(token);
                     checkError(data);
@@ -1327,7 +1345,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
         //nacitali sme EPSILON
         //Nacitane: ID ()
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
 
         if(!strcmp(token->name,"identifier")){
             if(isFunction(data->list->last->rootPtr, token->value)){
@@ -1919,7 +1937,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
     else if(!strcmp(token->name,"identifier")){
         //Nacitane: ID, pravidlo 5.
         //TODO zistit ci je funkcia aspon deklarovana
-        printf("\ntoken->name: %s, token->value: %s\n", token->name, token->value);
+        //printf("\ntoken->name: %s, token->value: %s\n", token->name, token->value);
 
 
         TNode * element = search(data->list->last->rootPtr, token->value);
@@ -1997,7 +2015,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             checkError(data);   
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
         //TODO ALL
             //TODO treba do podmienky zahrnut NIL
             //Check if is Expression
