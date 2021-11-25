@@ -236,12 +236,12 @@ void inOrder(TNode *rootPtr)
     if (rootPtr != NULL)
     {
         inOrder(rootPtr->lPtr);
-        printf("|%s|", rootPtr->ID);
+        fprintf(stderr, "|%s|", rootPtr->ID);
         inOrder(rootPtr->rPtr);
     }
     else
     {
-        printf("|N|");
+        fprintf(stderr, "|N|");
     }
 }
 

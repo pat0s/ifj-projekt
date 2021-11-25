@@ -1,3 +1,15 @@
+/**
+ * Project: IFJ21
+ * @file expressions.c
+ * @author Dovhalenko Dmytro
+ * @version 0.1
+ * 
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
+
 #include "expressions.h"
 #include <string.h>
 #include "error.h"
@@ -110,7 +122,7 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
                         //while(frames!=NULL){
                            // deleteFirst(frames);
                         //}                  
-                        printf("ERROR - undef var\n");
+                        fprintf(stderr, "ERROR - undef var\n");
                         free(token);
                         free(data);
                         exit(UNDEFINED_VAR);
@@ -143,7 +155,7 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
                         //while(frames!=NULL){
                            // deleteFirst(frames);
                         //}                  
-                        printf("ERROR - Deleni 0\n");
+                        fprintf(stderr, "ERROR - Deleni 0\n");
                         free(token);
                         free(data);
                         exit(DIVISION_BY_ZERO);
@@ -474,7 +486,7 @@ void *exp_analysator(Data_t *data){
                     }
                 }
                 if(precence_table[i][j]==3||error==-1){
-                    printf("ERROR - Chyba syntaktickeho analyzatoru zdola nahoru\n");
+                    fprintf(stderr, "ERROR - Chyba syntaktickeho analyzatoru zdola nahoru\n");
                     destroy(s);
                     /*while(frames!=NULL){
                         deleteFirst(frames); 

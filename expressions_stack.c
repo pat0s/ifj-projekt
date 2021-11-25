@@ -1,3 +1,10 @@
+/**
+ * @file expressions_stack.c
+ * 
+ * @brief
+ * @author Dovhalenko Dmytro, xdovha00
+ */
+
 #include "expressions_stack.h"
 #include <stdio.h>
 #include <stdlib.h>

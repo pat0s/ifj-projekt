@@ -1,3 +1,15 @@
+/**
+ * Project: IFJ21
+ * @file synAnalys.h
+ * @author Dalibor Králik
+ * @version 0.1
+ * 
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
+
 #ifndef SYNANALYS_H
 #define SYNANALYS_H
 

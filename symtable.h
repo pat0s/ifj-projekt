@@ -1,3 +1,14 @@
+/**
+ * @file symtable.h
+ * @author Ivo Procházka
+ * @brief 
+ * @version 0.1
+ * @date 2021-11-13
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
