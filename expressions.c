@@ -212,6 +212,9 @@ int kontrola_typu(Stack *s){
             return -1;
         }
     }
+    else if(!strcmp(top_type(s),"nil")){
+        return -1;
+    }
     else {
         pop(s);
         pop(s);
@@ -315,24 +318,40 @@ int do_reduc(Stack*s){
             }
         }
         else if(!strcmp(top1(s),"<")){                      //E -> E > E
-            kontrola_typu(s);
+            if(kontrola_typu(s)==0){
             change_top_type(s,"bool");
             //zavolat generovani >
+            }
+            else{
+                return -1;
+            }
         }
         else if(!strcmp(top1(s),">")){                      //E -> E < E
-            kontrola_typu(s);
+            if(kontrola_typu(s)==0){
             change_top_type(s,"bool");
             //zavolat generovani <
+            }
+            else{
+                return -1;
+            }
         }
         else if(!strcmp(top1(s),"<=")){                     //E -> E <= E
-            kontrola_typu(s);
+            if(kontrola_typu(s)==0){
             change_top_type(s,"bool");
             //zavolat generovani <=
+            }
+            else{
+                return -1;
+            }
         }
         else if(!strcmp(top1(s),">=")){                     //E -> E >= E
-            kontrola_typu(s);
+            if(kontrola_typu(s)==0){
             change_top_type(s,"bool");
             //zavolat generovani >=
+            }
+            else{
+                return -1;
+            }
         }
         else if(!strcmp(top1(s),"==")){                     //E -> E == E
             if(strcmp(top_type(s),"nil")){
