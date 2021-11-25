@@ -1,0 +1,13 @@
+require "ifj21"
+
+function swap (x1:integer,    x2: integer) : integer
+ local tmp : integer
+ tmp = x1 x1 = x2 x2 = tmp
+
+	if 1 then
+		local tmp : integer = 10
+	else
+		local tmp : integer = 5
+	end
+return 1
+end

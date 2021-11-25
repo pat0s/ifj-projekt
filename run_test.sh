@@ -80,7 +80,7 @@ function check_error_code()
 to_file ""
 to_file "------------ Basic testy ------------"
 to_file "Vsetky by mali skoncit s chybovym kodom 0!"
-for i in `seq 1 14`; do
+for i in `seq 1 16`; do
 	./$EXECUTABLE < $BASIC_TESTS$i
 	check_error_code $? 0 $i
 done
@@ -98,6 +98,20 @@ to_file "---------- Testy semantickych chyb (3)----------"
 for i in `seq 1 9`; do
 	./$EXECUTABLE < $SEM_ERR_TESTS$i	
 	check_error_code $? 3 $i
+done
+
+to_file ""
+to_file "---------- Testy semantickych chyb (4)----------"
+for i in `seq 14 17`; do
+	./$EXECUTABLE < $SEM_ERR_TESTS$i	
+	check_error_code $? 4 $i
+done
+
+to_file ""
+to_file "---------- Testy semantickych chyb (5)----------"
+for i in `seq 18 20`; do
+	./$EXECUTABLE < $SEM_ERR_TESTS$i	
+	check_error_code $? 5 $i
 done
 
 to_file ""

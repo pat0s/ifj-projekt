@@ -1,0 +1,13 @@
+require "ifj21"
+
+function func(str1 : string)
+	local n : number
+	local str2 : string 
+	local i : integer
+
+	n, i, str1 = 10.0, 10, 10 
+end
+
+function main()
+-- toto je main
+end

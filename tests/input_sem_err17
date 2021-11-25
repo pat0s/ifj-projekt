@@ -1,0 +1,11 @@
+require "ifj21"
+
+function func(str1 : string) : integer
+	local i : integer = 10
+	return i
+end
+
+function main()
+-- toto je main
+local a : string = func("ahoj")
+end

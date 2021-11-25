@@ -1,0 +1,9 @@
+require "ifj21"
+
+function func(str1 : string)
+	local n : number = "ahoj"
+end
+
+function main()
+-- toto je main
+end
