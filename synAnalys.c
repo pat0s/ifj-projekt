@@ -641,7 +641,7 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
             //Musim sa spytat, ci je TOKEN ID, pretoze budem cez funkciu isFunction(NULL, token->value) zistovat v symtable, ci je to ID funkcie alebo premennej a mohol by nastat problem
         if(!strcmp(token->name,"identifier")){
             if(!isFunction(data->list->last->rootPtr, token->value)){
-                printf("\ntoken->value: %s\n", token->value);
+                //printf("\ntoken->value: %s\n", token->value);
                     //kontrola ci je token->value v symtable
                 TNode * element = searchFrames(data->list, token->value);
                 if(element == NULL){
@@ -812,8 +812,11 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
     if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
             //Narazil som na EPSILON prechod
         
-    }
-    else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"if")){
+    }else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else") && data->isIf){
+            //Narazil som na EPSILON prechod
+
+
+    }else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"if")){
 
             //Ocakavam <exp>
         data->errorValue = read_token(token);
@@ -849,17 +852,24 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = read_token(token);
             checkError(data);
 
-            //if(!strcmp(token->name,"keyword") && strcmp(token->value,"else")){
+            if(strcmp(token->name,"keyword") ||(!strcmp(token->name,"keyword") && strcmp(token->value,"else"))){
+            
+                data->isIf = true;
+                //printf("\nSom pred st_list\n\n");
                 fSt_list(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
+                //printf("\nSom za st_list\n\n");
+                data->isIf = false;
 
-            //}            
+            }            
 
-
+            //printf("\nSom hend pred elsom\n\n");
+            
                 //Teraz by sa v tokene mal nachadza 'else', otestujem to a pokracujem v behu
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else")){
                     //Ocakavam <st-list>
+                //printf("\nSom v else\n\n");
                 data->errorValue = read_token(token);
                 checkError(data);
 
@@ -1004,6 +1014,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
+        //ZMYSLE TO MA TU
         enum STATE helpState = *state;
         *state = params;
         fType(token, state, data);
@@ -1031,7 +1042,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //Nacitanie som spravil v fInit() v epsilon prechode alebo vo <init-value>
 
         //printf("\n\n\ntoken: %s\n\n\n\n", token->value);
-
+        
         *state = st_list;
         fSt_list(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -1086,7 +1097,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
     }
     else{
-        printf("Error in state %d, fSt_list\n", *state);
+        printf("Error in state %d, fSt_list1231\n", *state);
         data->errorValue = 2;
         checkError(data);
     }
@@ -1688,7 +1699,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                         data->errorValue = read_token(token);
                         checkError(data);
                         
+                        
                             //Zmena stavu
+                            
                         *state = par_type;
                         fPar_type(token, state, data);
                             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -1714,6 +1727,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                         funkcia->ret_length = 0;
                         
                             //Zmena stavu
+                        
                         *state = ret_type;
                             //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
                         fRet_type(token, state, data);
@@ -1738,7 +1752,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                         data->funkcia = NULL;
 
 
-                            //Ocakavam <prog_con>                        
+                            //Ocakavam <prog_con>         
+                                    
                             //Zmena stavu
                         *state = prog_con;
                             //TODO, treba fixnut prepisanie predcahdzajucim zanorenim, mam v tomto ife 2x  synAnalys(token, state)
@@ -1818,7 +1833,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             TNode *rootPtr = NULL;
             insertFirst(data->list, true, rootPtr);
 
-
+            
             *state = params;
                 //Ocakavam <params>
             data->errorValue = read_token(token);
@@ -1874,7 +1889,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
 
                 //ZOZNAM RETURN TYPOV
-            
+           
             *state = st_list;
                 //Token mam nacitany z fRet_type, na zaklane neho som urcoval EPSILON prechod
              fSt_list(token, state, data);
@@ -1883,6 +1898,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             
             deleteFirst(data->list);
+            
                 //Zaver
             *state = prog_con;
 
@@ -1903,6 +1919,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
     else if(!strcmp(token->name,"identifier")){
         //Nacitane: ID, pravidlo 5.
         //TODO zistit ci je funkcia aspon deklarovana
+        printf("\ntoken->name: %s, token->value: %s\n", token->name, token->value);
 
 
         TNode * element = search(data->list->last->rootPtr, token->value);
@@ -1921,7 +1938,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             data->errorValue = read_token(token);
             checkError(data);
-
+            
             *state = arg;
                 //Ocakavam argument
 
@@ -2055,6 +2072,7 @@ int main(){
     
     Data_t *data = malloc(sizeof(Data_t));
     //osetrenie chyby mallocu
+    data->isIf = false;
     
     data->errorValue = 0;
     data->isError = false;  

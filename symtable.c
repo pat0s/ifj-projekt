@@ -346,7 +346,7 @@ TNode *bvsDelete(TNode *rootPtr, char *k)
 
 TNode *deleteNode(TNode *rootPtr){
     if(rootPtr == NULL){
-        return;
+        return NULL;
     }
     else{
         if(rootPtr->lPtr != NULL){
@@ -358,6 +358,7 @@ TNode *deleteNode(TNode *rootPtr){
         free(rootPtr);
         rootPtr = NULL;
    }
+   return NULL;
 }
 
 /**
@@ -513,9 +514,9 @@ TNode *searchFrames(Tframe_list *l, char *k)
  */
 void deleteFirst(Tframe_list *frames)
 {   
-    Tframe *tmp = frames->first;
-    int error = 0;
-    error=dispose(&(frames->first->rootPtr));
+    //Tframe *tmp = frames->first;
+    
+    dispose(&(frames->first->rootPtr));
     
     if (frames->first == frames->last)
     {
