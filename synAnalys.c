@@ -948,6 +948,12 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             }
         }
 
+        
+            //tabulka frame v tabulke symbolov pre WHILE
+            //bude jeden frame ale treba osetrit v generovani kodu definiciu funkcii
+        TNode *rootPtr = NULL;
+        insertFirst(data->list, false, rootPtr);
+
             //precedencna analyza nacitava dovtedy, kym nenarazi na klucove slovo 'do'
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -971,6 +977,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
                 //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo while cyklu
 
+                deleteFirst(data->list);
                     //Ocakavam <st-list>
                 data->errorValue = read_token(token);
                 checkError(data);
@@ -1144,7 +1151,9 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
         if(!strcmp(token->name,"identifier")){
-            if(searchFrames(data->list, token->value) != NULL){
+            TNode * element = searchFrames(data->list, token->value);
+            if(element != NULL){
+                printf("Redefinicia premennej2\n");
                 data->errorValue = 3;
                 checkError(data);
             }
