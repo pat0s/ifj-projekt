@@ -361,6 +361,10 @@ int do_reduc(Stack*s){
                     }
                 }
             }
+            else{
+                pop(s);
+                pop(s);
+            }
             change_top_type(s,"bool");
             //zavolat generovani ==
         }
@@ -371,6 +375,10 @@ int do_reduc(Stack*s){
                         return-1;
                     }
                 }
+            }
+            else{
+                pop(s);
+                pop(s);
             }
             change_top_type(s,"bool");
             //zavolat generovani ~=
