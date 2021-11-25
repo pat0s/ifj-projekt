@@ -8,7 +8,6 @@
  * @copyright Copyright (c) 2021
  * 
  */
-
 #include "symtable.h"
 
 /**
@@ -335,10 +334,15 @@ TNode *bvsDelete(TNode *rootPtr, char *k)
     }
 }
 
-
+/**
+ * @brief deletes node of a symtable
+ * 
+ * @param rootPtr root of a symtable
+ * @return TNode* 
+ */
 TNode *deleteNode(TNode *rootPtr){
     if(rootPtr == NULL){
-        return;
+        return NULL;
     }
     else{
         if(rootPtr->lPtr != NULL){
@@ -501,15 +505,139 @@ TNode *searchFrames(Tframe_list *l, char *k)
  */
 void deleteFirst(Tframe_list *frames)
 {   
-    Tframe *tmp = frames->first;
-    int error = 0;
-    error=dispose(&(frames->first->rootPtr));
-    
-    if (frames->first == frames->last)
-    {        
-        frames->last = NULL;
-    }
+    if(frames->first != NULL)
+    {
+        Tframe *tmp = frames->first;
+        int error = 0;
+        error = dispose(&(frames->first->rootPtr));
 
-    frames->first = frames->first->next;
-    free(tmp);
+        if (frames->first == frames->last)
+        {
+            frames->last = NULL;
+        }
+
+        frames->first = frames->first->next;
+        free(tmp);
+    }    
 }
+
+/*
+// symtable tests
+int main()
+{
+    //start
+
+    int error_c; // vyskyt erroru v create
+    int error_i; // vyskyt erroru v insert
+
+    int array_pt[] = {INTEGER, STRING, NUMBER, NIL}; // parameter types
+    int array_rt[] = {INTEGER, STRING, NUMBER}; // return types
+
+    // inicializace fframe listu
+    Tframe_list *a = (Tframe_list *)malloc(sizeof(Tframe_list));
+    initList(a);
+
+    // 1. frame
+    TNode *root_a = NULL;
+    insertFirst(a, true, root_a);
+
+    // symtable 1. framu
+    error_i = insert(&(a->first->rootPtr), createFuncNode("kun", true, NULL, 0, NULL, 0, &error_c));
+    error_i = insert(&(a->first->rootPtr), createFuncNode("opice", false, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&(a->first->rootPtr), createFuncNode("uhor", true, array_pt, LENGTH(array_pt), NULL, 0, &error_c));
+    error_i = insert(&(a->first->rootPtr), createFuncNode("zaklinac", false, NULL, 0, array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&(a->first->rootPtr), createFuncNode("Halina", false, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&(a->first->rootPtr), createFuncNode("Samuel L. Jackson", true, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+    error_i = insert(&(a->first->rootPtr), createFuncNode("auto", false, array_pt, LENGTH(array_pt), array_rt, LENGTH(array_rt), &error_c));
+
+    // 2. frame
+    TNode *root_b = NULL;
+    insertFirst(a, true, root_b);
+
+    // symtable 2. framu
+    error_i = insert(&(a->first->rootPtr), createVarNode("prosinec", INTEGER, "69", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("Xaver", NUMBER, "420", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("usak", STRING, "8", &error_c));
+
+    // 3. frame
+    TNode *root_c = NULL;
+    insertFirst(a, false, root_c);
+
+    // symtable 3. framu
+    error_i = insert(&(a->first->rootPtr), createVarNode("Jean Val Jean", NIL, "1000000", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("Werich", INTEGER, "485230", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("murlok", STRING, "874", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("habadej", STRING, "0", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("London", NIL, "000", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("Samuel Rondon", STRING, "96352", &error_c));
+
+    // 4. frame
+    TNode *root_d = NULL;
+    insertFirst(a, false, root_d);
+
+    // symtable 4. framu
+    error_i = insert(&(a->first->rootPtr), createVarNode("Mordor", NIL, "852", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("Mozkomor", INTEGER, "154", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("jogurt", STRING, "25853", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("Vera", NUMBER, "987426", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("Vlahovic", NIL, "368", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("Krivka", STRING, "3574", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("lol lmao", NIL, "368542", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("bochnik", NUMBER, "1234", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("ruzova", STRING, "78955", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("rozkrajet", STRING, "58527", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("hahahaha", NUMBER, "985", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("konec", NUMBER, "369525841478559", &error_c));
+
+    // test searchframes
+    TNode *res_searchF;
+    res_searchF = searchFrames(a, "jogurt");
+    res_searchF = searchFrames(a, "Mozkomor");
+    res_searchF = searchFrames(a, "Samuel Rondon");
+    res_searchF = searchFrames(a, "zaklinac");
+    res_searchF = searchFrames(a, "usak");
+    res_searchF = searchFrames(a, "Lojza");
+    res_searchF = searchFrames(a, "Dublin");
+
+    //test isFucntion
+    int res_isF;
+    res_isF = isFunction(a->last->rootPtr, "uhor");    
+    res_isF = isFunction(a->last->rootPtr, "Samuel L. Jackson");
+    res_isF = isFunction(a->last->rootPtr, "Halina");
+    res_isF = isFunction(a->last->rootPtr, "epsilon");
+
+    //test search
+    TNode *res_search;
+    res_search = search(a->first->rootPtr, "uhor");
+    res_search = search(a->first->rootPtr, "hp");
+    res_search = search(a->first->next->rootPtr, "habadej");
+    res_search = search(a->first->next->rootPtr, "end");
+    res_search = search(a->last->rootPtr, "kun");
+    res_search = search(a->first->next->rootPtr, "never");
+
+    //test deleteFirst
+    deleteFirst(a);
+    
+    //test dispose
+    dispose(&(a->first->rootPtr));
+
+    //test deleteFirst again
+    deleteFirst(a);
+
+    // 5. frame
+    TNode *root_e = NULL;
+    insertFirst(a, false, root_e);
+
+    // symtable 5. framu
+    error_i = insert(&(a->first->rootPtr), createVarNode("Murder, She wrote", STRING, "09", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("Snoop Dogg", INTEGER, "485230", &error_c));
+    error_i = insert(&(a->first->rootPtr), createVarNode("Man Utd", NUMBER, "874", &error_c));
+
+    //test deleteFirst again
+    deleteFirst(a);
+    deleteFirst(a);
+    deleteFirst(a);
+    deleteFirst(a);
+
+    return 0;
+}*/

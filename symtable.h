@@ -11,7 +11,6 @@
  * @copyright Copyright (c) 2021
  * 
  */
-
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
