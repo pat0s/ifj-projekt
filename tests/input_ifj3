@@ -14,7 +14,7 @@ function main() -- funkcia bez parametrov
   write("Faktorial nelze spocitat\n")
   else
    vysl = 1
-   while a > 0 then
+   while a > 0 do 
     vysl = vysl * a a = a -1 -- dva vyrazy na riadku
    end
    write("Vysledok je: ", vysl, "\n")

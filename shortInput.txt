@@ -1,5 +1,0 @@
-require "ifj21" 
-global writnee : function(string) : integer
-
-
-

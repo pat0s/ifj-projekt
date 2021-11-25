@@ -1,6 +1,6 @@
 --[[ Vypocet faktorialu
 rekurzivne ]]
-
+require "ifj21"
 
 function factorial(n : integer) : integer
   local n1 : integer = n -1

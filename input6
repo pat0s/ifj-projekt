@@ -1,6 +1,0 @@
-require "ifj21"
-
-function foo (autobus: integer)
- local tmp : integer = autobus
- local tmp2 : string = tmp
-end

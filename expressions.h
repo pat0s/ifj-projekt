@@ -46,7 +46,7 @@ typedef struct sData{
     Variable_t *premenna;
     TNode *leaf;
     char *tokenValue;
-    bool isIf;
+    int isIf;
 
 } Data_t;
 

@@ -1,41 +1,13 @@
------------- LEX testy ------------
+------------ LEX testy (ERR) ------------
+-- test c.1 - OK
+-- test c.2 - OK
+-- test c.3 - OK
+-- test c.4 - OK
+-- test c.5 - OK
+-- test c.6 - OK
+-- test c.7 - OK
 
-Vstup: .=
--- Chybovy kod - OK
-Vstup: %Ahoj
--- Chybovy kod - OK
-Vstup: &Ahoj
--- Chybovy kod - OK
-Vstup: 89e
--- Chybovy kod - OK
-Vstup: 89e+
--- Chybovy kod - OK
-Vstup: 89e-
--- Chybovy kod - OK
-Vstup: 8ea9
--- Chybovy kod - OK
-Vstup: ..
-Chybovy kod - OK
-Vstup: ==
-Chybovy kod - OK
-Vstup: ahoj
-Chybovy kod - OK
-Vstup: _cau
-Chybovy kod - OK
-Vstup: AhoK_d
-Chybovy kod - OK
-Vstup: ahoj_98
-Chybovy kod - OK
-Vstup: 98
-Chybovy kod - OK
-Vstup: 08.0
-Chybovy kod - OK
-Vstup: 98.0
-Chybovy kod - OK
-
------------- Basic testy ------------
-Vsetky by mali skoncit s chybovym kodom 0!
-
+------------ LEX testy (OK) ------------
 -- test c.1 - OK
 -- test c.2 - OK
 -- test c.3 - OK
@@ -44,19 +16,77 @@ Vsetky by mali skoncit s chybovym kodom 0!
 -- test c.6 - OK
 -- test c.7 - OK
 -- test c.8 - OK
--- test c.9 - X (ocakavany vystup: 0, vas vystup: 2)
+-- test c.9 - OK
+
+------------ Basic testy ------------
+Vsetky by mali skoncit s chybovym kodom 0!
+-- test c.1 - OK
+-- test c.2 - OK
+-- test c.3 - OK
+-- test c.4 - OK
+-- test c.5 - OK
+-- test c.6 - OK
+-- test c.7 - OK
+-- test c.8 - OK
+-- test c.9 - OK
 -- test c.10 - OK
 -- test c.11 - OK
 -- test c.12 - OK
+-- test c.13 - OK
+-- test c.14 - OK
+-- test c.15 - OK
+-- test c.16 - OK
+
+---------- Testy syntaktickych chyb ----------
+Vsetky by mali skoncit s chybovym kodom 2!
+-- test c.1 - OK
+-- test c.2 - OK
+-- test c.3 - OK
+-- test c.4 - OK
+-- test c.5 - OK
+-- test c.6 - OK
+-- test c.7 - OK
+-- test c.8 - OK
+-- test c.9 - OK
+-- test c.10 - OK
+
+---------- Testy semantickych chyb (3)----------
+-- test c.1 - OK
+-- test c.2 - OK
+-- test c.3 - OK
+-- test c.4 - OK
+-- test c.5 - OK
+-- test c.6 - OK
+-- test c.7 - OK
+-- test c.8 - OK
+-- test c.9 - OK
+
+---------- Testy semantickych chyb (4)----------
+-- test c.14 - X (ocakavany vystup: 4, vas vystup: 0)
+-- test c.15 - X (ocakavany vystup: 4, vas vystup: 0)
+-- test c.16 - X (ocakavany vystup: 4, vas vystup: 0)
+-- test c.17 - X (ocakavany vystup: 4, vas vystup: 0)
+
+---------- Testy semantickych chyb (5)----------
+-- test c.18 - X (ocakavany vystup: 5, vas vystup: 0)
+-- test c.19 - X (ocakavany vystup: 5, vas vystup: 0)
+-- test c.20 - X (ocakavany vystup: 5, vas vystup: 0)
+
+---------- Testy semantickych chyb (6)----------
+-- test c.10 - OK
+-- test c.11 - OK
+-- test c.12 - X (ocakavany vystup: 6, vas vystup: 2)
+-- test c.13 - OK
+
+---------- Testy semantickych chyb (9)----------
+Delenie nulou ako konstantou 0 a 0.0
+-- test c.1 - OK
+-- test c.2 - OK
 
 ---------- Testy zo zadania ifj projektu ----------
 Vsetky by mali skoncit s chybovym kodom 0!
-
 -- test c.1 - OK
 -- test c.2 - OK
--- test c.3 - X
-ocakavany vystup: 0, vas vystup: 6
--- test c.4 - X
-ocakavany vystup: 0, vas vystup: 2
--- test c.5 - X
-ocakavany vystup: 0, vas vystup: 6
+-- test c.3 - OK
+-- test c.4 - OK
+-- test c.5 - OK
