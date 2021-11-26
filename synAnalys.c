@@ -1040,11 +1040,14 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         TNode *rootPtr = NULL;
         insertFirst(data->list, false, rootPtr);
 
-
+            //V podmienkde Ifu sa nemozu skontrolovat datove typy, nemaju sa s cim
+        data->checkDataType = false;
             //precedencna analyza by sa mala zastavit po nacitany klucoveho slova 'then', netreba to teda potom nacitavat
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+
+        data->checkDataType = false;
 
             //Nemusim nacitavat dalsi token, lebo precedencna analyza nacita do premennje token klucove slovo 'then'
         if(!strcmp(token->name,"keyword") && !strcmp(token->value,"then")){
@@ -1148,10 +1151,13 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         TNode *rootPtr = NULL;
         insertFirst(data->list, false, rootPtr);
 
+            //vo While podmienke sa nemozu kontroloval datovy typy, nastal by problem
+        data->checkDataType = false;
             //precedencna analyza nacitava dovtedy, kym nenarazi na klucove slovo 'do'
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+        data->checkDataType = false;
 
             //Nemusim nacitavat dalsi token, lebo v tokene bude nacitane klucove slovo 'do', pretoze sa na tomto tokene precedencna analyza zastavi
             //Prestane nacitavat vyraz a spracuje ho
