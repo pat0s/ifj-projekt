@@ -547,7 +547,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
             }
 
                 //skontrolovanie datoveho typu a poctu navratovych hodnot
-            if(data->leaf->func->ret_length != 1){
+            if(data->leaf->func->ret_length < 1){
                 //TODO skontroluj chybovy kod
                 printf("ERROR - priradenie funkcie, ktora vracia nehodny pocet navratovych hodnot\n");
                 data->errorValue = 5;
@@ -768,7 +768,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             
                 //kontrola spravneho poctu returnov pri priradeni vysledku funkcie; a = foo(3)
             //printf("assignLength: %d, Ret_length: %d\n", data->assignArrayLength,data->leaf->func->ret_length);
-            if(data->assignArrayLength != data->leaf->func->ret_length){
+            if(data->assignArrayLength > data->leaf->func->ret_length){
                 //TODO skontroluj chybu a jej chybovu hodnot, moze byt 7 alebo 4
                 printf("ERROR - zly pocet returnovych hodnot funkcie pri pridareni10\n");
                 data->errorValue = 5;
@@ -778,11 +778,13 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
 
                 //TODO cyklus cez pole datovych typov assignarray a navrativych hodnto funkcie ret_types
                 //kontrola spravneho typu pri priradeni vsledku funkcie do premennej; a:integer = foo(10):integer
-            if(data->assignArray[data->assignArrayIndex].dataType != data->leaf->func->ret_types[data->assignArrayIndex]){
-                printf("ERROR - typova nekompatibilita pri priradeni returnu funkcie do premennej10\n");
-                data->errorValue = 4;
-                checkError(data);
+            for(int i = 0; i < data->assignArrayLength; i++){
+                if(data->assignArray[i].dataType != data->leaf->func->ret_types[i]){
+                    printf("ERROR - typova nekompatibilita pri priradeni returnu funkcie do premennej10\n");
+                    data->errorValue = 4;
+                    checkError(data);
 
+                }
             }
 
                //vycistenie ukazatela na pomocny TNode
