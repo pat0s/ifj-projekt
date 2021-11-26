@@ -147,7 +147,7 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
         }
         else{
             type=token->name;
-            if(!strcmp(token->value,"0")||!strcmp(token->value,"0.0")){
+            if(!strcmp(token->value,"0")||!strcmp(token->value,"0.0")||!strncmp(token->value,"0e",2)||!strncmp(token->value,"0E",2)){
                 if (!is_empty(s)){
 
                     if(!strcmp(top(s),"/")||!strcmp(top(s),"//")){
@@ -189,7 +189,7 @@ void do_equal(Stack*s){
 /**
  * @brief Provede kontrolu typu u binarnich operatoru a nastavi typ vysledneho vyrazu;
  * 
- * @returns 0 pri uspechu, -1 pri chybe;
+ * @returns 0 pri uspechu, -1 pri chybe; -2 jestli zaporne cislo(zamisto operace odecitani)
  */
 int kontrola_typu(Stack *s){
     char type[7];
@@ -209,19 +209,25 @@ int kontrola_typu(Stack *s){
     else if(!strcmp(top_type(s),"int")){
         pop(s);
         pop(s);
-        if(!strcmp(top_type(s),"int")){
-            strcpy(type,"int");
-            change_top_type(s,type);
-            return 0;
+        if(!is_empty(s)){
+            if(!strcmp(top_type(s),"int")){
+                strcpy(type,"int");
+                change_top_type(s,type);
+                return 0;
+            }
+            else if(!strcmp(top_type(s),"number")){
+                //zmenit typ posledniho vlozeneho na number
+                strcpy(type,"number");
+                change_top_type(s,type);
+                return 0;
+            }
+            else{
+                return -1;
+            }
         }
-        else if(!strcmp(top_type(s),"number")){
-            //zmenit typ posledniho vlozeneho na number
-            strcpy(type,"number");
-            change_top_type(s,type);
-            return 0;
-        }
-        else{
-            return -1;
+        else {
+            push(s,"E","int");
+            return -2;
         }
     }
     else if(!strcmp(top_type(s),"nil")){
@@ -230,19 +236,25 @@ int kontrola_typu(Stack *s){
     else {
         pop(s);
         pop(s);
-        if(!strcmp(top_type(s),"number")){
-            strcpy(type,"number");
-            change_top_type(s,type);
-            return 0;
-        }
-        else if(!strcmp(top_type(s),"int")){
-            //zmenit typ predposledniho na number
-            strcpy(type,"number");
-            change_top_type(s,type);
-            return 0;
+        if(!is_empty(s)){
+            if(!strcmp(top_type(s),"number")){
+                strcpy(type,"number");
+                change_top_type(s,type);
+                return 0;
+            }
+            else if(!strcmp(top_type(s),"int")){
+                //zmenit typ predposledniho na number
+                strcpy(type,"number");
+                change_top_type(s,type);
+                return 0;
+            }
+            else {
+                return -1;
+            }
         }
         else {
-            return -1;
+            push(s,"E","number");
+            return -2;
         }
     }
 }
@@ -295,9 +307,13 @@ int do_reduc(Stack*s){
             }
             
         }
-        else if(!strcmp(top1(s),"-")){                      //E -> E - E
-            if(kontrola_typu(s)==0){
+        else if(!strcmp(top1(s),"-")){                       //E -> E - E
+            int kontrol=kontrola_typu(s);                    
+            if(kontrol==0){
             //zavolat generovani -
+            }
+            else if(kontrol==-2){
+            //zavolat generovani zaporneho cisla    
             }
             else{
                 return -1;
