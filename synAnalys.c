@@ -319,7 +319,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
 
                 //semanticka kontrola spravneho poctu returnovych hodnot
             if(data->arrayTypeLength == data->indexType){
-                fprintf(stderr, "\nERROR - Nadmerny pocet vyrazov v returne\n");
+                fprintf(stderr, "\nERROR - Nadmerny pocet vyrazov v returne2\n");
                 data->errorValue = 5;
                 checkError(data);
             }
@@ -431,9 +431,9 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 
                     //pripradava na semanticku kontrolu, ulozenie datoveho typu a vynulovanie poctu
                 data->indexType = 0;
-                printf("arrayLength1: %d\n", data->arrayTypeLength);
+                //printf("arrayLength1: %d\n", data->arrayTypeLength);
                 if(data->arrayTypeLength == data->indexType){
-                    fprintf(stderr, "\nERROR - Nadmerny pocet vyrazov v returne\n");
+                    fprintf(stderr, "\nERROR - Nadmerny pocet vyrazov v returne3\n");
                     data->errorValue = 5;
                     checkError(data);
 
@@ -463,9 +463,9 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
         else{
                 //pripradava na semanticku kontrolu, ulozenie datoveho typu a vynulovanie poctu
             data->indexType = 0;
-             printf("arrayLength2: %d\n", data->arrayTypeLength);
+            //printf("arrayLength2: %d\n", data->arrayTypeLength);
             if(data->arrayTypeLength == data->indexType){
-                fprintf(stderr, "\nERROR - Nadmerny pocet vyrazov v returne\n");
+                fprintf(stderr, "\nERROR - Nadmerny pocet vyrazov v returne1\n");
                 data->errorValue = 5;
                 checkError(data);
             }
