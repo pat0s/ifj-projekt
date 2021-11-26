@@ -40,7 +40,8 @@ typedef struct sData{
     
     int indexType;
     int dataType;
-    //int arrayType[20];
+    int *arrayType;
+    int arrayTypeLength;
     bool checkDataType;
 
     Function_t *funkcia;

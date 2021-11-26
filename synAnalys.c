@@ -301,7 +301,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
-        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(")){
+        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
             if(!strcmp(token->name,"identifier")){
                 if(isFunction(data->list->last->rootPtr, token->value)){
                     fprintf(stderr, "Error in state %d, fValues, Function instead of variable\n", *state);
@@ -317,16 +317,27 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
                 }
             }
 
+                //semanticka kontrola spravneho poctu returnovych hodnot
+            if(data->arrayTypeLength == data->indexType){
+                fprintf(stderr, "\nERROR - Nadmerny pocet vyrazov v returne\n");
+                data->errorValue = 5;
+                checkError(data);
+            }
+            data->dataType = data->arrayType[data->indexType];
 
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory pojdem analyzovat
 
+            //inkrementacia pocitadla indexu pre pole datovy typova navratovych hodnot
+            data->indexType++;
+
             fValues(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
+            
         }
         else{
             fprintf(stderr, "Error in state %d, fValues, missing expression after \',\'\n", *state);
@@ -353,7 +364,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
 
 void fValue(Token *token, enum STATE *state, Data_t *data){
 
-    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ){
+    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil")) ){
         if(!strcmp(token->name,"identifier")){
             
                 //TODO tu to padalo na segmentation fault ak funkcia neexistovala -> preslo to do fexp a padlo
@@ -390,11 +401,18 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
 
                 if(data->leaf->func->param_length != data->indexType){
-                printf("ERROR - zly pocet parametrov volania funkcie\n");
-                data->errorValue = 5;
-                checkError(data);
+                    printf("ERROR - zly pocet parametrov volania funkcie\n");
+                    data->errorValue = 5;
+                    checkError(data);
                 }
+                    //return funkcie, kontrola spravneho poctu parametrov
 
+                if(data->leaf->func->ret_length > data->arrayTypeLength){
+                    printf("ERROR - Vysoky pocet returnovych hodnot inej funckie v returne ucastnej funkcie\n");
+                    data->errorValue = 5;
+                    checkError(data);
+                }
+                
                    //vycistenie ukazatela na pomocny TNode
                 data->indexType = 0;
                 data->leaf = NULL;
@@ -411,6 +429,17 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                     checkError(data);
                 }
                 
+                    //pripradava na semanticku kontrolu, ulozenie datoveho typu a vynulovanie poctu
+                data->indexType = 0;
+                printf("arrayLength1: %d\n", data->arrayTypeLength);
+                if(data->arrayTypeLength == data->indexType){
+                    fprintf(stderr, "\nERROR - Nadmerny pocet vyrazov v returne\n");
+                    data->errorValue = 5;
+                    checkError(data);
+
+                }
+                data->dataType = data->arrayType[data->indexType];
+
                     //Token je ID premennej
                     //TODO treba zistit zo symtable, ci je ID premenna inicializovana
                     //je to ID premennej, idem do <exp> fExp
@@ -418,23 +447,45 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
                     //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
+                
+                    //inkrementacia pocitadla indexu pre pole datovy typova navratovych hodnot
+                data->indexType++;
+
 
                 fValues(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
 
+                data->indexType = 0;
+
             }
         }
         else{
+                //pripradava na semanticku kontrolu, ulozenie datoveho typu a vynulovanie poctu
+            data->indexType = 0;
+             printf("arrayLength2: %d\n", data->arrayTypeLength);
+            if(data->arrayTypeLength == data->indexType){
+                fprintf(stderr, "\nERROR - Nadmerny pocet vyrazov v returne\n");
+                data->errorValue = 5;
+                checkError(data);
+            }
+            data->dataType = data->arrayType[data->indexType];
+
                 //Token je string, number lebo int
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
+                
+                //inkrementacia pocitadla indexu pre pole datovy typova navratovych hodnot
+            data->indexType++;
+
 
             fValues(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
+
+            data->indexType = 0;
 
         }
     }
@@ -518,12 +569,14 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
        
-       fExp(token, state, data);
+        fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
             //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
+        //data->errorValue = read_token(token);
+        //checkError(data);
         //data->errorValue = read_token(token);
         //checkError(data);
     }
@@ -604,7 +657,7 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
         }
-        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
             //Naschval prazdne, pre jednoduchost tu nechavam tuto podmienku
 
 
@@ -712,7 +765,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
 
             //fprintf(stderr, "\n\ntoken pred fExp: %s\n\n\n", token->value);
         fExp(token, state, data);
@@ -1202,6 +1255,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         fValue(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+
+        //ak bude navratovych typov malo, bude za ne dosadeny nil, TOTO zabezpeci generovanie kodu, ktore hned pri
+        //tvorbe a skoku funkcie inicializuje premenne na return a priradi im nil
         
             //V EPSILON prechode mam rovno nacitany dalsi token
     }
@@ -1494,7 +1550,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
         //nacitali sme EPSILON
         //Nacitane: ID ()
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
 
         if(!strcmp(token->name,"identifier")){
             if(isFunction(data->list->last->rootPtr, token->value)){
@@ -2099,6 +2155,15 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
 
+                //ulozenie returnovych typov do pomocneho pola, ktory v returne budem kontrolova
+            data->arrayTypeLength = data->funkcia->ret_length;
+            data->arrayType = malloc(sizeof(int)*(data->arrayTypeLength+1));
+            if(data->arrayType == NULL){
+                data->errorValue = 9;
+                checkError(data);
+            }
+            data->arrayType = data->funkcia->ret_types;
+
 
 
             //Vkladanie Function_t do symtable
@@ -2226,7 +2291,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             checkError(data);   
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#")  || !strcmp(token->name,"-")|| !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
         //TODO ALL
             //TODO treba do podmienky zahrnut NIL
             //Check if is Expression
