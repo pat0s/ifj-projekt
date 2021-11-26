@@ -1507,6 +1507,21 @@ void fRet_type(Token *token, enum STATE *state, Data_t *data){
 }
 
 
+/**
+ * @brief Function for reallocating array of types
+ * 
+ * @param data 
+ * @param array 
+ */
+void reallocArray(Data_t *data, int *array){
+    int *tmp = realloc (array, 25*sizeof(int));
+    if(tmp == NULL){
+        data->errorValue = 99;
+        checkError(data);
+    }
+    array = tmp;
+}
+
 
 /**
  * @brief Function for nondeterminal Type in LL gramar
@@ -1527,6 +1542,10 @@ void fType(Token *token, enum STATE *state, Data_t *data){
                 else if (!strcmp(token->value,"string"))
                     data->funkcia->param_types[data->funkcia->param_length] = 2;
                 data->funkcia->param_length++;
+                if(data->funkcia->param_length == 15){
+                    reallocArray(data, data->funkcia->param_types);
+                    data->funkcia->param_length = 25;
+                }
                 //TODO realloc
             }else if(*state == ret_type || *state == params_n ){
                 if(!strcmp(token->value,"integer"))
@@ -1536,6 +1555,11 @@ void fType(Token *token, enum STATE *state, Data_t *data){
                 else if (!strcmp(token->value,"string"))
                     data->funkcia->ret_types[data->funkcia->ret_length] = 2;
                 data->funkcia->ret_length++;
+
+                if(data->funkcia->ret_length == 15){
+                    reallocArray(data, data->funkcia->ret_types);
+                    data->funkcia->ret_length = 25;
+                }
                 //TODO realloc
             }else if(*state == params){
                 if(!strcmp(token->value,"integer"))
