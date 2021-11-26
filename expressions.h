@@ -39,7 +39,8 @@ typedef struct sData{
     Tframe_list *list;
     
     int indexType;
-    int arrayType[20];
+    int dataType;
+    //int arrayType[20];
     bool checkDataType;
 
     Function_t *funkcia;
@@ -47,6 +48,7 @@ typedef struct sData{
     TNode *leaf;
     char *tokenValue;
     int isIf;
+
 
 } Data_t;
 

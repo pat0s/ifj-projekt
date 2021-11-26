@@ -44,7 +44,9 @@ typedef struct tfunc
 {
     bool defined;
     int *param_types;
+    int param_length;
     int *ret_types;
+    int ret_length;
 } TFunc;
 
 /**

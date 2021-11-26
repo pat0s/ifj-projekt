@@ -135,6 +135,7 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
     if(given_pt == NULL)
     {
         newFunc->param_types = NULL;
+        newFunc->param_length = pt_length;
     }
     else
     {
@@ -150,11 +151,13 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
             newPt[i] = given_pt[i];
         }
         newFunc->param_types = newPt;
+        newFunc->param_length = pt_length;
     }
 
     if (given_rt == NULL)
     {
         newFunc->ret_types = NULL;
+        newFunc->ret_length = rt_length;
     }
     else
     {
@@ -170,6 +173,7 @@ TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_leng
             newRt[i] = given_rt[i];
         }
         newFunc->ret_types = newRt;
+        newFunc->ret_length = rt_length;
     }  
 
     newPtr->var = NULL;

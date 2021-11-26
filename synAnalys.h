@@ -24,7 +24,7 @@ enum STATE {assign, assigns, arg, args, exp, ifStatement, item, item_n, init, in
 
 
 
-
+void reallocArray(Data_t *data, int *array);
 void fValues(Token *token, enum STATE *state, Data_t *data);
 void fValue(Token *token, enum STATE *state, Data_t *data);
 void fInit_value(Token *token, enum STATE *state, Data_t *data);

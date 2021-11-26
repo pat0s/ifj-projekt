@@ -358,7 +358,17 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
             
                 //TODO tu to padalo na segmentation fault ak funkcia neexistovala -> preslo to do fexp a padlo
             if(isFunction(data->list->last->rootPtr, token->value)){
-                                  
+
+                TNode * element2 = search(data->list->last->rootPtr, token->value);
+                if(element2 == NULL){
+                    fprintf(stderr, "\nERROR - volanie neexistujuceho identifikatoru5\n");
+                    data->errorValue = 3;
+                    checkError(data);
+                }
+
+                    //inicializacia pre semanticke kontroly
+                data->leaf = element2;
+                data->indexType = 0;                  
                     //je to ID funkcie
                     //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
@@ -378,6 +388,16 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
 
                 fArg(token, state, data);
                 checkError(data);
+
+                if(data->leaf->func->param_length != data->indexType){
+                printf("ERROR - zly pocet parametrov volania funkcie\n");
+                data->errorValue = 5;
+                checkError(data);
+                }
+
+                   //vycistenie ukazatela na pomocny TNode
+                data->indexType = 0;
+                data->leaf = NULL;
 
                     //Nacitanie dalsieho tokenu, ocakavam <st-list>
                 data->errorValue = read_token(token);
@@ -440,6 +460,15 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
 
     if(!strcmp(token->name,"identifier")){
         if(isFunction(data->list->last->rootPtr, token->value)){
+            TNode * element2 = search(data->list->last->rootPtr, token->value);
+            if(element2 == NULL){
+                fprintf(stderr, "\nERROR - volanie neexistujuceho identifikatoru30\n");
+                data->errorValue = 3;
+                checkError(data);
+            }
+                //inicializacia pre semanticke kontroly
+            data->leaf = element2;
+            data->indexType = 0;
                 //je to ID funkcie
                 //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
@@ -459,6 +488,16 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
 
             fArg(token, state, data);
             checkError(data);
+            
+            if(data->leaf->func->param_length != data->indexType){
+                printf("ERROR - zly pocet parametrov volania funkcie\n");
+                data->errorValue = 5;
+                checkError(data);
+            }
+
+               //vycistenie ukazatela na pomocny TNode
+            data->indexType = 0;
+            data->leaf = NULL;
 
                 //Nacitanie dalsieho tokenu, ocakavam <st-list>
             data->errorValue = read_token(token);
@@ -613,6 +652,17 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
     if(!strcmp(token->name,"identifier")){
             //TODO treba zistit ci je to identifikator funkcie alebo premennej, ak funkcie tak riesim (<arg>), ak premennej tak idem to <exp>
         if(isFunction(data->list->last->rootPtr, token->value)){
+            TNode * element2 = search(data->list->last->rootPtr, token->value);
+            if(element2 == NULL){
+                fprintf(stderr, "\nERROR - volanie neexistujuceho identifikatoru5\n");
+                data->errorValue = 3;
+                checkError(data);
+            }
+
+                //inicializacia pre semanticke kontroly
+            data->leaf = element2;
+            data->indexType = 0;
+
                 //TODO Zistit v symtable, ci je deklarovana, ak nie tak ERROR
                 //Nacitanie '('
             data->errorValue = read_token(token);
@@ -631,7 +681,18 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             fArg(token, state, data);
             checkError(data);
                 //Netreba nacitat dalsi token, ked sa vynorim, a bude posledny token ')', tak sa nacita novy token
-        }
+
+            if(data->leaf->func->param_length != data->indexType){
+                printf("ERROR - zly pocet parametrov volania funkcie\n");
+                data->errorValue = 5;
+                checkError(data);
+            }
+
+               //vycistenie ukazatela na pomocny TNode
+            data->indexType = 0;
+            data->leaf = NULL;
+       
+       }
         else{
             TNode * element = searchFrames(data->list, token->value);
             if(element == NULL){
@@ -763,6 +824,10 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
+        data->leaf = element;
+        data->indexType = 0;
+
+
             //Ide argumnet funkcie, dany identifikator by mal patrit funkcii
 
             //TODO treba skontrolovat, ci je funkcia aspon deklarovana
@@ -774,7 +839,13 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
         fArg(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+        if(data->leaf->func->param_length != data->indexType){
+            printf("ERROR - zly pocet parametrov volania funkcie\n");
+            data->errorValue = 5;
+            checkError(data);
+        }
 
+        data->leaf = NULL;
             //Som v stave, kedy mam nacitanu ')' argumentu a musim prejst do <st-list>
         data->errorValue = read_token(token);
         checkError(data);
@@ -1148,6 +1219,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
         data->tokenValue = NULL;
+        data->checkDataType = false;
+        data->indexType = 0;
+        
 
         
 
@@ -1369,9 +1443,26 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
+        //priprava na typovu kontrolu a pocet parametrov
+        if(strcmp(data->leaf->ID, "write")){
+            data->checkDataType = true;
+            if(data->leaf->func->param_length == data->indexType){
+                printf("ERROR - nadmerny pocet parametrov funkcie\n");
+                data->errorValue = 5;
+                checkError(data);
+            }
+            data->dataType = data->leaf->func->param_types[data->indexType];
+        }else{
+            data->checkDataType = false;
+        }
+
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+        if(strcmp(data->leaf->ID, "write")){
+            data->indexType++;
+        }
+        data->checkDataType = false;
 
             //Nesmusim nacitat dalsi token, pretoze precedencna analyza v <exp> fExp nacita token, a podla neho sa rozhodne ci ma prestat nacitavat vyraz
             // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
@@ -1420,11 +1511,32 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
         }
+
+            //priprava na typovu kontrolu a pocet parametrov
+            //pripad, kedy sa ID != write
+        if(strcmp(data->leaf->ID, "write")){
+            data->checkDataType = true;
+            if(data->leaf->func->param_length == data->indexType){
+                printf("ERROR - nadmerny pocet parametrov funkcie\n");
+                data->errorValue = 5;
+                checkError(data);
+            }
+            data->dataType = data->leaf->func->param_types[data->indexType];
+        }else{
+            data->checkDataType = false;
+        }
+
             //Ocakavam argument <arg>
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
-       
+            //inkrementacia indexu, kt sa pouziva ako index v poli datovych typov funkcie
+        if(strcmp(data->leaf->ID, "write")){
+            data->indexType++;
+        }
+        data->checkDataType = false;
+
+
             //Nesmusim nacitat dalsi token, pretoze precedencna analyza v <exp> fExp nacita token, a podla neho sa rozhodne ci ma prestat nacitavat vyraz
             // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
             //Token vrati precedencna analyza v premennej 'token'
@@ -1507,6 +1619,21 @@ void fRet_type(Token *token, enum STATE *state, Data_t *data){
 }
 
 
+/**
+ * @brief Function for reallocating array of types
+ * 
+ * @param data 
+ * @param array 
+ */
+void reallocArray(Data_t *data, int *array){
+    int *tmp = realloc (array, 25*sizeof(int));
+    if(tmp == NULL){
+        data->errorValue = 99;
+        checkError(data);
+    }
+    array = tmp;
+}
+
 
 /**
  * @brief Function for nondeterminal Type in LL gramar
@@ -1527,6 +1654,10 @@ void fType(Token *token, enum STATE *state, Data_t *data){
                 else if (!strcmp(token->value,"string"))
                     data->funkcia->param_types[data->funkcia->param_length] = 2;
                 data->funkcia->param_length++;
+                if(data->funkcia->param_length == 15){
+                    reallocArray(data, data->funkcia->param_types);
+                    data->funkcia->param_length = 25;
+                }
                 //TODO realloc
             }else if(*state == ret_type || *state == params_n ){
                 if(!strcmp(token->value,"integer"))
@@ -1536,6 +1667,11 @@ void fType(Token *token, enum STATE *state, Data_t *data){
                 else if (!strcmp(token->value,"string"))
                     data->funkcia->ret_types[data->funkcia->ret_length] = 2;
                 data->funkcia->ret_length++;
+
+                if(data->funkcia->ret_length == 15){
+                    reallocArray(data, data->funkcia->ret_types);
+                    data->funkcia->ret_length = 25;
+                }
                 //TODO realloc
             }else if(*state == params){
                 if(!strcmp(token->value,"integer"))
@@ -1727,6 +1863,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             Function_t *funkcia = malloc(sizeof(Function_t));
             data->funkcia = funkcia;
+            data->funkcia->param_length = 0;
+            data->funkcia->ret_length = 0;
             /*funkcia->ID = malloc(sizeof(char)*strlen(token->value));
             if(funkcia->ID == NULL){
                 data->errorValue = 99;
@@ -1889,6 +2027,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
         Function_t *funkcia = malloc(sizeof(Function_t));
         data->funkcia = funkcia;
+        data->funkcia->param_length = 0;
+        data->funkcia->ret_length = 0;
         /*data->funkcia->ID = malloc(sizeof(char)*strlen(token->value));
         if(data->funkcia->ID == NULL){
             data->errorValue = 99;
@@ -2011,6 +2151,10 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
         
         if(!strcmp(token->name,"(")){
             //Nacitane: ID (
+                //predanie elementu do data->leaf pre typovu kompatibilitu
+            data->leaf = element;
+            data->indexType = 0;
+            //printf("\nDLZKA RETAZCKA PARAMETROV: %d\n",data->leaf->func->param_length);
 
             data->errorValue = read_token(token);
             checkError(data);
@@ -2022,10 +2166,19 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
 
+            if(data->leaf->func->param_length != data->indexType){
+                printf("ERROR - zly pocet parametrov volania funkcie\n");
+                data->errorValue = 5;
+                checkError(data);
+            }
+
                 // pokracovanie do prog_con
             *state = prog_con;    
             data->errorValue = read_token(token);
             checkError(data);
+                //vycistenie ukazatela na pomocny TNode
+            data->indexType = 0;
+            data->leaf = NULL;
 
             fProg_con(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -2152,6 +2305,11 @@ int main(){
     
     data->errorValue = 0;
     data->isError = false;  
+    data->leaf = NULL;
+
+    data->dataType = -1;
+    data->checkDataType = false;
+    data->indexType = 0;
 
     Tframe_list *frames = (Tframe_list*)malloc(sizeof(Tframe_list));
     initList(frames);
