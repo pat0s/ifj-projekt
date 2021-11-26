@@ -346,7 +346,7 @@ TNode *deleteNode(TNode *rootPtr){
     }
     else{
         if(rootPtr->lPtr != NULL){
-           deleteNode(rootPtr->lPtr);
+            deleteNode(rootPtr->lPtr);
         }
         if(rootPtr->rPtr != NULL){
             deleteNode(rootPtr->rPtr);
@@ -354,6 +354,7 @@ TNode *deleteNode(TNode *rootPtr){
         free(rootPtr);
         rootPtr = NULL;
    }
+   return rootPtr;
 }
 
 /**
@@ -507,10 +508,8 @@ void deleteFirst(Tframe_list *frames)
 {   
     if(frames->first != NULL)
     {
-        Tframe *tmp = frames->first;
-        int error = 0;
-        error = dispose(&(frames->first->rootPtr));
-
+        Tframe *tmp = frames->first;        
+        dispose(&(frames->first->rootPtr));
         if (frames->first == frames->last)
         {
             frames->last = NULL;
