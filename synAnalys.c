@@ -358,7 +358,17 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
             
                 //TODO tu to padalo na segmentation fault ak funkcia neexistovala -> preslo to do fexp a padlo
             if(isFunction(data->list->last->rootPtr, token->value)){
-                                  
+
+                TNode * element2 = search(data->list->last->rootPtr, token->value);
+                if(element2 == NULL){
+                    fprintf(stderr, "\nERROR - volanie neexistujuceho identifikatoru5\n");
+                    data->errorValue = 3;
+                    checkError(data);
+                }
+
+                    //inicializacia pre semanticke kontroly
+                data->leaf = element2;
+                data->indexType = 0;                  
                     //je to ID funkcie
                     //TODO treba zistit zo symtable, ci je funkcia aspon deklarovana
 
@@ -378,6 +388,16 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
 
                 fArg(token, state, data);
                 checkError(data);
+
+                if(data->leaf->func->param_length != data->indexType){
+                printf("ERROR - zly pocet parametrov volania funkcie\n");
+                data->errorValue = 5;
+                checkError(data);
+                }
+
+                   //vycistenie ukazatela na pomocny TNode
+                data->indexType = 0;
+                data->leaf = NULL;
 
                     //Nacitanie dalsieho tokenu, ocakavam <st-list>
                 data->errorValue = read_token(token);
@@ -2134,7 +2154,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //predanie elementu do data->leaf pre typovu kompatibilitu
             data->leaf = element;
             data->indexType = 0;
-            printf("\nDLZKA RETAZCKA PARAMETROV: %d\n",data->leaf->func->param_length);
+            //printf("\nDLZKA RETAZCKA PARAMETROV: %d\n",data->leaf->func->param_length);
 
             data->errorValue = read_token(token);
             checkError(data);
