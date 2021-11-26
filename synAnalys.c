@@ -542,8 +542,27 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
             
             if(data->leaf->func->param_length != data->indexType){
                 printf("ERROR - zly pocet parametrov volania funkcie\n");
+                data->errorValue = 5; // aelbo 7, alebo 4
+                checkError(data);
+            }
+
+                //skontrolovanie datoveho typu a poctu navratovych hodnot
+            if(data->leaf->func->ret_length != 1){
+                //TODO skontroluj chybovy kod
+                printf("ERROR - priradenie funkcie, ktora vracia nehodny pocet navratovych hodnot\n");
                 data->errorValue = 5;
                 checkError(data);
+
+            }
+
+                //kontrola spravneho datoveho typu medzi priradenim predemmenj a returnu funkcie
+            //printf("leaf: %d, premenna: %d\n",data->leaf->func->ret_types[0],data->premenna->dataType  );
+            if(data->leaf->func->ret_types[0] != data->premenna->dataType){
+                //TODO skontroluj chybovy kod
+                printf("ERROR - priradenie funkcie, ktora vracia nehodny datovy typ navratovej hodnoty\n");
+                data->errorValue = 4;
+                checkError(data);
+
             }
 
                //vycistenie ukazatela na pomocny TNode
@@ -561,6 +580,8 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 data->errorValue = 3;
                 checkError(data);
             }
+
+            data->dataType = data->premenna->dataType;
                 //TODO treba zistit zo symtable, ci je ID premenna inicializovana
                 //je to ID premennej, idem do <exp> fExp
             fExp(token, state, data);
@@ -1226,7 +1247,6 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         insert(&(data->list->first->rootPtr), createVarNode(data->premenna->ID, data->premenna->dataType, pole, &(data->errorValue)));
         checkError(data);
 
-        data->premenna = NULL;
 
             //Ocakavam <init>
         data->errorValue = read_token(token);
@@ -1236,6 +1256,8 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
+        
+        data->premenna = NULL;
             //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
             //Nacitanie som spravil v fInit() v epsilon prechode alebo vo <init-value>
 
