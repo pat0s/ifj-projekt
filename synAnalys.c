@@ -401,11 +401,18 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
 
                 if(data->leaf->func->param_length != data->indexType){
-                printf("ERROR - zly pocet parametrov volania funkcie\n");
-                data->errorValue = 5;
-                checkError(data);
+                    printf("ERROR - zly pocet parametrov volania funkcie\n");
+                    data->errorValue = 5;
+                    checkError(data);
                 }
+                    //return funkcie, kontrola spravneho poctu parametrov
 
+                if(data->leaf->func->ret_length > data->arrayTypeLength){
+                    printf("ERROR - Vysoky pocet returnovych hodnot inej funckie v returne ucastnej funkcie\n");
+                    data->errorValue = 5;
+                    checkError(data);
+                }
+                
                    //vycistenie ukazatela na pomocny TNode
                 data->indexType = 0;
                 data->leaf = NULL;
