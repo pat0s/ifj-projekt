@@ -799,12 +799,25 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
                 data->errorValue = 3;
                 checkError(data);
             }
+
+
+                //viac priradzujem hodnot ako ocakavam na lavej strane
+            if(data->assignArrayIndex == data->assignArrayLength){
+                //TODO skontroluj na zaklade vlakna z fora
+                
+
+
+            }
+
+            data->dataType = data->assignArray[data->assignArrayIndex].dataType;
                 //priradenie do data->dataType pre potrebyn fexp
             //data->dataType = data->assignArray[data->assignArrayIndex].dataType;
                 // ide o ID premennej
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
+            data->assignArrayIndex++;
+
 
                 //Inkrementacia indexu assignArray, pre potreby fExp
             //data->assignArrayIndex++;
