@@ -301,7 +301,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
-        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
             if(!strcmp(token->name,"identifier")){
                 if(isFunction(data->list->last->rootPtr, token->value)){
                     fprintf(stderr, "Error in state %d, fValues, Function instead of variable\n", *state);
@@ -364,7 +364,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
 
 void fValue(Token *token, enum STATE *state, Data_t *data){
 
-    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil")) ){
+    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil")) ){
         if(!strcmp(token->name,"identifier")){
             
                 //TODO tu to padalo na segmentation fault ak funkcia neexistovala -> preslo to do fexp a padlo
@@ -562,12 +562,14 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
        
-       fExp(token, state, data);
+        fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
             //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
+        //data->errorValue = read_token(token);
+        //checkError(data);
         //data->errorValue = read_token(token);
         //checkError(data);
     }
@@ -648,7 +650,7 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
         }
-        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
             //Naschval prazdne, pre jednoduchost tu nechavam tuto podmienku
 
 
@@ -756,7 +758,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
 
             //fprintf(stderr, "\n\ntoken pred fExp: %s\n\n\n", token->value);
         fExp(token, state, data);
@@ -1541,7 +1543,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
         //nacitali sme EPSILON
         //Nacitane: ID ()
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
 
         if(!strcmp(token->name,"identifier")){
             if(isFunction(data->list->last->rootPtr, token->value)){
@@ -2282,7 +2284,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             checkError(data);   
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#")  || !strcmp(token->name,"-")|| !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
         //TODO ALL
             //TODO treba do podmienky zahrnut NIL
             //Check if is Expression
