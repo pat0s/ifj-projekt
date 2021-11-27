@@ -547,7 +547,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
             }
 
                 //skontrolovanie datoveho typu a poctu navratovych hodnot
-            if(data->leaf->func->ret_length != 1){
+            if(data->leaf->func->ret_length < 1){
                 //TODO skontroluj chybovy kod
                 printf("ERROR - priradenie funkcie, ktora vracia nehodny pocet navratovych hodnot\n");
                 data->errorValue = 5;
@@ -581,6 +581,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
 
+                //posielanie datoveho typu precedencnej analyze
             data->dataType = data->premenna->dataType;
                 //TODO treba zistit zo symtable, ci je ID premenna inicializovana
                 //je to ID premennej, idem do <exp> fExp
@@ -592,6 +593,8 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
     }
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
        
+            //posielanie datoveho typu precedencnej analyze
+        data->dataType = data->premenna->dataType;
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
@@ -689,17 +692,29 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
-        fExp(token, state, data);
-        checkError(data);
+            //osetrenie segmentation fault pri moznom priradeni vaic hodnot ako je identifikatorov: id1, id2 = 10, 10, 10
+            //Ak nastane tato situacia, hodnoty by sa mali zahodit
+        if(data->assignArrayIndex < data->assignArrayLength){
+                //vlozenie datoveho type pre precedencnu analyzu
+            data->dataType = data->assignArray[data->assignArrayIndex].dataType;
+
+        }else{
+            data->checkDataType = false;
+        }
+            fExp(token, state, data);
+            checkError(data);
+
+            data->assignArrayIndex++;
+
+                //Nebude treba nacitavat token, lebo v precedencnej analyze bude musiet nacitat dalsi token, aby vedel ze ukonicl vyraz.
+                // Bud nacita ',' a pokracujem, alebo nacita EPSILON PRECHOD a koncim
+
+                //Vzdy sa rekurzivne zanorim do fAssigns(), ak bude EPSILON prechod, tak sa vynori, ak bude ',' tak riesim dalsie priradenie
+            fAssigns(token, state, data);
+                //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
+            checkError(data);
 
 
-            //Nebude treba nacitavat token, lebo v precedencnej analyze bude musiet nacitat dalsi token, aby vedel ze ukonicl vyraz.
-            // Bud nacita ',' a pokracujem, alebo nacita EPSILON PRECHOD a koncim
-
-            //Vzdy sa rekurzivne zanorim do fAssigns(), ak bude EPSILON prechod, tak sa vynori, ak bude ',' tak riesim dalsie priradenie
-        fAssigns(token, state, data);
-            //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
-        checkError(data);
     }
     else{
         //EPSILON PRECHOD
@@ -737,6 +752,11 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             data->leaf = element2;
             data->indexType = 0;
 
+            if(strcmp(data->leaf->ID, "write")){
+                data->checkDataType = false;
+            }
+            
+
                 //TODO Zistit v symtable, ci je deklarovana, ak nie tak ERROR
                 //Nacitanie '('
             data->errorValue = read_token(token);
@@ -757,9 +777,31 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
                 //Netreba nacitat dalsi token, ked sa vynorim, a bude posledny token ')', tak sa nacita novy token
 
             if(data->leaf->func->param_length != data->indexType){
-                printf("ERROR - zly pocet parametrov volania funkcie\n");
+                printf("ERROR - zly pocet parametrov volania funkcie10\n");
                 data->errorValue = 5;
                 checkError(data);
+            }
+
+            
+                //kontrola spravneho poctu returnov pri priradeni vysledku funkcie; a = foo(3)
+            //printf("assignLength: %d, Ret_length: %d\n", data->assignArrayLength,data->leaf->func->ret_length);
+            if(data->assignArrayLength > data->leaf->func->ret_length){
+                //TODO skontroluj chybu a jej chybovu hodnot, moze byt 7 alebo 4
+                printf("ERROR - zly pocet returnovych hodnot funkcie pri pridareni10\n");
+                data->errorValue = 5;
+                checkError(data);
+
+            }
+
+                //TODO cyklus cez pole datovych typov assignarray a navrativych hodnto funkcie ret_types
+                //kontrola spravneho typu pri priradeni vsledku funkcie do premennej; a:integer = foo(10):integer
+            for(int i = 0; i < data->assignArrayLength; i++){
+                if(data->assignArray[i].dataType != data->leaf->func->ret_types[i]){
+                    printf("ERROR - typova nekompatibilita pri priradeni returnu funkcie do premennej10\n");
+                    data->errorValue = 4;
+                    checkError(data);
+
+                }
             }
 
                //vycistenie ukazatela na pomocny TNode
@@ -774,25 +816,56 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
                 data->errorValue = 3;
                 checkError(data);
             }
+
+
+                //viac priradzujem hodnot ako ocakavam na lavej strane
+
+            data->dataType = data->assignArray[data->assignArrayIndex].dataType;
+                //priradenie do data->dataType pre potrebyn fexp
+            //data->dataType = data->assignArray[data->assignArrayIndex].dataType;
                 // ide o ID premennej
             fExp(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
+            data->assignArrayIndex++;
+
+
+                //Inkrementacia indexu assignArray, pre potreby fExp
+            //data->assignArrayIndex++;
                 //nemusim nacitavat dalsi token, lebo mi to precedencna analyza vrati v ukazatali a premennej 'token'
                 //precedencna analyza sa musi zastavit v momente, kedy narazi na ',' alebo EPSILON PRECHOD, v tomto pripade <st-list>
                 //Az vo funkcii fAssings() zistim, ci sa jednalo o EPSILON prechod alebo o ',' a teda dalsie hodnoty do priradenia
             fAssigns(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
+
+
+            //printf("index: %d, length: %d\n", data->assignArrayIndex, data->assignArrayLength );
+                //TODO asi kontrola ak je data->assignArrayIndex < data->assignArraylength tak error
+            if(data->assignArrayIndex < data->assignArrayLength){
+                fprintf(stderr, "\nERROR - Nizky pocet priradeni k identifikatorom\n");
+                data->errorValue = 7;
+                checkError(data);
+
+
+            }
         }
     }
     else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
 
+
+        
+        data->dataType = data->assignArray[data->assignArrayIndex].dataType;
+            //priradenie do data->dataType pre potrebyn fexp
+        //data->dataType = data->assignArray[data->assignArrayIndex].dataType;
             //fprintf(stderr, "\n\ntoken pred fExp: %s\n\n\n", token->value);
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
             //fprintf(stderr, "\n\ntoken po fExp: %s\n\n\n", token->value);
+
+            //Inkrementacia indexu assignArray, pre potreby fExp
+        data->assignArrayIndex++;
 
             //nemusim nacitavat dalsi token, lebo mi to precedencna analyza vrati v ukazatali a premennej 'token'
             //precedencna analyza sa musi zastavit v momente, kedy narazi na ',' alebo EPSILON PRECHOD, v tomto pripade <st-list>
@@ -800,6 +873,14 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
         fAssigns(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+
+        //printf("index: %d, length: %d\n", data->assignArrayIndex, data->assignArrayLength );
+            //TODO asi kontrola ak je data->assignArrayIndex < data->assignArraylength tak error
+        if(data->assignArrayIndex < data->assignArrayLength){
+            fprintf(stderr, "\nERROR - Nizky pocet priradeni k identifikatorom\n");
+            data->errorValue = 7;
+            checkError(data);
+        }
     }
     else{
         fprintf(stderr, "Error in state %d, fAssign\n", *state);
@@ -837,8 +918,15 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
                     data->errorValue = 3;
                     checkError(data);
                 }
-                
-                
+
+                 //TODO alokovat data->assignArray[].name
+                    //Priradenie datoveho typu do pola pre identifikatory, element je hladany z ID pracovaneho predtym
+                data->assignArray[data->assignArrayLength].dataType = element->var->data_type;
+                data->assignArrayLength++;
+                //printf("element->ID3: %s\n", element->ID);
+
+
+
                     //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
                 checkError(data);
@@ -864,6 +952,7 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
             //Ocakavam <assign>
         data->errorValue = read_token(token);
         checkError(data);
+        data->checkDataType = true;
 
 
         fAssign(token, state, data);
@@ -932,6 +1021,23 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = 3;
             checkError(data);
         }
+
+            //tvorba pola pre identifikatorov a ich datove typy
+        data->checkDataType = true;
+        data->assignArrayIndex = 0;
+        data->assignArrayLength = 0;
+        data->assignArray = malloc(sizeof(AssignToken_t) * 15);
+        if(data->assignArray == NULL){
+            data->errorValue = 99;
+            checkError(data);
+        }
+
+            //TODO alokovat data->assignArray[].name
+            //Priradenie datoveho typu do pola pre identifikatory, element je hladany z ID pracovaneho predtym
+        data->assignArray[data->assignArrayLength].dataType = element->var->data_type;
+        data->assignArrayLength++;
+
+
             //Prikaz priradenia, dany identifikator by mal byt premenna
 
             //Ocakavam bud ID funkcie alebo <exp>(<exp> moze byt aj nazov premennej, treba zistit v symtable)
@@ -943,6 +1049,10 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
+        data->assignArrayIndex = 0;
+        data->assignArrayLength = 0;
+        free(data->assignArray);
+
             //Token so <st-list> som nacital vo fAssign()
     }
     else if(!strcmp(token->name,",")){
@@ -952,8 +1062,23 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = 3;
             checkError(data);
         }
-            //prikaz priradenia, viacnasobne priradenie
 
+            //tvorba pola pre identifikatorov a ich datove typy
+        data->checkDataType = true;
+        data->assignArrayIndex = 0;
+        data->assignArrayLength = 0;
+        data->assignArray = malloc(sizeof(AssignToken_t) * 15);
+        if(data->assignArray == NULL){
+            data->errorValue = 99;
+            checkError(data);
+        }
+            //TODO alokovat data->assignArray[].name
+            //Priradenie datoveho typu do pola pre identifikatory, element je hladany z ID pracovaneho predtym
+        data->assignArray[data->assignArrayLength].dataType = element->var->data_type;
+        data->assignArrayLength++;
+        //printf("element->ID1: %s\n", element->ID);
+
+            //prikaz priradenia, viacnasobne priradenie
             //ocakavam ID premennej
         data->errorValue = read_token(token);
         checkError(data);
@@ -969,6 +1094,14 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
                     checkError(data);
                 }
 
+                
+                    //TODO alokovat data->assignArray[].name
+                    //Priradenie datoveho typu do pola pre identifikatory, element je hladany z ID pracovaneho predtym
+                data->assignArray[data->assignArrayLength].dataType = element->var->data_type;
+                data->assignArrayLength++;
+                //printf("element->ID2: %s\n", element->ID);
+
+
                     //ocakavam ',' alebo '=' a teda prechod od <item-n>
                 data->errorValue = read_token(token);
                 checkError(data);
@@ -976,6 +1109,11 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
                 fItem_n(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
+
+                    //Vynolovanie pola pre datove typy po vynoreni
+                data->assignArrayIndex = 0;
+                data->assignArrayLength = 0;
+                free(data->assignArray);
             }
             else{
                 fprintf(stderr, "Error in state %d, fItem_n, function instead of ID of variable\n", *state);
@@ -990,7 +1128,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
         }
     }
     else{
-        fprintf(stderr, "Error in state %d, fItem\n", *state);
+        fprintf(stderr, "Error in state %d, fItem1\n", *state);
         data->errorValue = 2;
         checkError(data);
     }
@@ -1252,6 +1390,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         char pole[]="";
         insert(&(data->list->first->rootPtr), createVarNode(data->premenna->ID, data->premenna->dataType, pole, &(data->errorValue)));
         checkError(data);
+        data->checkDataType = true;
 
 
             //Ocakavam <init>
@@ -1261,6 +1400,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         fInit(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+        data->checkDataType = false;
 
         
         data->premenna = NULL;
@@ -1279,10 +1419,11 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
-
+        data->checkDataType = true;
         fValue(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+        data->checkDataType = false;
 
         //ak bude navratovych typov malo, bude za ne dosadeny nil, TOTO zabezpeci generovanie kodu, ktore hned pri
         //tvorbe a skoku funkcie inicializuje premenne na return a priradi im nil
@@ -2329,6 +2470,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             
             //TODO treba sa dohodnut na returnoch, precedencna analyza by mala nacitat dalsi token a podla abecedy usudit, kedy treba prestat nacitavat
             //TODO Parser uz nenacitava dalsi token, funkcie pocitaju s tym, ze sa z precedencnej analyzi vrati v premennej 'token' dalsi nacitany token
+        //printf("checkDataType: %d, dataType: %d\n", data->checkDataType, data->dataType);
         exp_analysator(data);
     }
     else if(*state == arg && !strcmp(token->name,")")){

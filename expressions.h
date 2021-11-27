@@ -31,25 +31,48 @@ typedef struct sFunction{
 
 }Function_t;
 
+
+typedef struct fAssignToken{
+    char *name;
+    int dataType;
+
+}AssignToken_t;
+
 typedef struct sData{
     
     bool isError;
     int errorValue;
     Token *token;
     Tframe_list *list;
-    
+
+        //index v poli datovych typov
     int indexType;
+        //Uchovava datovy typ premennej pri deklaracii, semanticke kontroly
     int dataType;
+        //Premenna, ktora uchovava pole datovych typov. Pomoha pri semantickych kontrolach ruturnu funkcie
     int *arrayType;
+        //Premenna, ktora uchovava dlzku int *arrayType
     int arrayTypeLength;
+        //Premenna, ktora hovori precedencnej analyze kedy treba osetrovat datove typy
     bool checkDataType;
 
-    Function_t *funkcia;
-    Variable_t *premenna;
-    TNode *leaf;
-    char *tokenValue;
-    int isIf;
 
+        //pomocna premenna pre createFuncNode a semanticke kontroli
+    Function_t *funkcia;
+        //Pomocna premenna pre creteVarNode a semanticke kontroli
+    Variable_t *premenna;
+        //Pomocna premenna pre semanticke kontroli
+    TNode *leaf;
+        //Pomocna premenna pre ulozenie token->value v divokych situaciach
+    char *tokenValue;
+        //Pomocna premenna pre osetrenie spravneho poctu elsov v ife
+    int isIf;
+        //Pole tokenov, ktore musim ulozit pre spravne skontrolovanie typov a pre generovanie kodu
+    AssignToken_t *assignArray;
+        //Index pre assignArray, ktory sluzi na tahanie datoveho typu z pola na zaklade poctu volani fexp;
+    int assignArrayIndex;
+        //pocet datovych typov v poli
+    int assignArrayLength;
 
 } Data_t;
 
