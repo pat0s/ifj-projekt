@@ -2542,7 +2542,7 @@ int main(){
     data->isError = false;  
     data->leaf = NULL;
 
-    data->dataType = -1;
+    data->dataType = 0;
     data->checkDataType = false;
     data->indexType = 0;
 
@@ -2555,13 +2555,6 @@ int main(){
 
     //insertFirst(frames, true, rootPtr);
     //deleteFirst(data->list);
-
-
-
-
-
-
-
 
     
         //Idem vytvarat a vkladat vestavene funkce
