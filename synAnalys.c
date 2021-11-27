@@ -1390,6 +1390,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         char pole[]="";
         insert(&(data->list->first->rootPtr), createVarNode(data->premenna->ID, data->premenna->dataType, pole, &(data->errorValue)));
         checkError(data);
+        data->checkDataType = true;
 
 
             //Ocakavam <init>
@@ -1399,6 +1400,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         fInit(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+        data->checkDataType = false;
 
         
         data->premenna = NULL;
@@ -1417,10 +1419,11 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
-
+        data->checkDataType = true;
         fValue(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+        data->checkDataType = false;
 
         //ak bude navratovych typov malo, bude za ne dosadeny nil, TOTO zabezpeci generovanie kodu, ktore hned pri
         //tvorbe a skoku funkcie inicializuje premenne na return a priradi im nil
@@ -2467,6 +2470,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             
             //TODO treba sa dohodnut na returnoch, precedencna analyza by mala nacitat dalsi token a podla abecedy usudit, kedy treba prestat nacitavat
             //TODO Parser uz nenacitava dalsi token, funkcie pocitaju s tym, ze sa z precedencnej analyzi vrati v premennej 'token' dalsi nacitany token
+        //printf("checkDataType: %d, dataType: %d\n", data->checkDataType, data->dataType);
         exp_analysator(data);
     }
     else if(*state == arg && !strcmp(token->name,")")){
