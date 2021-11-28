@@ -74,6 +74,8 @@ typedef struct sData{
         //pocet datovych typov v poli
     int assignArrayLength;
 
+    int errorCode;
+
 } Data_t;
 
 

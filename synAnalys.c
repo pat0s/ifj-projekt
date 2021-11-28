@@ -363,7 +363,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
  */
 
 void fValue(Token *token, enum STATE *state, Data_t *data){
-
+    data->errorCode = 5;
     if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil")) ){
         if(!strcmp(token->name,"identifier")){
             
@@ -1024,6 +1024,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
 
             //tvorba pola pre identifikatorov a ich datove typy
         data->checkDataType = true;
+        data->errorCode = 4;
         data->assignArrayIndex = 0;
         data->assignArrayLength = 0;
         data->assignArray = malloc(sizeof(AssignToken_t) * 15);
@@ -1065,6 +1066,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
 
             //tvorba pola pre identifikatorov a ich datove typy
         data->checkDataType = true;
+        data->errorCode = 4;
         data->assignArrayIndex = 0;
         data->assignArrayLength = 0;
         data->assignArray = malloc(sizeof(AssignToken_t) * 15);
@@ -1341,6 +1343,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //Ocakavam ID
         data->errorValue = read_token(token);
         checkError(data);
+        data->errorCode = 4;
 
             //test, ci je dany token ID, ak nie tak ERROR
         if(strcmp(token->name,"identifier")){
@@ -1751,6 +1754,8 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
             data->checkDataType = false;
         }
 
+        data->errorCode = 5;
+
             //Ocakavam argument <arg>
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -1765,6 +1770,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
             //Nesmusim nacitat dalsi token, pretoze precedencna analyza v <exp> fExp nacita token, a podla neho sa rozhodne ci ma prestat nacitavat vyraz
             // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
             //Token vrati precedencna analyza v premennej 'token'
+        data->errorCode = 5;
         fArgs(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data); 
@@ -2537,6 +2543,7 @@ int main(){
     Data_t *data = malloc(sizeof(Data_t));
     //osetrenie chyby mallocu
     data->isIf = 0;
+    data->errorCode = 4;
     
     data->errorValue = 0;
     data->isError = false;  
