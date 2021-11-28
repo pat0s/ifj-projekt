@@ -3,6 +3,6 @@ require "ifj21"
 function sucet_n (a : number, b : integer) : integer
  local sucet : number = a
  local tmp : integer = 0
-
+ local int:integer = 10
  while tmp < b do sucet = sucet + a tmp = tmp + 1 end
-return sucet end
+return int end
