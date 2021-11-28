@@ -294,7 +294,7 @@ void kontrola_typu_vysledku(Stack* s,Data_t* data,Token* token){
             */
             free(token);
             free(data);
-            exit(INCOMPATIBLE_TYPES);
+            exit(data->errorCode);
         }
     }
     else{
