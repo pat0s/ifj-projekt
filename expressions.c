@@ -260,6 +260,50 @@ int kontrola_typu(Stack *s){
 }
 
 /**
+ * @brief Provede porovnani typu vysledku a ocekavaneho typu vyrazu
+ * 
+ * @returns chyba pri spatnem typu vysledku
+ */
+void kontrola_typu_vysledku(Stack* s,Data_t* data,Token* token){
+    if(data->checkDataType==true){
+        //printf("kontrol type %s, %d --------------------\n",top_type(s),data->dataType);
+        int typ_vyrazu;
+        if(!strcmp(top_type(s),"int")){
+            typ_vyrazu=0;
+        }
+        else if(!strcmp(top_type(s),"number")){
+            typ_vyrazu=1;
+        }
+        else if(!strcmp(top_type(s),"string")){
+            typ_vyrazu=2;
+        }
+        else if(!strcmp(top_type(s),"nil")){
+            typ_vyrazu=3;
+        }
+        if(typ_vyrazu==3||typ_vyrazu==data->dataType){
+            destroy(s);
+            return;
+        }
+        else{
+            //printf("kontrol type %s, %d--------------------\n",top_type(s),data->dataType);
+            fprintf(stderr, "ERROR - Chyba syntaktickeho analyzatoru zdola nahoru, nekompatybilita typu vyrazu\n");
+            destroy(s);
+            /*while(frames!=NULL){
+            eleteFirst(frames); 
+            } 
+            */
+            free(token);
+            free(data);
+            exit(INCOMPATIBLE_TYPES);
+        }
+    }
+    else{
+        destroy(s);
+        return;
+    }
+}
+
+/**
  * @brief Provede zmenu zasobniku podle pravidel
  * 
  * @returns 0 pri uspechu, -1 pri chybe;
@@ -435,22 +479,13 @@ int do_reduc(Stack*s){
 return 0;
 }
 
-void *exp_analysator(Data_t *data){
+void exp_analysator(Data_t *data){
     Stack * s=(Stack *)malloc(sizeof(Stack));
     init_stack(s);
 
     Token *token = data->token;
     Tframe_list *frames= data->list;
 
-//Vymazat
-/*
-    TNode *rootPtr = NULL;    
-    int error_c;
-    insert(&rootPtr, createVarNode("a", 0, "32", &error_c));
-    insert(&rootPtr, createVarNode("b", 1, "33", &error_c));
-    insert(&rootPtr, createVarNode("c", 2, "34", &error_c));
-    */
-//
 
     int error=0;
     int i,j;
@@ -494,10 +529,9 @@ void *exp_analysator(Data_t *data){
                         }
                     } 
                     if(error!=-1){
-                        destroy(s);  
-                        //data->token = token; 
+                        kontrola_typu_vysledku(s,data,token);
                         //printf("Return token %s\n",data->token->name);         
-                        return 0;
+                        return;
                         }
                     }
                 }
@@ -514,7 +548,7 @@ void *exp_analysator(Data_t *data){
                 }
             }                                           
 //Vypis stavu zasobniku po provedeni operace
-  /*
+/*
     print=top(s);
     print2=top1(s);
     printf("Vrchol zasobniku: %s%s\n",print2,print);
@@ -523,9 +557,9 @@ void *exp_analysator(Data_t *data){
 */
 ///////////////////////////////////////////////////////////
     }
-    destroy(s);
+    kontrola_typu_vysledku(s,data,token);
     //printf("Return token %s\n",data->token->name);
-    return 0;
+    return;
 }
 /*
 int main(){

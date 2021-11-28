@@ -93,7 +93,9 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames);
 void do_equal(Stack*s);
 int kontrola_typu(Stack *s);
 int do_reduc(Stack *s);
-void *exp_analysator(Data_t *data);
+void exp_analysator(Data_t *data);
+void kontrola_typu_vysledku(Stack *s,Data_t* data,Token* token);
+
 
 // Rules
 /*
