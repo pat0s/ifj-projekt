@@ -399,6 +399,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
 
                 fArg(token, state, data);
                 checkError(data);
+                data->errorCode = 4;
 
                 if(data->leaf->func->param_length != data->indexType){
                     printf("ERROR - zly pocet parametrov volania funkcie\n");
@@ -540,6 +541,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
             fArg(token, state, data);
             checkError(data);
             
+            data->errorCode = 4;
             if(data->leaf->func->param_length != data->indexType){
                 printf("ERROR - zly pocet parametrov volania funkcie\n");
                 data->errorValue = 5; // aelbo 7, alebo 4
@@ -773,6 +775,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
 
             fArg(token, state, data);
+            data->errorCode = 4;
             checkError(data);
                 //Netreba nacitat dalsi token, ked sa vynorim, a bude posledny token ')', tak sa nacita novy token
 
@@ -1000,6 +1003,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
         fArg(token, state, data);
+        data->errorCode = 4;
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
         if(data->leaf->func->param_length != data->indexType){
@@ -1695,6 +1699,7 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
             //Nesmusim nacitat dalsi token, pretoze precedencna analyza v <exp> fExp nacita token, a podla neho sa rozhodne ci ma prestat nacitavat vyraz
             // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
             //Token vrati precedencna analyza v premennej 'token'
+        data->errorCode = 5;
         fArgs(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
@@ -2405,6 +2410,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             fArg(token, state, data);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
+            data->errorCode = 4;
 
             if(data->leaf->func->param_length != data->indexType){
                 printf("ERROR - zly pocet parametrov volania funkcie\n");
