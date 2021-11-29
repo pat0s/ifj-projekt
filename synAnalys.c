@@ -2030,6 +2030,11 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
 
             data->funkcia->param_length++;
             //TODO realloc
+            if(data->funkcia->param_length == 15){
+                reallocArray(data, data->funkcia->param_types);
+                data->funkcia->param_length = 25;
+            }
+            
 
             //if(funkcia->param_length == LENGTH(funkcia->param_types)){
              //   fprintf(stderr, "HELLO\n");
