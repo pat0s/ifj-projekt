@@ -1,0 +1,50 @@
+foo2(param1){
+  if(param1 < 5){
+    printf("%d", param1);
+    param1 = param1+1
+    foo2(param1)
+  }
+}
+
+d = 0
+call foo2(d)
+
+LABEL foo2
+PUSHFRAME
+DEFVAR LF@foo2_param1
+MOVE LF@foo2_param1  LF@foo2_arg1
+DEFVAR LF@T-Z-Pl
+DEFVAR LF@T-Z-Pr
+PUSHS LF@foo2_param1
+PUSHS int@5
+POPS LF@T-Z-Pr
+POPS LF@T-Z-Pl
+PUSHS LF@T-Z-Pl
+PUSHS LF@T-Z-Pr
+LTS
+PUSHS bool@false
+JUMPIFEQS Z-P-else
+WRITE LF@foo2_param1
+PUSHS LF@foo2_param1
+PUSHS int@1
+ADDS
+POPS LF@foo2_param1
+CREATEFRAME
+DEFVAR TF@foo2_arg1
+MOVE TF@foo2_arg1 LF@foo2_param1
+CALL foo2
+JUMP Z-P-end_if
+LABEL Z-P-else
+LABEL Z-P-end_if
+POPFRAME
+RETURN
+
+//main funkce
+DEFVAR LF@C-Z-Pd
+MOVE LF@C-Z-Pd int@0
+
+CREATEFRAME
+DEFVAR TF@foo2_arg1
+MOVE TF@foo2_arg1 LF@C-Z-Pd
+CALL foo2
+//main funkce

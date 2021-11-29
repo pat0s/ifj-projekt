@@ -1,0 +1,11 @@
+print(string, "text", flag jestli se nachazime v while)
+{
+	if(flag){
+		//přiřazeni do string
+	}else{
+		//tisknuti
+	}
+}
+
+nebo ungetchar, 1. pruchod: vypis defvaru uvnitr cyklu 2. pruchod: vypis vseho ostaniho  krome defvaru 
+// Z-P muzeme pocitat vzdy odznovu pokud se nachazime ve funkci nebo nechat pocitadlo bezet od zacatku az do konce programu, je to jedno 

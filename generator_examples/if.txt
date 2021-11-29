@@ -1,0 +1,23 @@
+m = true
+if(m == true){
+  printf("jsme tady");
+}else{}
+
+DEFVAR LF@C-Z-Pm
+MOVE LF@C-Z-Pm bool@true
+
+DEFVAR LF@T-Z-Pl
+DEFVAR LF@T-Z-Pr
+PUSHS LF@C-Z-Pm
+POPS LF@T-Z-Pl
+PUSHS bool@true
+POPS LF@T-Z-Pr
+PUSHS LF@T-Z-Pl
+PUSHS LF@T-Z-Pr
+EQS
+PUSHS bool@false
+JUMPIFEQS Z-P-else
+WRITE string@jsme\032tady
+JUMP Z-P-end_if
+LABEL Z-P-else
+LABEL Z-P-end_if

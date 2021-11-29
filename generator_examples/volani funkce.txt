@@ -1,0 +1,44 @@
+y = foo("vut", "fit")
+// konkatenuje retezce, vysledek hodi na vystup
+// pokud ma funkce N returnu, vygeneruje se N foo_returnN a N foo_retvalN
+
+//zacatek
+.IFJcode21
+
+JUMP foo_end
+LABEL foo
+PUSHFRAME
+DEFVAR LF@foo_retval1
+MOVE LF@foo_retval1 nil@nil
+DEFVAR LF@foo_param1
+MOVE LF@foo_param1  LF@foo_arg1
+DEFVAR LF@foo_param2
+MOVE LF@foo_param2  LF@foo_arg2
+DEFVAR LF@C-Z-Pc
+CONCAT C-Z-Pc foo_param1 foo_param2
+MOVE foo_retval1 C-Z-Pc
+POPFRAME
+RETURN
+LABEL foo_end
+
+JUMP main_end
+LABEL main
+PUSHFRAME
+.
+.
+.
+DEFVAR LF@foo_return1
+CREATEFRAME
+DEFVAR TF@foo_arg1
+MOVE TF@foo_arg1 string@vut
+DEFVAR TF@foo_arg2
+MOVE TF@foo_arg2 string@fit
+CALL foo
+MOVE LF@foo_return1 TF@foo_retval1
+POPFRAME
+RETURN
+LABEL main_end
+
+CREATEFRAME
+CALL main
+//konec

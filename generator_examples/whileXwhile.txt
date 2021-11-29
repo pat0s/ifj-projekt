@@ -1,0 +1,42 @@
+x = 0
+while(x < 10){
+  while(x < 5){
+  x = x+1
+  }
+}
+
+DEFVAR LF@C-Z-Px
+MOVE X LF@C-Z-Px int@0
+
+DEFVAR LF@T-Z-Pl
+DEFVAR LF@T-Z-Pr
+DEFVAR LF@T-(Z+1)-Pl
+DEFVAR LF@T-(Z+1)-Pr
+LABEL Z-P-while
+PUSH LF@C-Z-Px
+PUSH int@10
+POPS LF@T-Z-Pr
+POPS LF@T-Z-Pl
+PUSHS LF@T-Z-Pl
+PUSHS LF@T-Z-Pr
+LTS
+PUSHS bool@false
+JUMPIFEQS Z-P-end_while
+LABEL (Z+1)-P-while
+PUSH LF@C-Z-Px
+PUSH int@5
+POPS LF@T-Z-Pr
+POPS LF@T-Z-Pl
+PUSHS LF@T-Z-Pl
+PUSHS LF@T-Z-Pr
+LTS
+PUSHS bool@false
+JUMPIFEQS (Z+1)-P-end_while
+PUSH LF@C-Z-Px
+PUSH int@5
+ADDS
+POPS LF@C-Z-Px
+JUMP (Z+1)-P-while
+LABEL (Z+1)-P-end_while
+JUMP Z-P-while
+LABEL Z-P-end_while

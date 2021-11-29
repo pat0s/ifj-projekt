@@ -1,0 +1,64 @@
+a = 0
+while(5+a <= 30/3){
+  a = a+1
+}
+
+DEFVAR LF@Z-Pa
+MOVE LF@Z-Pa int@0
+
+LABEL @Z-P-while
+PUSH 5
+PUSH LF@Z-Pa
+ADDS
+PUSHS 30
+PUSHS 3
+IDIVS
+EQS
+PUSHS 5
+PUSH LF@Z-Pa
+ADDS
+PUSHS 30
+PUSHS 3
+IDIVS
+LTS
+ORS
+PUSHS bool@false
+JUMPIFEQS @Z-P-endwhile
+PUSHS LF@Z-Pa
+PUSHS int@1
+ADDS
+POPS LF@Z-Pa
+JUMP @Z-P-while
+LABEL @Z-P-endwhile
+
+DEFVAR LF@C-Z-Pa
+MOVE LF@C-Z-Pa int@0
+
+DEFVAR LF@T-Z-Pl
+DEFVAR LF@T-Z-Pr
+LABEL Z-P-while
+PUSH 5
+PUSH LF@Z-Pa
+ADDS
+PUSHS 30
+PUSHS 3
+IDIVS
+POPS LF@T-Z-Pr
+POPS LF@T-Z-Pl
+PUSHS LF@T-Z-Pl
+PUSHS LF@T-Z-Pr
+EQS
+PUSHS LF@T-Z-Pl
+PUSHS LF@T-Z-Pr
+LTS
+ORS
+PUSHS bool@false
+JUMPIFEQS Z-P-end_while
+PUSHS LF@C-Z-Pa
+PUSHS int@1
+ADDS
+POPS LF@C-Z-Pa
+JUMP Z-P-while
+LABEL Z-P-end_while
+
+
