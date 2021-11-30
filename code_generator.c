@@ -1,7 +1,4 @@
-
-
-#define TO_INTEGER \
-    "LABEL $toInteger\n" \
+#include <stdio.h>
 
 // reads, readi, readn -> READ
 // write -> WRITE * n podla parametrov
@@ -46,3 +43,8 @@
 
 // kontrola neocakavanej hodnoty nil pri operaciach
 // okrem == ~=
+
+int main(){
+    printf("ahoj");
+    return 0;
+}

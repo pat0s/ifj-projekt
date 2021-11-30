@@ -25,3 +25,6 @@ expc:
 # potom vymazat
 symtable:
 	gcc -std=c99 -Wall -pedantic -g symtable.c -o symtable
+
+code_generator:
+	gcc -std=c99 -Wall -pedantic -g code_generator.c -o code_generator	
