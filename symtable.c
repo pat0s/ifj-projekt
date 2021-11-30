@@ -19,7 +19,7 @@
  * @param error_occur stores 0 for 0 erorrs, stores 1 if an error occured
  * @return TNode* 
  */
-TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_occur)
+TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_occur, int specialID)
 {
     *error_occur = 0;
 
@@ -65,6 +65,7 @@ TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_o
         newVal[i] = given_val[i];
     }
     newVar->value = newVal;
+    newVar->specialID = specialID;
 
     newPtr->var = newVar;
     newPtr->func = NULL;

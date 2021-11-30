@@ -53,6 +53,7 @@ typedef struct tvar
 {
     int data_type;
     char *value;
+    int specialID;
 } TVar;
 
 /**
@@ -119,7 +120,7 @@ typedef struct tframe_list
 
 // user functions for symtable
 
-TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_occur);
+TNode *createVarNode(char *given_id, int given_dt, char *given_val, int *error_occur, int specialID);
 TNode *createFuncNode(char *given_id, bool given_def, int *given_pt, int pt_length, int *given_rt, int rt_length, int *error_occur);
 int insert(TNode **rootPtr, TNode *newNode);
 int dispose(TNode **rootPtr);

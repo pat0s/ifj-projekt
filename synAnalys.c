@@ -1160,6 +1160,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
 
     }else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"if")){
+        data->specialIDNumber++;
 
             //Ocakavam <exp>
         data->errorValue = read_token(token);
@@ -1218,6 +1219,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             
                 //Teraz by sa v tokene mal nachadza 'else', otestujem to a pokracujem v behu
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else")){
+                data->specialIDNumber++;
                     //vymazanie if framu z tabulky symbolov
                 deleteFirst(data->list);
                     //tabulka frame v tabulke symbolov pre else
@@ -1237,7 +1239,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                     //v Tokene by sa mal nachadza 'end', idem to otestovat a pokracujem v behu programu uz mimo if statement
                 if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
                         //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo if statement
-                    
+                    data->specialIDNumber++;
                         //odstranenie vrchneho framu v symtable
                     deleteFirst(data->list);
                         //Ocakavam <st-list>
@@ -1268,6 +1270,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         }
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"while")){
+
+        data->whileDeep++;
+        data->specialIDNumber++;
         
             //Ocakavam <exp>
         data->errorValue = read_token(token);
@@ -1320,6 +1325,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 //Teraz by som mal mat v tokene slovo 'end', spytam sa, ci tam je
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
                 //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo while cyklu
+                data->whileDeep--;
+                data->specialIDNumber++;
+
 
                 deleteFirst(data->list);
                     //Ocakavam <st-list>
@@ -1395,7 +1403,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
             //insert do symtable
         char pole[]="";
-        insert(&(data->list->first->rootPtr), createVarNode(data->premenna->ID, data->premenna->dataType, pole, &(data->errorValue)));
+        insert(&(data->list->first->rootPtr), createVarNode(data->premenna->ID, data->premenna->dataType, pole, &(data->errorValue), data->specialIDNumber));
         checkError(data);
         data->checkDataType = true;
 
@@ -1515,7 +1523,7 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
 
             //search ci sa nenachadza v symtable
             char pole[] = "";
-            TNode *variable = createVarNode(token->value, 0, pole, &(data->errorValue));
+            TNode *variable = createVarNode(token->value, 0, pole, &(data->errorValue), data->specialIDNumber);
             checkError(data);
 
             //Ocakavam ':'
@@ -1605,7 +1613,7 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
-        TNode *variable = createVarNode(token->value, 0, pole, &(data->errorValue));
+        TNode *variable = createVarNode(token->value, 0, pole, &(data->errorValue), data->specialIDNumber);
         checkError(data);
 
         data->funkcia->param_types = malloc(sizeof(int)*15);
@@ -2131,7 +2139,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
                 if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
                     //Nacitane: global ID : function
-                    
+                    data->specialIDNumber = 0;
                         //Ocakavam '('
                     data->errorValue = read_token(token);
                     checkError(data);
@@ -2555,9 +2563,9 @@ int main(){
     //osetrenie chyby mallocu
     data->isIf = 0;
     data->errorCode = 4;
-    
+    data->specialIDNumber = 0;
+    data->whileDeep = 0;
     data->errorValue = 0;
-    data->isError = false;  
     data->leaf = NULL;
 
     data->dataType = 0;

@@ -40,7 +40,6 @@ typedef struct fAssignToken{
 
 typedef struct sData{
     
-    bool isError;
     int errorValue;
     Token *token;
     Tframe_list *list;
@@ -75,7 +74,10 @@ typedef struct sData{
     int assignArrayLength;
 
     int errorCode;
-
+        //pocet zanoreni while cyklov
+    int whileDeep;
+        //cislo, ktore pridava inukatnost premennym pri generovani kodu
+    int specialIDNumber;
 } Data_t;
 
 
