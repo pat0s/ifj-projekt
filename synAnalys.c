@@ -1403,7 +1403,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
             //insert do symtable
         char pole[]="";
-        printf("name; %s, specialID: %d\n", data->premenna->ID, data->specialIDNumber);
+        //printf("name; %s, specialID: %d\n", data->premenna->ID, data->specialIDNumber);
         insert(&(data->list->first->rootPtr), createVarNode(data->premenna->ID, data->premenna->dataType, pole, &(data->errorValue), data->specialIDNumber));
         checkError(data);
         data->checkDataType = true;
@@ -1524,8 +1524,8 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
 
             //search ci sa nenachadza v symtable
             char pole[] = "";
-            printf("name; %s, specialID: %d\n", token->value, data->specialIDNumber);
             TNode *variable = createVarNode(token->value, 0, pole, &(data->errorValue), data->specialIDNumber);
+            //printf("name; %s, specialID: %d\n", variable->ID, variable->var->specialID);
             checkError(data);
 
             //Ocakavam ':'
@@ -1614,8 +1614,8 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = 99;
             checkError(data);
         }
-        printf("name; %s, specialID: %d\n", token->value, data->specialIDNumber);
         TNode *variable = createVarNode(token->value, 0, pole, &(data->errorValue), data->specialIDNumber);
+        //printf("name; %s, specialID: %d\n", variable->ID, variable->var->specialID);
         checkError(data);
 
         data->funkcia->param_types = malloc(sizeof(int)*15);
