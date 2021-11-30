@@ -308,13 +308,13 @@ void kontrola_typu_vysledku(Stack* s,Data_t* data,Token* token){
  * 
  * @returns 0 pri uspechu, -1 pri chybe;
  */
-int do_reduc(Stack*s){
+int do_reduc(Stack*s,Token* token){
     if(!strcmp(top(s),"string")){                           //E -> string
         pop(s);
         push(s,"E","string");
     }
     else if(!strcmp(top(s),"int")){                         //E -> int
-        pop(s);
+        pop(s);     
         push(s,"E","int");
     }
     else if(!strcmp(top(s),"number")){                      //E -> number
@@ -323,12 +323,26 @@ int do_reduc(Stack*s){
     }
     else if(!strcmp(top(s),"nil")){                         //E -> nil
         pop(s);
+        //generovani nil
         push(s,"E","nil");
     }
     else if(!strcmp(top(s),"identifier")){                  //E -> id
         char type[7];
         strcpy(type,top_type(s));
         pop(s);
+        bool kontrola_op_za=(!strcmp(token->name,"==")||!strcmp(token->name,"~="))&&is_empty(s);
+        bool kontrola_op_pred=false;
+        if(!is_empty(s)){
+            kontrola_op_pred=(!strcmp(top(s),"==")||!strcmp(top(s),"~="))&&(strcmp(token->name,"+")&&strcmp(token->name,"-")&&strcmp(token->name,"*")&&strcmp(token->name,"/")&&strcmp(token->name,"//")&&strcmp(token->name,".."));
+        }
+        if(kontrola_op_za||kontrola_op_pred){
+            //generovani bez osetreni nil
+            //printf("%s generovat bez osetreni\n",token->name);
+        }
+        else{
+            //printf("%s generovat s osetrenim\n", token->name);
+        }
+
         push(s,"E",type);
     }
     else if(!strcmp(top(s),"E")){                           //E -> #E
@@ -518,14 +532,15 @@ void exp_analysator(Data_t *data){
                 read_token(token);
             }                                           
         else if(precence_table[i][j]==2&&error!=-1){    //REDUCE
-                error = do_reduc(s);
+                error = do_reduc(s,token);
             }                                           
         else if(precence_table[i][j]==3||error==-1){    //Prazdny zasobnik a vstup je prazdny nebo ')'
                 if(error!=-1){
                    if((i==8 && (j==7||j==8)) ||(i==4&&j==4) ){ 
                     if((i==4&&j==4)) {
-                        while(top1(s)!=NULL&&error!=-1){
-                            error=do_reduc(s);
+                        while((top1(s)!=NULL||strcmp(top(s),"E"))&&error!=-1){
+                            error=do_reduc(s,token);
+                            //printf("zasobnik %s %s",top1(s),top(s)\n);
                         }
                     } 
                     if(error!=-1){
