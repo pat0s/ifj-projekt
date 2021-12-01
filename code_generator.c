@@ -128,8 +128,8 @@ void START_AND_BUILTIN_FUNCTIONS()
         "DEFVAR LF@tmp\n" \
         "TYPE LF@tmp LF@f\n" \
         "PUSHS LF@tmp \n" \
-        "JUMPIFEQS tointeger_nil\n" \    
-        "FLOAT2INT LF@tointeger_retval1 LF@f\n" \       
+        "JUMPIFEQS tointeger_nil\n" \
+        "FLOAT2INT LF@tointeger_retval1 LF@f\n" \
         "LABEL tointeger_nil\n" \
         "POPFRAME\n" \
         "RETURN\n");
@@ -143,7 +143,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "DEFVAR LF@i\n" \
         "MOVE LF@i LF@ord_arg2\n" \
         "DEFVAR LF@ord_retval1\n" \
-        "MOVE LF@ord_retval1 nil@nil\n" \      
+        "MOVE LF@ord_retval1 nil@nil\n" \
         "PUSHS nil@nil\n" \
         "DEFVAR LF@tmp\n" \
         "TYPE LF@tmp LF@s\n" \
@@ -157,7 +157,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS int@1\n" \
         "LTS\n" \
         "PUSHS bool@true \n" \
-        "JUMPIFEQS ord_end\n" \         
+        "JUMPIFEQS ord_end\n" \
         "STRLEN LF@tmp LF@s\n" \
         "PUSHS LF@i\n" \
         "PUSHS LF@tmp\n" \
@@ -167,8 +167,8 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS LF@s\n" \
         "PUSHS LF@i\n" \
         "STRI2INTS\n" \
-        "POPS LF@ord_retval1\n" \        
-        "LABEL ord_end\n" \       
+        "POPS LF@ord_retval1\n" \
+        "LABEL ord_end\n" \
         "POPFRAME\n" \
         "RETURN\n");
 
@@ -179,7 +179,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "DEFVAR LF@i\n" \
         "MOVE LF@i LF@chr_arg1\n" \
         "DEFVAR LF@chr_retval1\n" \
-        "MOVE LF@chr_retval1 nil@nil\n" \           
+        "MOVE LF@chr_retval1 nil@nil\n" \
         "PUSHS nil@nil\n" \
         "PUSHS LF@i\n" \
         "JUMPIFEQS unexpectedNil\n" \
@@ -195,11 +195,94 @@ void START_AND_BUILTIN_FUNCTIONS()
         "JUMPIFEQS chr_end\n" \
         "PUSHS LF@i\n" \
         "INT2CHARS\n" \
-        "POPS LF@chr_retval1\n" \       
-        "LABEL chr_end\n" \           
+        "POPS LF@chr_retval1\n" \
+        "LABEL chr_end\n" \
         "POPFRAME\n" \
         "RETURN\n");
 
+    // readn
+    // readi
+    // reads
+    
+    // substr
+    
+    // chr
+    // ak je i < j 
+    // * staci skontrolovat ci je i < 1, ak je mensie, tak sa vrati nil ak nie, tak sa pokracuje
+    // * staci skontrolovat ci je j > strlen(s), ak je vacsie, vrati sa nil ak nie, tak sa pokracuje
+    printf( \
+        "LABEL substr\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@s\n" \
+        "MOVE LF@s LF@substr_arg1\n" \
+        "DEFVAR LF@i\n" \
+        "MOVE LF@i LF@substr_arg1\n" \
+        "DEFVAR LF@j\n" \
+        "MOVE LF@j LF@substr_arg1\n" \
+        "DEFVAR LF@substr_retval1\n" \
+        "MOVE LF@substr_retval1 nil@nil\n" \
+
+        "PUSHS nil@nil\n" \
+        "PUSHS LF@s\n" \
+        "JUMPIFEQS unexpectedNil\n" \
+
+        "PUSHS nil@nil\n" \
+        "PUSHS LF@i\n" \
+        "JUMPIFEQS unexpectedNil\n" \
+
+        "PUSHS nil@nil\n" \
+        "PUSHS LF@j\n" \
+        "JUMPIFEQS unexpectedNil\n" \
+        
+        "PUSHS LF@j\n" \
+        "PUSHS LF@i\n" \
+        "LTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS substr_end\n" \
+
+
+        "PUSHS LF@i\n" \
+        "PUSHS int@1\n" \
+        "LTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS substr_end\n" \
+        
+        "DEFVAR LF@tmp\n" \
+        "STRLEN LF@tmp LF@s\n" \
+        "PUSHS LF@j\n" \
+        "PUSHS LF@tmp\n"\
+        "GTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS substr_end\n" \
+
+        "GETCHAR LF@substr_retval1 LF@s LF@i\n" \
+        "PUSHS int@1\n" \
+        "PUSHS LF@i\n" \
+        "ADDS\n" \
+        "POPS LF@i\n" \
+        
+        "LABEL while\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS LF@j\n" \
+        "GTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMIFEQS end_while\n" \
+        "GETCHAR LF@tmp LF@s LF@i\n" \
+        "CONCAT LF@substr_retval1 LF@substr_retval1 LF@tmp\n" \
+        "PUSHS int@1\n" \
+        "PUSHS LF@i\n" \
+        "ADDS\n" \
+        "POPS LF@i\n" \
+        "JUMP while\n" \
+        
+        "LABEL end_while\n" \
+        "POPFRAME\n" \
+        "RETURN\n");
+
+    // -- write function
+    // write(a, 10)
+    // "WRITE nazov_premennej_a\n" 
+    // "WRITE int@10\n"
 
     // koniec vstavanych funkcii
     printf("LABEL startOfCode");
