@@ -65,11 +65,13 @@ void MULS(TDynString *string, bool flag)
 
 void DIVS(TDynString *string, bool flag)
 {
+    // TODO: kontrola delenia 0
     generate_code(string, "DIVS\n", true);
 }
 
 void IDIVS(TDynString *string, bool flag)
 {
+    // TODO: kontrola delenia 0
     generate_code(string, "IDIVS\n", true);
 }
 
@@ -107,9 +109,23 @@ void STRLEN(TDynString *dyn_string, bool flag, char *var, char *symb)
 void START_AND_BUILTIN_FUNCTIONS()
 {
     printf(".IFJcode21\n");
+
+    printf("JUMP startOfCode\n");
+    printf("LABEL unexpectedNil\n");
+    printf("EXIT int@8\n");
+    printf("LABEL divisionByZero\n");
+    printf("EXIT int@9\n");
     // zbytek
+
+    // koniec vstavanych funkcii
+    printf("LABEL startOfCode");
 }
 
+/**
+ * @brief Generate function header
+ * 
+ * @param func_name Pointer to function's name
+ */
 void FUNC_START(char *func_name)
 {
     printf("JUMP %s_end\n", func_name);    
@@ -123,10 +139,19 @@ void PARAMETERS(char *func_name, char *param_name, int number)
     printf("MOVE LF@%s LF@%s_arg%d\n", param_name, func_name, number);
 }
 
-void RETVALS(char *func_name, int number)
+/**
+ * @brief Generate return values for function
+ * 
+ * @param func_name Pointer to function's name 
+ * @param count Number of return values
+ */
+void RETVALS(char *func_name, int count)
 {
-    printf("DEFVAR LF@%s_retval%d\n", func_name, number);
-    printf("MOVE LF@%s_retval%d nil@nil\n", func_name, number); 
+    for (int i = 1; i <= count; i++)
+    {
+        printf("DEFVAR LF@%s_retval%d\n", func_name, i);
+        printf("MOVE LF@%s_retval%d nil@nil\n", func_name, i);
+    }   
 }
 
 void RETURNS(char *func_name, int number, char *symb)
@@ -134,6 +159,11 @@ void RETURNS(char *func_name, int number, char *symb)
     printf("MOVE LF@%s_retval%d %s\n", func_name, number, symb);
 }
 
+/**
+ * @brief Generate function ending
+ * 
+ * @param func_name Pointer to function's name
+ */
 void FUNC_END(char *func_name)
 {
     printf("POPFRAME\n");
