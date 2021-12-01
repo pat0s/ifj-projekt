@@ -203,10 +203,8 @@ void START_AND_BUILTIN_FUNCTIONS()
     // readn
     // readi
     // reads
-    
+
     // substr
-    
-    // chr
     // ak je i < j 
     // * staci skontrolovat ci je i < 1, ak je mensie, tak sa vrati nil ak nie, tak sa pokracuje
     // * staci skontrolovat ci je j > strlen(s), ak je vacsie, vrati sa nil ak nie, tak sa pokracuje
