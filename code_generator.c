@@ -50,29 +50,29 @@ void generate_code(TDynString *dyn_string, char *code, bool flag)
 
 void ADDS(TDynString *string, bool flag)
 {
-    generate_code(string, "ADDS\n", true);
+    generate_code(string, "ADDS\n", flag);
 }
 
 void SUBS(TDynString *string, bool flag)
 {
-    generate_code(string, "SUBS\n", true);
+    generate_code(string, "SUBS\n", flag);
 }
 
 void MULS(TDynString *string, bool flag)
 {
-    generate_code(string, "MULS\n", true);
+    generate_code(string, "MULS\n", flag);
 }
 
 void DIVS(TDynString *string, bool flag)
 {
     // TODO: kontrola delenia 0
-    generate_code(string, "DIVS\n", true);
+    generate_code(string, "DIVS\n", flag);
 }
 
 void IDIVS(TDynString *string, bool flag)
 {
     // TODO: kontrola delenia 0
-    generate_code(string, "IDIVS\n", true);
+    generate_code(string, "IDIVS\n", flag);
 }
 
 void CONCAT(TDynString *dyn_string, bool flag, char *var, char *symb1, char *symb2)
@@ -115,7 +115,91 @@ void START_AND_BUILTIN_FUNCTIONS()
     printf("EXIT int@8\n");
     printf("LABEL divisionByZero\n");
     printf("EXIT int@9\n");
-    // zbytek
+    
+    // tointeger
+    printf( \
+        "LABEL tointeger\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@f\n" \
+        "MOVE LF@f LF@tointeger_arg1\n" \
+        "DEFVAR LF@tointeger_retval1\n" \
+        "MOVE LF@tointeger_retval1 nil@nil\n" \
+        "PUSHS LF@tointeger_retval1\n" \
+        "DEFVAR LF@tmp\n" \
+        "TYPE LF@tmp LF@f\n" \
+        "PUSHS LF@tmp \n" \
+        "JUMPIFEQS tointeger_nil\n" \    
+        "FLOAT2INT LF@tointeger_retval1 LF@f\n" \       
+        "LABEL tointeger_nil\n" \
+        "POPFRAME\n" \
+        "RETURN\n");
+    
+    // ord
+    printf( \
+        "LABEL ord\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@s\n" \
+        "MOVE LF@s LF@ord_arg1\n" \
+        "DEFVAR LF@i\n" \
+        "MOVE LF@i LF@ord_arg2\n" \
+        "DEFVAR LF@ord_retval1\n" \
+        "MOVE LF@ord_retval1 nil@nil\n" \      
+        "PUSHS nil@nil\n" \
+        "DEFVAR LF@tmp\n" \
+        "TYPE LF@tmp LF@s\n" \
+        "PUSHS LF@tmp\n" \
+        "JUMPIFEQS unexpectedNil\n" \
+        "PUSHS nil@nil\n" \
+        "TYPE LF@tmp LF@i\n" \
+        "PUSHS LF@tmp\n" \
+        "JUMPIFEQS unexpectedNil\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS int@1\n" \
+        "LTS\n" \
+        "PUSHS bool@true \n" \
+        "JUMPIFEQS ord_end\n" \         
+        "STRLEN LF@tmp LF@s\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS LF@tmp\n" \
+        "GTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS ord_end\n" \
+        "PUSHS LF@s\n" \
+        "PUSHS LF@i\n" \
+        "STRI2INTS\n" \
+        "POPS LF@ord_retval1\n" \        
+        "LABEL ord_end\n" \       
+        "POPFRAME\n" \
+        "RETURN\n");
+
+    // chr
+    printf( \
+        "LABEL chr\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@i\n" \
+        "MOVE LF@i LF@chr_arg1\n" \
+        "DEFVAR LF@chr_retval1\n" \
+        "MOVE LF@chr_retval1 nil@nil\n" \           
+        "PUSHS nil@nil\n" \
+        "PUSHS LF@i\n" \
+        "JUMPIFEQS unexpectedNil\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS int@0\n" \
+        "LTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS chr_end\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS int@255\n" \
+        "GTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS chr_end\n" \
+        "PUSHS LF@i\n" \
+        "INT2CHARS\n" \
+        "POPS LF@chr_retval1\n" \       
+        "LABEL chr_end\n" \           
+        "POPFRAME\n" \
+        "RETURN\n");
+
 
     // koniec vstavanych funkcii
     printf("LABEL startOfCode");
