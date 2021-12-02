@@ -51,4 +51,6 @@ typedef struct dynString
 // kontrola neocakavanej hodnoty nil pri operaciach
 // okrem == ~=
 
+// funkce parameter integer, return ukazatel na string
+
 #endif

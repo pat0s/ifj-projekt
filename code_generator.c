@@ -6,7 +6,7 @@
 #include "code_generator.h"
 #include "error.h"
 
-#define ending_0 2 // need to alocate space for \0
+// need to alocate space for \0
 
 /*void dyn_string_init(TDynString *dyn_string)
 {
