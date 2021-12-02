@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "error.h"
+#include "code_generator_v2.h"
 
 #define ending_0 1
 
@@ -29,6 +30,63 @@ int compute_digits(int n)
         r++;
     }
     return r;
+}
+
+//000-032, 035 a 092,
+void str2_codestr(char *dst, char*src)
+{
+
+
+}
+
+void str2hex(char *value, char *buf)
+{
+    char *eptr;
+    double result = strtod(value, &eptr);
+    sprintf(buf, "%a", result);
+}
+
+char *symbol_generator(Token *token)
+{
+    char *symbol;
+    if(strcmp(token->name, "identifier") == 0)
+    {
+        char prefix[4] = "LF@";
+
+        symbol = (char *)malloc((token->value_len + 4)*(sizeof(char)));
+        // TODO: osetrenie mallocu
+        strcpy(symbol, prefix);
+        strcat(symbol, token->value);
+    }
+    else
+    {
+        if (strcmp(token->name, "string") == 0)
+        {
+            //strcpy(symbol, "string@");
+        }
+        else if(strcmp(token->name, "int") == 0)
+        {
+            symbol = (char *)malloc((token->value_len + 5)*(sizeof(char)));
+            // TODO: osetrenie mallocu
+            strcpy(symbol, "int@");
+            strcat(symbol, token->value);
+
+            return symbol;
+        }
+        else if(strcmp(token->name, "number") == 0)
+        {    
+            char buf[500];
+            str2hex(token->value, buf);
+
+            symbol = (char*)malloc((6+strlen(buf))*sizeof(char));
+            // TODO osetrenie mallocu
+            strcpy(symbol, "float@");
+            strcat(symbol, buf);
+        }
+
+    }
+
+    return symbol;
 }
 
 void START_AND_BUILTIN_FUNCTIONS()
@@ -239,7 +297,7 @@ void ARGUMENTS(char *string, bool flag, char *func_name, int number, char *symb)
 
 void CALL_FUNC(char *string, bool flag, char *func_name)
 {
-    generate_code(string, "CALL ");
+    generate_code(string, "CALL ", flag);
     generate_code(string, func_name, flag);
     generate_code(string, "\n", flag);    
 }
@@ -331,7 +389,7 @@ void WHILE_CONDITION(char *string, bool flag, int number)
     sprintf(str_n, "%d", number);
 
     generate_code(string, "PUSHS bool@false", flag);
-    generate_code(string, "JUMPIFEQS end_while_");
+    generate_code(string, "JUMPIFEQS end_while_", flag);
     generate_code(string, str_n, flag);
     generate_code(string, "\n", flag);
 
@@ -362,7 +420,7 @@ void IF_CONDITION(char *string, bool flag, int number)
     sprintf(str_n, "%d", number);
 
     generate_code(string, "PUSHS bool@false", flag);
-    generate_code(string, "JUMPIFEQS else_");
+    generate_code(string, "JUMPIFEQS else_", flag);
     generate_code(string, str_n, flag);
     generate_code(string, "\n", flag);
 
@@ -374,11 +432,11 @@ void ELSE_BRANCH(char *string, bool flag, int number)
     char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
     sprintf(str_n, "%d", number);
     
-    generate_code(string, "JUMP end_if_");
+    generate_code(string, "JUMP end_if_", flag);
     generate_code(string, str_n, flag);
     generate_code(string, "\n", flag);
 
-    generate_code(string, "LABEL else_");
+    generate_code(string, "LABEL else_", flag);
     generate_code(string, str_n, flag);
     generate_code(string, "\n", flag);
 
@@ -390,7 +448,7 @@ void IF_END(char *string, bool flag, int number)
     char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
     sprintf(str_n, "%d", number);
 
-    generate_code(string, "LABEL end_if_");
+    generate_code(string, "LABEL end_if_", flag);
     generate_code(string, str_n, flag);
     generate_code(string, "\n", flag);
 
@@ -437,6 +495,7 @@ void CONDITION_PUSHS(char *string, bool flag, int number)
 int main()
 {
     char *while_string = (char *)malloc(sizeof(char));
+    while_string[0] = '\0';
     generate_code(while_string, "ADDS\n", true);
     generate_code(while_string, "POPS\n", true);
     generate_code(while_string, "CONCAT\n", true);
@@ -446,7 +505,41 @@ int main()
     generate_code(while_string, "PUSHFRAME\n", true);
     generate_code(while_string, "RETURN\n", true);
 
+    // Testovanie funkcie generate symbol
+    Token *token;
+    //token_initialisation(token);
+    strcpy(token->name, "identifier");
+    token->value_len = 10;
+    token->value = (char *)malloc(token->value_len*sizeof(char));
+    strcpy(token->value, "ahoj");
+
+    printf("%s\n", symbol_generator(token));
+
+    strcpy(token->name, "string");
+    token->value_len = 10;
+    token->value = (char *)malloc(token->value_len*sizeof(char));
+    strcpy(token->value, "ahoj ako sa mas");
+
+    printf("%s\n", symbol_generator(token));
+
+    strcpy(token->name, "int");
+    token->value_len = 10;
+    token->value = (char *)malloc(token->value_len*sizeof(char));
+    strcpy(token->value, "-5");
+
+    printf("%s\n", symbol_generator(token));
+
+    strcpy(token->name, "number");
+    token->value_len = 10;
+    token->value = (char *)malloc(token->value_len*sizeof(char));
+    strcpy(token->value, "10.5");
+
+    printf("%s\n", symbol_generator(token));
+
 
     printf("%s", while_string);
     free(while_string);
+
+
+   
 }
