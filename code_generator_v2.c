@@ -33,9 +33,34 @@ int compute_digits(int n)
 }
 
 //000-032, 035 a 092,
-void str2_codestr(char *dst, char*src)
+// \ -> 092
+// #  -> 035
+void str2_codestr(char *dst, char *old_str)
 {
+    bool is_escaped = false;
+    int j = 0;
 
+    for (int i = 0; i < strlen(old_str); i++)
+    {
+        // TODO porieisit ak su v starom stringu escape sekvencie
+        if ((old_str[i] >= 0 && old_str[i] <= 32) || old_str[i] == 35 || old_str[i] == 92)
+        {
+            char tmp[3]; // mozu sa tu ulozit iba cisla 0-32, 35 alebo 92
+            dst[j++] = '\\';
+            dst[j++] = '0';
+
+            sprintf(tmp, "%d", old_str[i]);
+            dst[j++] = tmp[0];
+            if (strlen(tmp) > 1) dst[j++] = tmp[1];
+        }
+        else
+        {
+            dst[j++] = old_str[i];
+        }
+
+    }
+
+    dst[j] = '\0';
 
 }
 
@@ -62,7 +87,16 @@ char *symbol_generator(Token *token)
     {
         if (strcmp(token->name, "string") == 0)
         {
-            //strcpy(symbol, "string@");
+            // TODO mozno pomocou reallocu
+            char *buf;
+            buf = (char *)malloc(sizeof(char) * 500);
+            // TODO: osetrenie mallocu
+            str2_codestr(buf, token->value);
+
+            symbol = (char *)malloc((8 + strlen(buf))*(sizeof(char)));
+            // TODO: osetrenie mallocu
+            strcpy(symbol, "string@");
+            strcat(symbol, buf);
         }
         else if(strcmp(token->name, "int") == 0)
         {
@@ -78,7 +112,7 @@ char *symbol_generator(Token *token)
             char buf[500];
             str2hex(token->value, buf);
 
-            symbol = (char*)malloc((6+strlen(buf))*sizeof(char));
+            symbol = (char*)malloc((7 + strlen(buf))*sizeof(char));
             // TODO osetrenie mallocu
             strcpy(symbol, "float@");
             strcat(symbol, buf);
@@ -518,7 +552,14 @@ int main()
     strcpy(token->name, "string");
     token->value_len = 10;
     token->value = (char *)malloc(token->value_len*sizeof(char));
-    strcpy(token->value, "ahoj ako sa mas");
+    strcpy(token->value, "ahoj ako sa mas#");
+
+    printf("%s\n", symbol_generator(token));
+
+    strcpy(token->name, "string");
+    token->value_len = 10;
+    token->value = (char *)malloc(token->value_len*sizeof(char));
+    strcpy(token->value, "ahoj");
 
     printf("%s\n", symbol_generator(token));
 
