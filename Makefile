@@ -1,11 +1,11 @@
 EXECUTABLE = IFJ21
-CFLAGS = -g -Wall -Wextra -lm #-Wextra -Werror -lm
+CFLAGS = -std=c99 -pedantic -g -Wall -Wextra -lm #-Wextra -Werror -lm
 
 .PHONY = clean all
 
 all: $(EXECUTABLE)
 
-$(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stack.o
+$(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stack.o code_generator_v2.o
 	gcc $(CFLAGS) $^ -o $@
 
 %.o: %.c
