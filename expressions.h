@@ -78,6 +78,11 @@ typedef struct sData{
     int whileDeep;
         //cislo, ktore pridava inukatnost premennym pri generovani kodu
     int specialIDNumber;
+        //specialne ID cislo prevedene na string
+    char *specialIDString;
+        //pointer na dynamcky string pri while cykle
+    char *string;
+
 } Data_t;
 
 

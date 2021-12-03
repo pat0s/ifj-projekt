@@ -4,6 +4,7 @@
 #define _CODE_GENERATOR_H_V2_
 
 // not user functions
+char *INT2STRING(int number);
 void generate_code(char *string, char *code, bool flag);
 int compute_digits(int n);
 char *symbol_generator(Token *token);

@@ -7,6 +7,15 @@
 
 #define ending_0 1
 
+
+char *INT2STRING(int number)
+{
+    char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
+    sprintf(str_n, "%d", number);
+    return str_n;
+}
+
+
 void generate_code(char *string, char *code, bool flag)
 {
     if (flag){
@@ -43,7 +52,7 @@ void str2_codestr(char *dst, char *old_str)
     bool is_escaped = false;
     int j = 0;
 
-    for (int i = 0; i < strlen(old_str); i++)
+    for (unsigned int i = 0; i < strlen(old_str); i++)
     {
         if ((old_str[i] >= 0 && old_str[i] <= 32) || old_str[i] == 35 || old_str[i] == 92)
         {
@@ -434,7 +443,7 @@ void PARAMETERS(char *func_name, char *param_name, int number)
 
 void DEF_RETVALS(char *func_name, int count)
 {
-    for (int i = 1; i <= count; i++)
+    for (int i = 0; i < count; i++)
     {
         printf("DEFVAR LF@%s_retval%d\n", func_name, i);
         printf("MOVE LF@%s_retval%d nil@nil\n", func_name, i);
@@ -493,6 +502,10 @@ void WHILE_END(char *string, bool flag, int number)
 {
     char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
     sprintf(str_n, "%d", number);
+
+    //vypisat *string
+    //realloc na sizeof(char)*1 kvoli potencialneu novemu while
+    //naplnit '\0'
 
     // jump back
     generate_code(string, "JUMP while_", flag);
@@ -584,6 +597,8 @@ void CONDITION_PUSHS(char *string, bool flag, int number)
     free(str_n);
 }
 
+
+/*
 // testovani
 int main()
 {
@@ -666,4 +681,4 @@ int main()
 
 
    
-}
+}*/

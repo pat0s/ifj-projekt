@@ -16,7 +16,7 @@
 #include <string.h>
 #include "synAnalys.h"
 #include "error.h"
-
+#include "code_generator_v2.h"
 #include "symtable.h"
 
 
@@ -1194,6 +1194,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
         data->checkDataType = false;
 
+            //generovanie podmienky skoku if
+        IF_CONDITION(data->string, data->whileDeep, INT2STRING(data->specialIDNumber));
+        int IDOfIf = data->specialIDNumber;
+
             //Nemusim nacitavat dalsi token, lebo precedencna analyza nacita do premennje token klucove slovo 'then'
         if(!strcmp(token->name,"keyword") && !strcmp(token->value,"then")){
             
@@ -1220,6 +1224,11 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 //Teraz by sa v tokene mal nachadza 'else', otestujem to a pokracujem v behu
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"else")){
                 data->specialIDNumber++;
+
+                    //generovanie kodu else branch
+                ELSE_BRANCH(data->string, data->whileDeep, INT2STRING(IDOfIf));
+
+
                     //vymazanie if framu z tabulky symbolov
                 deleteFirst(data->list);
                     //tabulka frame v tabulke symbolov pre else
@@ -1239,6 +1248,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                     //v Tokene by sa mal nachadza 'end', idem to otestovat a pokracujem v behu programu uz mimo if statement
                 if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
                         //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo if statement
+                   
+                        //generovnie kodu end if
+                    IF_END(data->string, data->whileDeep, INT2STRING(IDOfIf));
+                    
                     data->specialIDNumber++;
                         //odstranenie vrchneho framu v symtable
                     deleteFirst(data->list);
@@ -1273,6 +1286,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
         data->whileDeep++;
         data->specialIDNumber++;
+
+            //generovanie kodu inicializacia while
+        WHILE_START(data->string, data->whileDeep, INT2STRING(data->specialIDNumber));
         
             //Ocakavam <exp>
         data->errorValue = read_token(token);
@@ -1308,6 +1324,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
         data->checkDataType = false;
 
+
+            //generovanie kodu while condition
+        WHILE_CONDITION(data->string, data->whileDeep, INT2STRING(data->specialIDNumber));
+
             //Nemusim nacitavat dalsi token, lebo v tokene bude nacitane klucove slovo 'do', pretoze sa na tomto tokene precedencna analyza zastavi
             //Prestane nacitavat vyraz a spracuje ho
 
@@ -1325,6 +1345,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 //Teraz by som mal mat v tokene slovo 'end', spytam sa, ci tam je
             if(!strcmp(token->name,"keyword") && !strcmp(token->value,"end")){
                 //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo while cyklu
+                
+                    //generovanie kodu ukoncenia while
+                WHILE_END(data->string, data->whileDeep, INT2STRING(data->specialIDNumber));
+                
                 data->whileDeep--;
                 data->specialIDNumber++;
 
@@ -1528,6 +1552,9 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
             //printf("name; %s, specialID: %d\n", variable->ID, variable->var->specialID);
             checkError(data);
 
+                //generovanie kodu parametrov definicie funkcie
+            PARAMETERS(data->funkcia->ID, token->value, INT2STRING(data->funkcia->param_length));
+
             //Ocakavam ':'
             data->errorValue = read_token(token);
             checkError(data);
@@ -1624,6 +1651,9 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
         data->funkcia->param_length = 0;
+
+            //generovanie kodu pre parametre definicie funkcie
+        PARAMETERS(data->funkcia->ID, token->value, INT2STRING(0));
         
 
             //ocakavam argument ':'
@@ -1701,6 +1731,12 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
         fExp(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+
+            //generovanie kodu pre argumenty funkcie
+        ARGUMENTS(data->string, data->whileDeep, data->leaf->ID, INT2STRING(data->indexType), );
+
+
+
         if(strcmp(data->leaf->ID, "write")){
             data->indexType++;
         }
@@ -1776,6 +1812,11 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
             //inkrementacia indexu, kt sa pouziva ako index v poli datovych typov funkcie
+
+            //generovanie kodu pre argumenty funkcie
+        ARGUMENTS(data->string, data->whileDeep, data->leaf->ID, INT2STRING(0), );
+
+
         if(strcmp(data->leaf->ID, "write")){
             data->indexType++;
         }
@@ -2276,6 +2317,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             }
         }
 
+            //generovanie zaciatku funkcie
+        FUNC_START(token->value);
+
 
         Function_t *funkcia = malloc(sizeof(Function_t));
         data->funkcia = funkcia;
@@ -2360,6 +2404,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             }
             data->arrayType = data->funkcia->ret_types;
 
+                //generovanie returnov funkcie
+            DEF_RETVALS(data->funkcia->ID, data->funkcia->ret_length);
+
 
 
             //Vkladanie Function_t do symtable
@@ -2375,6 +2422,10 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             
             deleteFirst(data->list);
+
+            //TODO chyba mi tu PUSH returnovych hodnot
+                //generovanie kodu ukoncenie funkcie
+            FUNC_END(data->funkcia->ID);
             
                 //Zaver
             *state = prog_con;
@@ -2406,6 +2457,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
+            //generovanie volania funkcie
+        CREATEFRAME(data->string, data->whileDeep);
+
             //Ocakavam '('
         data->errorValue = read_token(token);
         checkError(data);
@@ -2434,6 +2488,14 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
 
+                //generovanie volania funkcie
+            CALL_FUNC(data->string, data->whileDeep, element->ID);
+                //generovanie navratovych hodnot funkcie
+            for(int i = 0; i < data->leaf->func->ret_length; i++){
+                RETURNS(data->string, data->whileDeep, data->leaf->ID, INT2STRING(i));
+            }
+            
+            
                 // pokracovanie do prog_con
             *state = prog_con;    
             data->errorValue = read_token(token);
@@ -2570,12 +2632,21 @@ int main(){
     data->whileDeep = 0;
     data->errorValue = 0;
     data->leaf = NULL;
+    data->string = (char *)malloc(sizeof(char));
+    if(data->string == NULL){
+        data->errorValue = 99;
+        checkError(data);
+    }
 
     data->dataType = 0;
     data->checkDataType = false;
     data->indexType = 0;
 
     Tframe_list *frames = (Tframe_list*)malloc(sizeof(Tframe_list));
+    if(frames == NULL){
+        data->errorValue = 99;
+        checkError(data);
+    }
     initList(frames);
     TNode *rootPtr = NULL;
     insertFirst(frames, true, rootPtr);
@@ -2592,13 +2663,17 @@ int main(){
     
     
     enum STATE state = prog;
-    //Osetrenie chyby mallocu
 
+        //generovanie vestavenych funkcii
+    START_AND_BUILTIN_FUNCTIONS();
 
 
     Token *token = malloc(sizeof(Token));
-    //TODO osetri malloc error
-
+    if(token == NULL){
+        data->errorValue = 99;
+        checkError(data);
+    }
+    
     data->token = token;
 
     data->errorValue = read_token(token);
