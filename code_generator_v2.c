@@ -394,58 +394,42 @@ void FUNC_END(char *func_name)
     printf("LABEL %s_end\n", func_name);
 }
 
-void WHILE_START(char *string, bool flag, int number)
+void WHILE_START(char *string, bool flag, char *number)
 {
-    char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
-    sprintf(str_n, "%d", number);
-
-    // 1. DEFVAR
-    generate_code(string, "DEFVAR LF@T-", flag);
-    generate_code(string, str_n, flag);
-    generate_code(string, "l\n", flag);
-
-    // 2. DEFVAR
-    generate_code(string, "DEFVAR LF@T-", flag);
-    generate_code(string, str_n, flag);
-    generate_code(string, "r\n", flag);
-
     // LABEL whilu
-    generate_code(string, "LABEL while_", flag);
-    generate_code(string, str_n, flag);
-    generate_code(string, "\n", flag);
-
-    free(str_n);
+    char *buffer = (char *)malloc(sizeof(char) * (strlen("LABEL while_") + 
+                                                  strlen(number) + 
+                                                  strlen("\n") +
+                                                  ending_0));
+    sprintf(buffer, "LABEL while_%s\n", number);   
+    generate_code(string, buffer, flag);
+    free(buffer);
 }
 
-void WHILE_CONDITION(char *string, bool flag, int number)
+void WHILE_CONDITION(char *string, bool flag, char *number)
 {
-    char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
-    sprintf(str_n, "%d", number);
-
-    generate_code(string, "PUSHS bool@false", flag);
-    generate_code(string, "JUMPIFEQS end_while_", flag);
-    generate_code(string, str_n, flag);
-    generate_code(string, "\n", flag);
-
-    free(str_n);
+    char *buffer = (char *)malloc(sizeof(char) * (strlen("PUSHS bool@false\n") +
+                                                  strlen("JUMPIFEQS end_while_") +
+                                                  strlen(number) +
+                                                  strlen("\n") +
+                                                  ending_0));
+    sprintf(buffer, "PUSHS bool@false\nJUMPIFEQS end_while_%s\n", number);
+    generate_code(string, buffer, flag);
+    free(buffer);   
 }
 
-void WHILE_END(char *string, bool flag, int number)
+void WHILE_END(char *string, bool flag, char *number)
 {
-    char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
-    sprintf(str_n, "%d", number);
-
-    // jump back
-    generate_code(string, "JUMP while_", flag);
-    generate_code(string, str_n, flag);
-    generate_code(string, "\n", flag);
-
-    // end cycle
-    generate_code(string, "LABEL end_while_", flag);
-    generate_code(string, str_n, flag);
-    generate_code(string, "\n", flag);
-
-    free(str_n);
+    char *buffer = (char *)malloc(sizeof(char) * (strlen("JUMP while_") +
+                                                  strlen(number) +
+                                                  strlen("\n") +
+                                                  strlen("LABEL end_while_") +
+                                                  strlen(number) +
+                                                  strlen("\n") +
+                                                  ending_0));
+    sprintf(buffer, "JUMP while_%s\nLABEL end_while_%s\n", number, number);
+    generate_code(string, buffer, flag);
+    free(buffer);   
 }
 
 void IF_CONDITION(char *string, bool flag, int number)
@@ -487,6 +471,12 @@ void IF_END(char *string, bool flag, int number)
     generate_code(string, "\n", flag);
 
     free(str_n);
+}
+
+void CONDITION_START(char *number)
+{    
+    printf("DEFVAR LF@T-%sl\n", number);    
+    printf("DEFVAR LF@T-%sr\n", number);
 }
 
 void CONDITION_POPS(char *string, bool flag, int number)
