@@ -32,9 +32,12 @@ int compute_digits(int n)
     return r;
 }
 
-//000-032, 035 a 092,
-// \ -> 092
-// #  -> 035
+/**
+ * @brief Edits string literals
+ * 
+ * @param dst Input string
+ * @param old_str Output string in format for .ifjcode21
+ */
 void str2_codestr(char *dst, char *old_str)
 {
     bool is_escaped = false;
@@ -42,16 +45,60 @@ void str2_codestr(char *dst, char *old_str)
 
     for (int i = 0; i < strlen(old_str); i++)
     {
-        // TODO porieisit ak su v starom stringu escape sekvencie
         if ((old_str[i] >= 0 && old_str[i] <= 32) || old_str[i] == 35 || old_str[i] == 92)
         {
+            if (old_str[i] == 92)
+            {
+                is_escaped = !is_escaped;
+            }
+
+            if (is_escaped) continue;
+
             char tmp[3]; // mozu sa tu ulozit iba cisla 0-32, 35 alebo 92
             dst[j++] = '\\';
             dst[j++] = '0';
 
             sprintf(tmp, "%d", old_str[i]);
+            if (strlen(tmp) == 1) dst[j++] = '0';
             dst[j++] = tmp[0];
             if (strlen(tmp) > 1) dst[j++] = tmp[1];
+        }
+        else if(is_escaped)
+        {
+            char tmp[3]; // mozu sa tu ulozit iba cisla 0-32, 35 alebo 92
+            switch (old_str[i])
+            {
+                // '\t', '\n'
+                case 't':
+                case 'n':
+                    dst[j++] = '\\';
+                    dst[j++] = '0';
+
+                    sprintf(tmp, "%d", old_str[i]);
+                    if (strlen(tmp) == 1) dst[j++] = '0';
+                    dst[j++] = tmp[0];
+                    if (strlen(tmp) > 1) dst[j++] = tmp[1];
+                    
+                    break;
+                // '\"'  
+                case '\"':
+                    dst[j++] = '\"';
+                    break;
+                // '\xyz' -> 000-255  
+                case '0':
+                case '1':
+                case '2':
+                    dst[j++] = '\\';
+
+                    dst[j++] = old_str[i++];
+                    dst[j++] = old_str[i++];
+                    dst[j++] = old_str[i];
+
+                    break;
+                default:
+                    break;
+            }
+            is_escaped = false;
         }
         else
         {
@@ -61,9 +108,14 @@ void str2_codestr(char *dst, char *old_str)
     }
 
     dst[j] = '\0';
-
 }
 
+/**
+ * @brief Converts string representation of float number to hex format
+ * 
+ * @param value String representation of float number
+ * @param buf Hex format
+ */
 void str2hex(char *value, char *buf)
 {
     char *eptr;
@@ -71,6 +123,12 @@ void str2hex(char *value, char *buf)
     sprintf(buf, "%a", result);
 }
 
+/**
+ * @brief 
+ * 
+ * @param token 
+ * @return char 
+ */
 char *symbol_generator(Token *token)
 {
     char *symbol;
@@ -97,6 +155,7 @@ char *symbol_generator(Token *token)
             // TODO: osetrenie mallocu
             strcpy(symbol, "string@");
             strcat(symbol, buf);
+            free(buf);
         }
         else if(strcmp(token->name, "int") == 0)
         {
@@ -394,42 +453,58 @@ void FUNC_END(char *func_name)
     printf("LABEL %s_end\n", func_name);
 }
 
-void WHILE_START(char *string, bool flag, char *number)
+void WHILE_START(char *string, bool flag, int number)
 {
+    char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
+    sprintf(str_n, "%d", number);
+
+    // 1. DEFVAR
+    generate_code(string, "DEFVAR LF@T-", flag);
+    generate_code(string, str_n, flag);
+    generate_code(string, "l\n", flag);
+
+    // 2. DEFVAR
+    generate_code(string, "DEFVAR LF@T-", flag);
+    generate_code(string, str_n, flag);
+    generate_code(string, "r\n", flag);
+
     // LABEL whilu
-    char *buffer = (char *)malloc(sizeof(char) * (strlen("LABEL while_") + 
-                                                  strlen(number) + 
-                                                  strlen("\n") +
-                                                  ending_0));
-    sprintf(buffer, "LABEL while_%s\n", number);   
-    generate_code(string, buffer, flag);
-    free(buffer);
+    generate_code(string, "LABEL while_", flag);
+    generate_code(string, str_n, flag);
+    generate_code(string, "\n", flag);
+
+    free(str_n);
 }
 
-void WHILE_CONDITION(char *string, bool flag, char *number)
+void WHILE_CONDITION(char *string, bool flag, int number)
 {
-    char *buffer = (char *)malloc(sizeof(char) * (strlen("PUSHS bool@false\n") +
-                                                  strlen("JUMPIFEQS end_while_") +
-                                                  strlen(number) +
-                                                  strlen("\n") +
-                                                  ending_0));
-    sprintf(buffer, "PUSHS bool@false\nJUMPIFEQS end_while_%s\n", number);
-    generate_code(string, buffer, flag);
-    free(buffer);   
+    char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
+    sprintf(str_n, "%d", number);
+
+    generate_code(string, "PUSHS bool@false", flag);
+    generate_code(string, "JUMPIFEQS end_while_", flag);
+    generate_code(string, str_n, flag);
+    generate_code(string, "\n", flag);
+
+    free(str_n);
 }
 
-void WHILE_END(char *string, bool flag, char *number)
+void WHILE_END(char *string, bool flag, int number)
 {
-    char *buffer = (char *)malloc(sizeof(char) * (strlen("JUMP while_") +
-                                                  strlen(number) +
-                                                  strlen("\n") +
-                                                  strlen("LABEL end_while_") +
-                                                  strlen(number) +
-                                                  strlen("\n") +
-                                                  ending_0));
-    sprintf(buffer, "JUMP while_%s\nLABEL end_while_%s\n", number, number);
-    generate_code(string, buffer, flag);
-    free(buffer);   
+    char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
+    sprintf(str_n, "%d", number);
+
+    // jump back
+    generate_code(string, "JUMP while_", flag);
+    generate_code(string, str_n, flag);
+    generate_code(string, "\n", flag);
+
+    // end cycle
+    generate_code(string, "LABEL end_while_", flag);
+    generate_code(string, str_n, flag);
+    generate_code(string, "\n", flag);
+
+    free(str_n);
 }
 
 void IF_CONDITION(char *string, bool flag, int number)
@@ -471,12 +546,6 @@ void IF_END(char *string, bool flag, int number)
     generate_code(string, "\n", flag);
 
     free(str_n);
-}
-
-void CONDITION_START(char *number)
-{    
-    printf("DEFVAR LF@T-%sl\n", number);    
-    printf("DEFVAR LF@T-%sr\n", number);
 }
 
 void CONDITION_POPS(char *string, bool flag, int number)
@@ -539,29 +608,53 @@ int main()
 
     printf("%s\n", symbol_generator(token));
 
+    printf("%s\n", symbol_generator(token));
+
     strcpy(token->name, "string");
-    token->value_len = 10;
+    token->value_len = 100;
     token->value = (char *)malloc(token->value_len*sizeof(char));
-    strcpy(token->value, "ahoj ako sa mas#");
+    strcpy(token->value, "ahoj ako\t sa mas#");
 
     printf("%s\n", symbol_generator(token));
 
     strcpy(token->name, "string");
-    token->value_len = 10;
+    token->value_len = 100;
+    token->value = (char *)malloc(token->value_len*sizeof(char));
+    strcpy(token->value, "znak noveho riadku: ahoj\n ako sa mas#");
+
+    printf("%s\n", symbol_generator(token));
+
+    strcpy(token->name, "string");
+    token->value_len = 100;
+    token->value = (char *)malloc(token->value_len*sizeof(char));
+    strcpy(token->value, "uvodzoka a backslash: ahoj\\ ako sa mas\"");
+
+    printf("%s\n", symbol_generator(token));
+
+    strcpy(token->name, "string");
+    token->value_len = 100;
+    token->value = (char *)malloc(token->value_len*sizeof(char));
+    strcpy(token->value, "dalsie escape: ako\\035 ako\\009 ako\\215");
+    printf("original:%s\n", token->value);
+
+    printf("%s\n", symbol_generator(token));
+
+    strcpy(token->name, "string");
+    token->value_len = 100;
     token->value = (char *)malloc(token->value_len*sizeof(char));
     strcpy(token->value, "ahoj");
 
     printf("%s\n", symbol_generator(token));
 
     strcpy(token->name, "int");
-    token->value_len = 10;
+    token->value_len = 100;
     token->value = (char *)malloc(token->value_len*sizeof(char));
     strcpy(token->value, "-5");
 
     printf("%s\n", symbol_generator(token));
 
     strcpy(token->name, "number");
-    token->value_len = 10;
+    token->value_len = 100;
     token->value = (char *)malloc(token->value_len*sizeof(char));
     strcpy(token->value, "10.5");
 
