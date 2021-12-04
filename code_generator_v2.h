@@ -10,6 +10,7 @@
 #include "scanner.h"
 
 // not user functions
+char *INT2STRING(int number);
 int generate_code(char **string, char *code, bool flag);
 void str2_codestr(char *dst, char *old_str);
 void str2hex(char *value, char *buf);
@@ -42,9 +43,9 @@ int CALL_FUNC(char **string, bool flag, char *func_name);
 
 // function definition
 void FUNC_START(char *func_name);
-void PARAMETERS(char *func_name, char *param_name, int number);
-void DEF_RETVALS(char *func_name, int count);
-void RETURN_RETVALS(char *func_name, int number);
+void PARAMETERS(char *func_name, char *param_name, int number, char *IDcislo);
+void DEF_RETVALS( int count);
+void RETURN_RETVALS( int number);
 void FUNC_END(char *func_name, int count);
 
 // while

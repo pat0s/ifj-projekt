@@ -409,11 +409,18 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                     //return funkcie, kontrola spravneho poctu parametrov
 
                 if(data->leaf->func->ret_length > data->arrayTypeLength){
-                    printf("ERROR - Vysoky pocet returnovych hodnot inej funckie v returne ucastnej funkcie\n");
+                    printf("ERROR - Vysoky pocet returnovych hodnot inej funckie v returne sucastnej funkcie\n");
                     data->errorValue = 5;
                     checkError(data);
                 }
                 
+
+                //TODO musim ist odzadu ale neviem podla ktorej premennej, treba skontrolovat
+                for(int i = 0; i ; i--){
+                    RETURN_RETVALS(i);
+
+                }
+
                    //vycistenie ukazatela na pomocny TNode
                 data->indexType = 0;
                 data->leaf = NULL;
@@ -449,6 +456,8 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
                     //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
                 
+                RETURN_RETVALS(data->indexType);
+                
                     //inkrementacia pocitadla indexu pre pole datovy typova navratovych hodnot
                 data->indexType++;
 
@@ -477,7 +486,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
-                
+            RETURN_RETVALS(data->indexType);    
                 //inkrementacia pocitadla indexu pre pole datovy typova navratovych hodnot
             data->indexType++;
 
@@ -640,6 +649,7 @@ void fInit(Token *token, enum STATE *state, Data_t *data){
             //          - Pre ID funkcie je to ZABEZPECENE
     }
     else{
+
         //Znaci EPSILON PRECHOD
         //Tento 'else' je tu len symbolicky pre spravne porozumenie situacie
     }
@@ -1350,6 +1360,12 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 WHILE_END(data->string, data->whileDeep, INT2STRING(data->specialIDNumber));
                 
                 data->whileDeep--;
+
+                if(data->whileDeep == 0){
+                    printf("%s",data->string);
+                    data->string = realloc(data->string, sizeof(char));
+                    data->string[0] = '\0';
+                }
                 data->specialIDNumber++;
 
 
@@ -1465,6 +1481,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
         data->checkDataType = false;
 
+
         //ak bude navratovych typov malo, bude za ne dosadeny nil, TOTO zabezpeci generovanie kodu, ktore hned pri
         //tvorbe a skoku funkcie inicializuje premenne na return a priradi im nil
         
@@ -1553,7 +1570,7 @@ void fParams_n(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
 
                 //generovanie kodu parametrov definicie funkcie
-            PARAMETERS(data->funkcia->ID, token->value, INT2STRING(data->funkcia->param_length));
+            PARAMETERS(data->funkcia->ID, token->value, data->funkcia->param_length, INT2STRING(data->specialIDNumber));
 
             //Ocakavam ':'
             data->errorValue = read_token(token);
@@ -1653,7 +1670,7 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
         data->funkcia->param_length = 0;
 
             //generovanie kodu pre parametre definicie funkcie
-        PARAMETERS(data->funkcia->ID, token->value, INT2STRING(0));
+        PARAMETERS(data->funkcia->ID, token->value, 0, INT2STRING(data->specialIDNumber));
         
 
             //ocakavam argument ':'
@@ -1733,7 +1750,7 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
             //generovanie kodu pre argumenty funkcie
-        ARGUMENTS(data->string, data->whileDeep, data->leaf->ID, INT2STRING(data->indexType), );
+        ARGUMENTS(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(data->indexType), );
 
 
 
@@ -2405,7 +2422,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             data->arrayType = data->funkcia->ret_types;
 
                 //generovanie returnov funkcie
-            DEF_RETVALS(data->funkcia->ID, data->funkcia->ret_length);
+            DEF_RETVALS(data->funkcia->ret_length);
 
 
 
@@ -2458,7 +2475,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
         }
 
             //generovanie volania funkcie
-        CREATEFRAME(data->string, data->whileDeep);
+        CREATEFRAME(&(data->string), data->whileDeep);
 
             //Ocakavam '('
         data->errorValue = read_token(token);
@@ -2489,11 +2506,11 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             }
 
                 //generovanie volania funkcie
-            CALL_FUNC(data->string, data->whileDeep, element->ID);
+            CALL_FUNC(&(data->string), data->whileDeep, element->ID);
                 //generovanie navratovych hodnot funkcie
-            for(int i = 0; i < data->leaf->func->ret_length; i++){
-                RETURNS(data->string, data->whileDeep, data->leaf->ID, INT2STRING(i));
-            }
+            /*for(int i = 0; i < data->leaf->func->ret_length; i++){
+                POPS(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(i));
+            }*/
             
             
                 // pokracovanie do prog_con
@@ -2684,6 +2701,7 @@ int main(){
     checkError(data);
     
     fprintf(stderr, "Syn analys: %d\n", data->errorValue);  
+    free(data->string);
 
     free(token);
     free(data);

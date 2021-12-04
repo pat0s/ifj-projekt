@@ -2,6 +2,14 @@
 
 #define ending_0 1
 
+
+char *INT2STRING(int number)
+{
+    char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
+    sprintf(str_n, "%d", number);
+    return str_n;
+}
+
 int generate_code(char **string, char *code, bool flag)
 {
     if (flag){
@@ -714,31 +722,31 @@ void FUNC_START(char *func_name)
     printf("MOVE LF@T-Nsymb2 nil@nil\n");
 }
 
-void PARAMETERS(char *func_name, char *param_name, int number)
+void PARAMETERS(char *func_name, char *param_name, int number, char *IDcislo)
 {
-    printf("DEFVAR LF@%s\n", param_name);
+    printf("DEFVAR LF@C-%s%s\n",IDcislo, param_name);
     printf("MOVE LF@%s LF@%s_arg%d\n", param_name, func_name, number);
 }
 
-void DEF_RETVALS(char *func_name, int count)
+void DEF_RETVALS( int count)
 {
     for (int i = 0; i < count; i++)
     {
-        printf("DEFVAR LF@%s_retval%d\n", func_name, i);
-        printf("MOVE LF@%s_retval%d nil@nil\n", func_name, i);
+        printf("DEFVAR LF@retval%d\n", i);
+        printf("MOVE LF@retval%d nil@nil\n", i);
     }
 }
 
-void RETURN_RETVALS(char *func_name, int number)
+void RETURN_RETVALS( int number)
 {
-    printf("POPS LF@%s_retval%d\n", func_name, number);
+    printf("POPS LF@retval%d\n", number);
 }
 
 void FUNC_END(char *func_name, int count)
 {
     for (int i = 0; i <= count; i++)
     {
-        printf("PUSHS LF@%s_retval%d\n", func_name, i);        
+        printf("PUSHS LF@retval%d\n", i);        
     }
 
     printf("POPFRAME\n");

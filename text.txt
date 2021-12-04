@@ -1,0 +1,46 @@
+
+return 10, 5, 5+a
+
+return foo
+
+function foo2(a:integer):integer
+
+return a, 10
+end
+
+
+function foo(a:integer):string, integer
+foo(2)
+
+
+local b:integer = foo2(10)
+
+return foo(6)
+end
+
+
+
+
+
+foo(5+10)
+x = foo(5+10)
+
+
+
+
+
+require "ifj21"
+
+global foo2(a:integer): integer, integer, integer, integer
+
+
+funciton foo(a:integer): integer
+local c: integer
+
+a,b,c = foo2(5)
+
+return 10
+end
+
+foo(5+10)
+clears
