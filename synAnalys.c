@@ -978,6 +978,9 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
                 fItem_n(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
+
+
+                //TODO POPS pre n-tu premennu pri viacnasobnom priradeni, kde jej hodnota je na zasobniku uz pushnuta
             }
             else{
                 fprintf(stderr, "Error in state %d, fItem_n, function instead of ID of variable\n", *state);
@@ -1165,6 +1168,8 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
                 fItem_n(token, state, data);
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
+
+                //TODO POPS() pre druhu premennu ktora je vo viacnasobnom priradeni a ma hodnotu pushnutu na zasobniku
 
                     //Vynolovanie pola pre datove typy po vynoreni
                 data->assignArrayIndex = 0;
@@ -1451,6 +1456,8 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
+        
+
         Variable_t variable;
         data->premenna = &variable;
         data->premenna->ID = token->value;
@@ -1555,6 +1562,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = read_token(token);
             checkError(data);
         }
+        /* Ak sa jedna o priradenie, budem potrebovat POPS pre hodnotu zo zasobnika pre tuto premennu, ktoru som na zaciatku spracoval
+        else{
+            POPS()
+        }*/
 
        // fprintf(stderr, "\n\ntoken identif: %s\n\n\n", token->value);
     //docasne
@@ -1792,7 +1803,8 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
             //generovanie kodu pre argumenty funkcie
-        ARGUMENTS(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(data->indexType), );
+        DEFINE_ARG(data->leaf->ID, INT2STRING(data->indexType));
+        INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(data->indexType));
 
 
 
@@ -1873,7 +1885,9 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
             //inkrementacia indexu, kt sa pouziva ako index v poli datovych typov funkcie
 
             //generovanie kodu pre argumenty funkcie
-        ARGUMENTS(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(0), );
+        DEFINE_ARG(data->leaf->ID, INT2STRING(0));
+        INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(0));
+
 
 
         if(strcmp(data->leaf->ID, "write")){
