@@ -465,7 +465,7 @@ void DEFVAR_AND_INIT(char *var_name, char *number)
 int PUSHS(char **string, bool flag, Token *token, char *number, bool nill_oc)
 {
     int ie;
-    char *buffer;
+    char *buffer = NULL;
     char *symbol_gen = symbol_generator(token, number);
 
     if(nill_oc)
@@ -510,11 +510,21 @@ int PUSHS(char **string, bool flag, Token *token, char *number, bool nill_oc)
        
     }    
 
-    buffer = (char *)realloc(buffer, sizeof(char) * (strlen("PUSHS ") +
+    if (buffer == NULL)
+    {
+        buffer = (char *)malloc(sizeof(char) * (strlen("PUSHS ") +
+                                                strlen(symbol_gen) +
+                                                strlen("\n") +
+                                                ending_0));
+    }
+    else
+    {
+        buffer = (char *)realloc(buffer, sizeof(char) * (strlen("PUSHS ") +
                                                          strlen(symbol_gen) +
                                                          strlen("\n") +
                                                          ending_0));
-    
+    }
+
     if (buffer == NULL) // check if malloc failed in CONDITION_START
     {
         return INTERNAL_ERROR;
@@ -576,6 +586,7 @@ int POPS(char **string, bool flag, char *var_name, char *number)
     }
 
     free(buffer);
+    free(unique_symbol);
     return 0;
 }
 
@@ -1171,7 +1182,8 @@ int CONDITION_PUSHS(char **string, bool flag, char *number)
 /*
 // testovani
 int main()
-{    
+{
+
     
     // testovani funkci generovani
     char **f_string;
@@ -1179,7 +1191,7 @@ int main()
     while_string[0] = '\0';
     f_string = &while_string;
 
-    Token *token = malloc(sizeof(Token));
+    //Token *token = malloc(sizeof(Token));
     //token_initialisation(token);
     strcpy(token->name, "identifier");
     token->value_len = 10;
