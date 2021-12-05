@@ -229,8 +229,8 @@ int kontrola_typu(Stack *s){
             }
         }
         else {
-            push(s,"E","int");
-            return -2;
+            //push(s,"E","int");
+            return -1;
         }
     }
     else if(!strcmp(top_type(s),"nil")){
@@ -256,8 +256,8 @@ int kontrola_typu(Stack *s){
             }
         }
         else {
-            push(s,"E","number");
-            return -2;
+            //push(s,"E","number");
+            return -1;
         }
     }
 }
@@ -388,12 +388,12 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             //zavolat generovani -
             SUBS(&data->string,data->whileDeep);
             }
-            else if(kontrol==-2){
+            /*else if(kontrol==-2){
             //zavolat generovani zaporneho cisla  
             strcat("-",generator_token->value);
             generator_token->value_len++; 
             PUSHS(&data->string,data->whileDeep,generator_token,NULL,false); 
-            }
+            }*/
             else{
                 return -1;
             }
