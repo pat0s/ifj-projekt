@@ -994,7 +994,7 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
 
 
                 //TODO POPS pre n-tu premennu pri viacnasobnom priradeni, kde jej hodnota je na zasobniku uz pushnuta
-                POPS(&(data->string), data->whileDeep, element->ID, INT2STRING(data->specialIDNumber));
+                POPS(&(data->string), data->whileDeep, element->ID, INT2STRING(element->var->specialID));
             }
             else{
                 fprintf(stderr, "Error in state %d, fItem_n, function instead of ID of variable\n", *state);
@@ -1190,7 +1190,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
 
                     //TODO POPS() pre druhu premennu ktora je vo viacnasobnom priradeni a ma hodnotu pushnutu na zasobniku
-                POPS(&(data->string), data->whileDeep, element->ID, INT2STRING(data->specialIDNumber));
+                POPS(&(data->string), data->whileDeep, element->ID, INT2STRING(element->var->specialID));
 
 
                     //Vynolovanie pola pre datove typy po vynoreni
@@ -1435,7 +1435,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 data->whileDeep--;
 
                 if(data->whileDeep == 0){
-                    //printf("%s",data->string);
+                    printf("%s",data->string);
                     data->string = realloc(data->string, sizeof(char));
                     data->string[0] = '\0';
                 }
@@ -1570,6 +1570,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
     else if(!strcmp(token->name,"identifier")){
 
         data->tokenValue = token->value;
+        TNode * element = searchFrames(data->list, token->value);
             //Ocakavam <item>
         data->errorValue = read_token(token);
         checkError(data);
@@ -1592,7 +1593,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         }
         else{
             // Ak sa jedna o priradenie, budem potrebovat POPS pre hodnotu zo zasobnika pre tuto premennu, ktoru som na zaciatku spracoval
-            POPS(&(data->string), data->whileDeep, data->tokenValue, INT2STRING(data->specialIDNumber));
+            POPS(&(data->string), data->whileDeep, data->tokenValue, INT2STRING(element->var->specialID));
         }
 
 
