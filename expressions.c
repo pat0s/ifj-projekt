@@ -384,7 +384,10 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             SUBS(&data->string,data->whileDeep);
             }
             else if(kontrol==-2){
-            //zavolat generovani zaporneho cisla    
+            //zavolat generovani zaporneho cisla  
+            strcat("-",generator_token->value);
+            generator_token->value_len++; 
+            PUSHS(&data->string,data->whileDeep,generator_token,NULL,false); 
             }
             else{
                 return -1;
@@ -415,6 +418,9 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
                 if(!strcmp(top_type(s),"int")){
                     //zavolat generovani //
                     IDIVS(&data->string,data->whileDeep);
+                }
+                else{
+                    return -1;
                 }
             }
             else{
@@ -564,7 +570,7 @@ void exp_analysator(Data_t *data){
         if(precence_table[i][j]==0&&error!=-1){         //SHIFT
                 if(j==4){
                 strcpy(generator_token->name,token->name);
-                generator_token->value = (char*)realloc(generator_token->value,token->value_len*sizeof(char));
+                generator_token->value = (char*)realloc(generator_token->value,token->value_len*sizeof(char)+1);
                 strcpy(generator_token->value,token->value);
                 generator_token->value_len=token->value_len;
                 }
