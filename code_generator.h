@@ -58,11 +58,11 @@ void FUNC_END(char *func_name, int count);
 
 // while
 int WHILE_START(char **string, bool flag, char *number);
-int WHILE_CONDITION(char **string, bool flag, char *number);
+int WHILE_CONDITION(char **string, bool flag, char *number, bool n_comp);
 int WHILE_END(char **string, bool flag, char *number);
 
 // if
-int IF_CONDITION(char **string, bool flag, char *number);
+int IF_CONDITION(char **string, bool flag, char *number, bool n_comp);
 int ELSE_BRANCH(char **string, bool flag, char *number);
 int IF_END(char **string, bool flag, char *number);
 

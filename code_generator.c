@@ -968,9 +968,24 @@ int WHILE_START(char **string, bool flag, char *number)
     return 0;
 }
 
-int WHILE_CONDITION(char **string, bool flag, char *number)
+int WHILE_CONDITION(char **string, bool flag, char *number, bool n_comp)
 {
     int ie;
+
+    if (n_comp)
+    {
+        // POPS GF@T-Nsymb1
+        // TYPE GF@T-Nvar GF@T-Nsymb1
+        // PUSH GF@T-Nvar
+        // PUSH string@nil
+        // EQS
+        // NOTS
+        ie = generate_code(string, "POPS GF@T-Nsymb1\nTYPE GF@T-Nvar GF@T-Nsymb1\nPUSH GF@T-Nvar\nPUSH string@nil\nEQS\nNOTS\n", flag); // check if malloc failed in generate_code
+        if (ie == INTERNAL_ERROR)
+        {
+            return ie;
+        }
+    }
 
     // PUSHS bool@false
     ie = generate_code(string, "PUSHS bool@false\n", flag); // check if malloc failed in generate_code
@@ -1041,9 +1056,24 @@ int WHILE_END(char **string, bool flag, char *number)
     return 0;
 }
 
-int IF_CONDITION(char **string, bool flag, char *number)
+int IF_CONDITION(char **string, bool flag, char *number, bool n_comp)
 {
     int ie;
+
+    if(n_comp)
+    {
+        // POPS GF@T-Nsymb1
+        // TYPE GF@T-Nvar GF@T-Nsymb1
+        // PUSH GF@T-Nvar
+        // PUSH string@nil
+        // EQS
+        // NOTS
+        ie = generate_code(string, "POPS GF@T-Nsymb1\nTYPE GF@T-Nvar GF@T-Nsymb1\nPUSH GF@T-Nvar\nPUSH string@nil\nEQS\nNOTS\n", flag); // check if malloc failed in generate_code
+        if (ie == INTERNAL_ERROR)
+        {
+            return ie;
+        }
+    }    
 
     // PUSHS bool@false
     ie = generate_code(string, "PUSHS bool@false\n", flag); // check if malloc failed in generate_code
