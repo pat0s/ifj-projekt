@@ -273,12 +273,21 @@ int read_token(Token *token)
             {
                 strcpy(state, "p14");
             }
+            else if (symbol == EOF)
+            {
+                return LEX_ERROR;
+            }
+            
         }
         else if (!strcmp(state, "p14"))
         {
             if (symbol == ']')
             {
                 strcpy(state, "s");
+            }
+            else if (symbol == EOF)
+            {
+                return LEX_ERROR;
             }
             else
             {
