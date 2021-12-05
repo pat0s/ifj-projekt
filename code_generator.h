@@ -1,56 +1,70 @@
-#ifndef _CODE_GENERATOR_H_
-#define _CODE_GENERATOR_H_
+#ifndef _CODE_GENERATOR_H_V2_
+#define _CODE_GENERATOR_H_V2_
 
-typedef struct dynString
-{
-    char *string;
-    int length;
-} TDynString;
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
-// reads, readi, readn -> READ
-// write -> WRITE * n podla parametrov
+#include "error.h"
+#include "scanner.h"
 
-// Start
+// not user functions
+char *INT2STRING(int number);
+int generate_code(char **string, char *code, bool flag);
+void str2_codestr(char *dst, char *old_str);
+void str2hex(char *value, char *buf);
+char *symbol_generator(Token *token);
 
-// hlavicka funkcie
+// start
+void START_AND_BUILTIN_FUNCTIONS();
 
-// return values
-// return funkcie (prikaz return)
+// variable definition and initialization
+void DEFVAR_AND_INIT(char *var_name);
+int  POPS(char **string, bool flag, char *var_name);
 
-// priradenie hodnot z return funkcie (samotny prikaz return)
+// exppresions
+int PUSHS(char **string, bool flag, Token *token, bool nill_oc);
+int ADDS(char **string, bool flag);
+int SUBS(char **string, bool flag);
+int MULS(char **string, bool flag);
+int DIVS(char **string, bool flag, Token *token);
+int IDIVS(char **string, bool flag, Token *token);
+int LTS(char **string, bool flag);
+int GTS(char **string, bool flag);
+int EQS(char **string, bool flag);
+int ANDS(char **string, bool flag);
+int ORS(char **string, bool flag);
+int NOTS(char **string, bool flag);
+int CONCAT(char **string, bool flag);
+int STRLEN(char **string, bool flag);
 
-// volanie funkcie
+// call function
+void CREATEFRAME();
+int  DEFINE_ARG(char *func_name, char *number);
+int  INIT_ARG(char **string, bool flag, char *func_name, char *number);
+int  CALL_FUNC(char **string, bool flag, char *func_name);
 
-// vkladanie parametrov do funckie
+// function definition
+void FUNC_START(char *func_name);
+void PARAMETERS(char *func_name, char *param_name, int number, char *IDcislo);
+void DEF_RETVALS( int count);
+void RETURN_RETVALS( int number);
+void FUNC_END(char *func_name, int count);
 
-// if label
+// while
+int WHILE_START(char **string, bool flag, char *number);
+int WHILE_CONDITION(char **string, bool flag, char *number);
+int WHILE_END(char **string, bool flag, char *number);
 
-// if jump
+// if
+int IF_CONDITION(char **string, bool flag, char *number);
+int ELSE_BRANCH(char **string, bool flag, char *number);
+int IF_END(char **string, bool flag, char *number);
 
-// else jmp, label
-
-// if end
-
-// while - hlavicka, telo, end
-
-// premenna vo while !!!!
-
-// var definicia
-
-// var priradenie
-
-// konstanta
-
-// operacie
-// # -> STRLEN
-// .. -> CONCAT
-
-// kontrola delenia 0
-// iba pri / a //
-
-// kontrola neocakavanej hodnoty nil pri operaciach
-// okrem == ~=
-
-// funkce parameter integer, return ukazatel na string
+// condition
+void CONDITION_VARS(char *number);
+int  CONDITION_POPS(char **string, bool flag, char *number);
+int  CONDITION_PUSHS(char **string, bool flag, char *number);
 
 #endif
