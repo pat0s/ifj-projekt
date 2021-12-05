@@ -3,6 +3,16 @@
 #define ending_0 1
 
 
+int compute_digits(int n)
+{
+    int r = 1;
+    while(n > 9){
+        n /= 10;
+        r++;
+    }
+    return r;
+}
+
 char *INT2STRING(int number)
 {
     char *str_n = (char *)malloc(sizeof(char) * (compute_digits(number) + ending_0));
@@ -730,7 +740,7 @@ void CREATEFRAME()
     printf("CREATEFRAME\n");
 }
 
-int DEFINE_ARG(char *func_name, char *number)
+void DEFINE_ARG(char *func_name, char *number)
 {
     // DEFVAR TF@[func_name]_arg[number]
     printf("DEFVAR TF@%s_arg%s\n", func_name, number);    

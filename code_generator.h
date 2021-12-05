@@ -1,5 +1,5 @@
-#ifndef _CODE_GENERATOR_H_V2_
-#define _CODE_GENERATOR_H_V2_
+#ifndef _CODE_GENERATOR_H_
+#define _CODE_GENERATOR_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +10,7 @@
 #include "scanner.h"
 
 // not user functions
+int compute_digits(int n);
 char *INT2STRING(int number);
 int generate_code(char **string, char *code, bool flag);
 void str2_codestr(char *dst, char *old_str);
@@ -41,7 +42,7 @@ int STRLEN(char **string, bool flag);
 
 // call function
 void CREATEFRAME();
-int  DEFINE_ARG(char *func_name, char *number);
+void  DEFINE_ARG(char *func_name, char *number);
 int  INIT_ARG(char **string, bool flag, char *func_name, char *number);
 int  CALL_FUNC(char **string, bool flag, char *func_name);
 
