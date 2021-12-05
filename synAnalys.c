@@ -1087,8 +1087,8 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
 
         data->leaf = NULL;
             //Som v stave, kedy mam nacitanu ')' argumentu a musim prejst do <st-list>
-        data->errorValue = read_token(token);
-        checkError(data);
+       // data->errorValue = read_token(token);
+       // checkError(data);
             //Teraz som nacital dalsi token, v ktorom ocakavam <st-list>, spravil som to preto tu, pretoze musim pocitat situaciu spojenu s pravidlo 16. kde priradzujem a musim rozpoznat EPSILON prechod
     }
     else if(!strcmp(token->name,"=")){
