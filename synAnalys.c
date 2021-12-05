@@ -421,8 +421,12 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 }
                 
                     //generovanie kodu call_func
-                CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+                if(strcmp(element2->ID, "write")){
+                    CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
 
+                }
+                
+                //TODO TODO
                 //TODO musim ist odzadu ale neviem podla ktorej premennej, treba skontrolovat
                 //priradenie returnov vnorenej funkcie do returnov vonkajsej funkcie, musim priradit zozadu
                 for(int i = data->leaf->func->ret_length-1; i >= 0 ; i--){
@@ -590,7 +594,10 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
 
 
                 //generovanie kodu call_func
-            CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+
+            if(strcmp(element2->ID, "write")){
+                CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+            }
             //TODO POPS DO VOIDU AK funkcia vrati viac ako 1 return na zasobnik
             for(int i = data->leaf->func->ret_length; i > 1; i--){
                 //TODO POPS DO VOIDU
@@ -833,7 +840,9 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             }
 
                 //generovanie kodu call_func
-            CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+            if(strcmp(element2->ID, "write")){    
+                CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+            }
             //TODO POPS DO VOIDU AK funkcia vrati viac ako 1 return na zasobnik
             for(int i = data->leaf->func->ret_length; i > data->assignArrayLength; i--){
                 POPS_INFINITE(&(data->string), data->whileDeep);
@@ -1066,7 +1075,9 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
 
 
             //generovanie kodu call_func
-        CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+        if(strcmp(element->ID, "write")){
+            CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+        }
         //TODO POPS returnov funkcie do VOID premennej
 
         for(int i = 0; i < data->leaf->func->ret_length; i++){
@@ -1827,7 +1838,7 @@ void fArgs(Token *token, enum STATE *state, Data_t *data, char *functionName){
             INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(data->indexType));
         }
         else{
-            CALL_FUNC(&(data->string), data->whileDeep, functionName);
+            //CALL_FUNC(&(data->string), data->whileDeep, functionName);
 
         }
 
@@ -1914,7 +1925,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data, char *functionName){
             INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(0));
         }
         else{
-            CALL_FUNC(&(data->string), data->whileDeep, functionName);
+           // CALL_FUNC(&(data->string), data->whileDeep, functionName);
         }
 
 
@@ -2591,7 +2602,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             }
 
                 //generovanie volania funkcie
-            CALL_FUNC(&(data->string), data->whileDeep, element->ID);
+            if(strcmp(element->ID, "write")){
+                CALL_FUNC(&(data->string), data->whileDeep, element->ID);
+            }
                 //generovanie navratovych hodnot funkcie
                 //TODO generovanie kodu POPS do nejakej Void premennej
             for(int i = 0; i < data->leaf->func->ret_length; i++){
