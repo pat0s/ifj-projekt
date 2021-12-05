@@ -182,169 +182,230 @@ void START_AND_BUILTIN_FUNCTIONS()
 
     printf("JUMP startOfCode\n");
     printf("LABEL unexpectedNil\n");
-    printf("EXIT int@8\n");
+    printf("EXIT int@8\n\n");
     printf("LABEL divisionByZero\n");
-    printf("EXIT int@9\n");
+    printf("EXIT int@9\n\n");
 
     // tointeger
     printf(
-        "LABEL tointeger\n"
-        "PUSHFRAME\n"
-        "DEFVAR LF@f\n"
-        "MOVE LF@f LF@tointeger_arg1\n"
-        "DEFVAR LF@tointeger_retval1\n"
-        "MOVE LF@tointeger_retval1 nil@nil\n"
-        "PUSHS LF@tointeger_retval1\n"
-        "DEFVAR LF@tmp\n"
-        "TYPE LF@tmp LF@f\n"
-        "PUSHS LF@tmp \n"
-        "JUMPIFEQS tointeger_nil\n"
-        "FLOAT2INT LF@tointeger_retval1 LF@f\n"
-        "LABEL tointeger_nil\n"
-        "POPFRAME\n"
-        "RETURN\n");
+        "LABEL tointeger\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@f\n" \
+        "MOVE LF@f LF@tointeger_arg1\n" \
+        "DEFVAR LF@tointeger_retval1\n" \
+        "MOVE LF@tointeger_retval1 nil@nil\n" \
+        "PUSHS string@nil\n" \
+        "DEFVAR LF@tmp\n" \
+        "TYPE LF@tmp LF@f\n" \
+        "PUSHS LF@tmp \n" \
+        "JUMPIFEQS tointeger_nil\n" \
+        "FLOAT2INT LF@tointeger_retval1 LF@f\n" \
+        "LABEL tointeger_nil\n" \
+        "PUSHS LF@tointeger_retval1\n" \
+        "POPFRAME\n" \
+        "RETURN\n\n");
 
     // ord
     printf(
-        "LABEL ord\n"
-        "PUSHFRAME\n"
-        "DEFVAR LF@s\n"
-        "MOVE LF@s LF@ord_arg1\n"
-        "DEFVAR LF@i\n"
-        "MOVE LF@i LF@ord_arg2\n"
-        "DEFVAR LF@ord_retval1\n"
-        "MOVE LF@ord_retval1 nil@nil\n"
-        "PUSHS nil@nil\n"
-        "DEFVAR LF@tmp\n"
-        "TYPE LF@tmp LF@s\n"
-        "PUSHS LF@tmp\n"
-        "JUMPIFEQS unexpectedNil\n"
-        "PUSHS nil@nil\n"
-        "TYPE LF@tmp LF@i\n"
-        "PUSHS LF@tmp\n"
-        "JUMPIFEQS unexpectedNil\n"
-        "PUSHS LF@i\n"
-        "PUSHS int@1\n"
-        "LTS\n"
-        "PUSHS bool@true \n"
-        "JUMPIFEQS ord_end\n"
-        "STRLEN LF@tmp LF@s\n"
-        "PUSHS LF@i\n"
-        "PUSHS LF@tmp\n"
-        "GTS\n"
-        "PUSHS bool@true\n"
-        "JUMPIFEQS ord_end\n"
-        "PUSHS LF@s\n"
-        "PUSHS LF@i\n"
-        "STRI2INTS\n"
-        "POPS LF@ord_retval1\n"
-        "LABEL ord_end\n"
-        "POPFRAME\n"
-        "RETURN\n");
+        "LABEL ord\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@s\n" \
+        "MOVE LF@s LF@ord_arg1\n" \
+        "DEFVAR LF@i\n" \
+        "MOVE LF@i LF@ord_arg2\n" \
+        "DEFVAR LF@ord_retval1\n" \
+        "MOVE LF@ord_retval1 nil@nil\n" \
+        "PUSHS string@nil\n" \
+        "DEFVAR LF@tmp\n" \
+        "TYPE LF@tmp LF@s\n" \
+        "PUSHS LF@tmp\n" \
+        "JUMPIFEQS unexpectedNil\n" \
+        "PUSHS string@nil\n" \
+        "TYPE LF@tmp LF@i\n" \
+        "PUSHS LF@tmp\n" \
+        "JUMPIFEQS unexpectedNil\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS int@1\n" \
+        "LTS\n" \
+        "PUSHS bool@true \n" \
+        "JUMPIFEQS ord_end\n" \
+        "STRLEN LF@tmp LF@s\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS LF@tmp\n" \
+        "GTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS ord_end\n" \
+        "PUSHS LF@s\n" \
+        "PUSHS LF@i\n" \
+        "STRI2INTS\n" \
+        "POPS LF@ord_retval1\n" \
+        "LABEL ord_end\n" \
+        "PUSHS LF@ord_retval1\n" \
+        "POPFRAME\n" \
+        "RETURN\n\n");
 
     // chr
     printf(
-        "LABEL chr\n"
-        "PUSHFRAME\n"
-        "DEFVAR LF@i\n"
-        "MOVE LF@i LF@chr_arg1\n"
-        "DEFVAR LF@chr_retval1\n"
-        "MOVE LF@chr_retval1 nil@nil\n"
-        "PUSHS nil@nil\n"
-        "PUSHS LF@i\n"
-        "JUMPIFEQS unexpectedNil\n"
-        "PUSHS LF@i\n"
-        "PUSHS int@0\n"
-        "LTS\n"
-        "PUSHS bool@true\n"
-        "JUMPIFEQS chr_end\n"
-        "PUSHS LF@i\n"
-        "PUSHS int@255\n"
-        "GTS\n"
-        "PUSHS bool@true\n"
-        "JUMPIFEQS chr_end\n"
-        "PUSHS LF@i\n"
-        "INT2CHARS\n"
-        "POPS LF@chr_retval1\n"
-        "LABEL chr_end\n"
-        "POPFRAME\n"
-        "RETURN\n");
+        "LABEL chr\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@i\n" \
+        "MOVE LF@i LF@chr_arg1\n" \
+        "DEFVAR LF@chr_retval1\n" \
+        "MOVE LF@chr_retval1 nil@nil\n" \
+        "PUSHS nil@nil\n" \
+        "PUSHS LF@i\n" \
+        "JUMPIFEQS unexpectedNil\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS int@0\n" \
+        "LTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS chr_end\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS int@255\n" \
+        "GTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS chr_end\n" \
+        "PUSHS LF@i\n" \
+        "INT2CHARS\n" \
+        // toto obidvoje as vymazat
+        "POPS LF@chr_retval1\n" \
+        "PUSHS LF@chr_retval1\n" \
+        "LABEL chr_end\n" \
+        "POPFRAME\n" \
+        "RETURN\n\n");
 
     // readn
+    printf( \
+        "LABEL readn\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@readn_retval1\n" \
+        "MOVE LF@readn_retval1 nil@nil\n" \
+        "DEFVAR LF@tmp\n" \
+        "DEFVAR LF@type_check\n" \
+        "READ LF@tmp float\n" \
+        "TYPE LF@type_check LF@tmp\n" \
+        "PUSHS LF@type_check\n" \
+        "PUSHS string@float\n" \
+        "JUMPIFNEQS readn_end\n" \
+        "MOVE LF@readn_retval1 LF@tmp\n" \
+        "LABEL readn_end\n" \
+        "PUSHS LF@readn_retva1\n" \
+        "POPFRAME\n" \
+        "RETURN\n\n" \
+    );
+
     // readi
+     printf( \
+        "LABEL readi\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@readi_retval1\n" \
+        "MOVE LF@readi_retval1 nil@nil\n" \
+        "DEFVAR LF@tmp\n" \
+        "DEFVAR LF@type_check\n" \
+        "READ LF@tmp int\n" \
+        "TYPE LF@type_check LF@tmp\n" \
+        "PUSHS LF@type_check\n" \
+        "PUSHS string@int\n" \
+        "JUMPIFNEQS readi_end\n" \
+        "MOVE LF@readi_retval1 LF@tmp\n" \
+        "LABEL readi_end\n" \
+        "PUSHS LF@readi_retva1\n" \
+        "POPFRAME\n" \
+        "RETURN\n\n" \
+    );
+    
     // reads
+    printf( \
+        "LABEL readn\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@reads_retval1\n" \
+        "MOVE LF@reads_retval1 nil@nil\n" \
+        "DEFVAR LF@tmp\n" \
+        "DEFVAR LF@type_check\n" \
+        "READ LF@tmp string\n" \
+        "TYPE LF@type_check LF@tmp\n" \
+        "PUSHS LF@type_check\n" \
+        "PUSHS string@string\n" \
+        "JUMPIFNEQS reads_end\n" \
+        "MOVE LF@reads_retval1 LF@tmp\n" \
+        "LABEL reads_end\n" \
+        "PUSHS LF@reads_retva1\n" \
+        "POPFRAME\n" \
+        "RETURN\n\n" \
+    );
 
     // substr
     // ak je i < j
     // * staci skontrolovat ci je i < 1, ak je mensie, tak sa vrati nil ak nie, tak sa pokracuje
     // * staci skontrolovat ci je j > strlen(s), ak je vacsie, vrati sa nil ak nie, tak sa pokracuje
     printf(
-        "LABEL substr\n"
-        "PUSHFRAME\n"
-        "DEFVAR LF@s\n"
-        "MOVE LF@s LF@substr_arg1\n"
-        "DEFVAR LF@i\n"
-        "MOVE LF@i LF@substr_arg1\n"
-        "DEFVAR LF@j\n"
-        "MOVE LF@j LF@substr_arg1\n"
-        "DEFVAR LF@substr_retval1\n"
-        "MOVE LF@substr_retval1 nil@nil\n"
+        "LABEL substr\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@s\n" \
+        "MOVE LF@s LF@substr_arg1\n" \
+        "DEFVAR LF@i\n" \
+        "MOVE LF@i LF@substr_arg1\n" \
+        "DEFVAR LF@j\n" \
+        "MOVE LF@j LF@substr_arg1\n" \
+        "DEFVAR LF@substr_retval1\n" \
+        "MOVE LF@substr_retval1 nil@nil\n" \
 
-        "PUSHS nil@nil\n"
-        "PUSHS LF@s\n"
-        "JUMPIFEQS unexpectedNil\n"
+        "PUSHS nil@nil\n" \
+        "PUSHS LF@s\n" \
+        "JUMPIFEQS unexpectedNil\n" \
 
-        "PUSHS nil@nil\n"
-        "PUSHS LF@i\n"
-        "JUMPIFEQS unexpectedNil\n"
+        "PUSHS nil@nil\n" \
+        "PUSHS LF@i\n" \
+        "JUMPIFEQS unexpectedNil\n" \
 
-        "PUSHS nil@nil\n"
-        "PUSHS LF@j\n"
-        "JUMPIFEQS unexpectedNil\n"
+        "PUSHS nil@nil\n" \
+        "PUSHS LF@j\n" \
+        "JUMPIFEQS unexpectedNil\n" \
 
-        "PUSHS LF@j\n"
-        "PUSHS LF@i\n"
-        "LTS\n"
-        "PUSHS bool@true\n"
-        "JUMPIFEQS substr_end\n"
+        "PUSHS LF@j\n" \
+        "PUSHS LF@i\n" \
+        "LTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS substr_end\n" \
 
-        "PUSHS LF@i\n"
-        "PUSHS int@1\n"
-        "LTS\n"
-        "PUSHS bool@true\n"
-        "JUMPIFEQS substr_end\n"
+        "PUSHS LF@i\n" \
+        "PUSHS int@1\n" \
+        "LTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS substr_end\n" \
 
-        "DEFVAR LF@tmp\n"
-        "STRLEN LF@tmp LF@s\n"
-        "PUSHS LF@j\n"
-        "PUSHS LF@tmp\n"
-        "GTS\n"
-        "PUSHS bool@true\n"
-        "JUMPIFEQS substr_end\n"
+        "DEFVAR LF@tmp\n" \
+        "STRLEN LF@tmp LF@s\n" \
+        "PUSHS LF@j\n" \
+        "PUSHS LF@tmp\n" \
+        "GTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMPIFEQS substr_end\n" \
 
-        "GETCHAR LF@substr_retval1 LF@s LF@i\n"
-        "PUSHS int@1\n"
-        "PUSHS LF@i\n"
-        "ADDS\n"
-        "POPS LF@i\n"
+        "GETCHAR LF@substr_retval1 LF@s LF@i\n" \
+        "PUSHS int@1\n" \
+        "PUSHS LF@i\n" \
+        "ADDS\n" \
+        "POPS LF@i\n" \
 
-        "LABEL while\n"
-        "PUSHS LF@i\n"
-        "PUSHS LF@j\n"
-        "GTS\n"
-        "PUSHS bool@true\n"
-        "JUMIFEQS end_while\n"
-        "GETCHAR LF@tmp LF@s LF@i\n"
-        "CONCAT LF@substr_retval1 LF@substr_retval1 LF@tmp\n"
-        "PUSHS int@1\n"
-        "PUSHS LF@i\n"
-        "ADDS\n"
-        "POPS LF@i\n"
-        "JUMP while\n"
+        "LABEL while\n" \
+        "PUSHS LF@i\n" \
+        "PUSHS LF@j\n" \
+        "GTS\n" \
+        "PUSHS bool@true\n" \
+        "JUMIFEQS end_while\n" \
+        "GETCHAR LF@tmp LF@s LF@i\n" \
+        "CONCAT LF@substr_retval1 LF@substr_retval1 LF@tmp\n" \
+        "PUSHS int@1\n" \
+        "PUSHS LF@i\n" \
+        "ADDS\n" \
+        "POPS LF@i\n" \
+        "JUMP while\n" \
 
-        "LABEL end_while\n"
-        "POPFRAME\n"
-        "RETURN\n");
+        "LABEL end_while\n" \
+        "PUSHS LF@substr_ret1\n" \
+        "POPFRAME\n" \
+        "RETURN\n\n");
 
     // -- write function
     // write(a, 10)
@@ -371,6 +432,7 @@ int DEFVAR_AND_INIT(char **string, bool flag, char *var_name)
 int PUSHS(char **string, bool flag, Token *token, bool nill_oc)
 {
     int ie;
+    char *buffer;
 
     if(nill_oc)
     {
@@ -381,7 +443,7 @@ int PUSHS(char **string, bool flag, Token *token, bool nill_oc)
             return ie;
         }
 
-        char *buffer = (char *)malloc(sizeof(char) * (strlen("TYPE LF@T-Nvar ") +
+        buffer = (char *)malloc(sizeof(char) * (strlen("TYPE LF@T-Nvar ") +
                                                       strlen(symbol_generator(token)) +
                                                       strlen("\n") +
                                                       ending_0));
@@ -665,7 +727,7 @@ int STRLEN(char **string, bool flag)
     return 0;
 }
 
-int CREATEFRAME()
+void CREATEFRAME()
 {
     // CREATEFRAME
     printf("CREATEFRAME\n");
