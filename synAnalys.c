@@ -301,7 +301,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
-        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+        if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
             if(!strcmp(token->name,"identifier")){
                 if(isFunction(data->list->last->rootPtr, token->value)){
                     fprintf(stderr, "Error in state %d, fValues, Function instead of variable\n", *state);
@@ -366,7 +366,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
 
 void fValue(Token *token, enum STATE *state, Data_t *data){
     data->errorCode = 5;
-    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil")) ){
+    if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil")) ){
         if(!strcmp(token->name,"identifier")){
             
                 //TODO tu to padalo na segmentation fault ak funkcia neexistovala -> preslo to do fexp a padlo
@@ -594,6 +594,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
             //TODO POPS DO VOIDU AK funkcia vrati viac ako 1 return na zasobnik
             for(int i = data->leaf->func->ret_length; i > 1; i--){
                 //TODO POPS DO VOIDU
+                POPS_INFINITE(&(data->string), data->whileDeep);
             }
 
                //vycistenie ukazatela na pomocny TNode
@@ -622,7 +623,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati <st-list>
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") ||(!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
        
             //posielanie datoveho typu precedencnej analyze
         data->dataType = data->premenna->dataType;
@@ -662,6 +663,8 @@ void fInit(Token *token, enum STATE *state, Data_t *data){
         fInit_value(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
+
+        POPS(&(data->string), data->whileDeep, data->premenna->ID, INT2STRING(data->specialIDNumber));
 
             //WARNING -> postaraj sa o to, aby bol v tokene nacitany <st-list>, pri vynoreni s tym pocitas
             //          - Pre string, int a number je to ZABEZPECENE
@@ -713,7 +716,7 @@ void fAssigns(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
         }
-        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+        else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#")  || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
             //Naschval prazdne, pre jednoduchost tu nechavam tuto podmienku
 
 
@@ -833,6 +836,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
             //TODO POPS DO VOIDU AK funkcia vrati viac ako 1 return na zasobnik
             for(int i = data->leaf->func->ret_length; i > data->assignArrayLength; i--){
+                POPS_INFINITE(&(data->string), data->whileDeep);
                 //TODO POPS DO VOIDU
             }
 
@@ -895,7 +899,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             }
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
 
 
         
@@ -981,6 +985,7 @@ void fItem_n(Token *token, enum STATE *state, Data_t *data){
 
 
                 //TODO POPS pre n-tu premennu pri viacnasobnom priradeni, kde jej hodnota je na zasobniku uz pushnuta
+                POPS(&(data->string), data->whileDeep, element->ID, INT2STRING(data->specialIDNumber));
             }
             else{
                 fprintf(stderr, "Error in state %d, fItem_n, function instead of ID of variable\n", *state);
@@ -1063,6 +1068,10 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //generovanie kodu call_func
         CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
         //TODO POPS returnov funkcie do VOID premennej
+
+        for(int i = 0; i < data->leaf->func->ret_length; i++){
+            POPS_INFINITE(&(data->string), data->whileDeep);
+        }
 
 
         data->leaf = NULL;
@@ -1169,7 +1178,9 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
                     //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
                 checkError(data);
 
-                //TODO POPS() pre druhu premennu ktora je vo viacnasobnom priradeni a ma hodnotu pushnutu na zasobniku
+                    //TODO POPS() pre druhu premennu ktora je vo viacnasobnom priradeni a ma hodnotu pushnutu na zasobniku
+                POPS(&(data->string), data->whileDeep, element->ID, INT2STRING(data->specialIDNumber));
+
 
                     //Vynolovanie pola pre datove typy po vynoreni
                 data->assignArrayIndex = 0;
@@ -1466,6 +1477,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->premenna = &variable;
         data->premenna->ID = token->value;
 
+            //generovanie kodu DEFVAR premennej
+        DEFVAR_AND_INIT(token->value, INT2STRING(data->specialIDNumber));
+
             //TODO zistit ci sa dane ID vyskytuje v tomto frame v symtable, ak ano tak error, ak nie tak treba nasledne vlozit do symtable tuto premennu
 
             //Ocakavam ':'
@@ -1510,7 +1524,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->checkDataType = false;
 
 
-        //TODO POPS(&(data->string), data->whileDeep, data->premenna->ID, INT2STRING(data->specialIDNumber));
+        
         
         data->premenna = NULL;
             //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
@@ -1553,9 +1567,6 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
-        data->tokenValue = NULL;
-        data->checkDataType = false;
-        data->indexType = 0;
         
 
         
@@ -1566,11 +1577,15 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = read_token(token);
             checkError(data);
         }
-        /* Ak sa jedna o priradenie, budem potrebovat POPS pre hodnotu zo zasobnika pre tuto premennu, ktoru som na zaciatku spracoval
         else{
-            POPS()
-        }*/
+            // Ak sa jedna o priradenie, budem potrebovat POPS pre hodnotu zo zasobnika pre tuto premennu, ktoru som na zaciatku spracoval
+            POPS(&(data->string), data->whileDeep, data->tokenValue, INT2STRING(data->specialIDNumber));
+        }
 
+
+        data->tokenValue = NULL;
+        data->checkDataType = false;
+        data->indexType = 0;
        // fprintf(stderr, "\n\ntoken identif: %s\n\n\n", token->value);
     //docasne
         //data->errorValue = read_token(token);
@@ -1848,7 +1863,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
         //nacitali sme EPSILON
         //Nacitane: ID ()
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"-") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#") || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
 
         if(!strcmp(token->name,"identifier")){
             if(isFunction(data->list->last->rootPtr, token->value)){
@@ -2569,9 +2584,9 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             CALL_FUNC(&(data->string), data->whileDeep, element->ID);
                 //generovanie navratovych hodnot funkcie
                 //TODO generovanie kodu POPS do nejakej Void premennej
-            /*for(int i = 0; i < data->leaf->func->ret_length; i++){
-                POPS(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(i));
-            }*/
+            for(int i = 0; i < data->leaf->func->ret_length; i++){
+                POPS_INFINITE(&(data->string), data->whileDeep);
+            }
             
             
                 // pokracovanie do prog_con
@@ -2628,7 +2643,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
             checkError(data);   
         }
     }
-    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#")  || !strcmp(token->name,"-")|| !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
+    else if(!strcmp(token->name,"string") || !strcmp(token->name,"int") || !strcmp(token->name,"number") || !strcmp(token->name,"identifier") || !strcmp(token->name,"#")  || !strcmp(token->name,"(") || (!strcmp(token->name,"keyword") && !strcmp(token->value,"nil"))){
         //TODO ALL
             //TODO treba do podmienky zahrnut NIL
             //Check if is Expression
