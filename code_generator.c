@@ -207,11 +207,11 @@ void START_AND_BUILTIN_FUNCTIONS()
 {
     printf(".IFJcode21\n");
 
-    printf("DEFVAR GF@T-Nvar");
+    printf("DEFVAR GF@T-Nvar\n");
     printf("MOVE GF@T-Nvar nil@nil\n");
-    printf("DEFVAR GF@T-Nsymb1");
+    printf("DEFVAR GF@T-Nsymb1\n");
     printf("MOVE GF@T-Nsymb1 nil@nil\n");
-    printf("DEFVAR GF@T-Nsymb2");
+    printf("DEFVAR GF@T-Nsymb2\n");
     printf("MOVE GF@T-Nsymb2 nil@nil\n");
 
     printf("JUMP startOfCode\n");
@@ -361,7 +361,7 @@ void START_AND_BUILTIN_FUNCTIONS()
     
     // reads
     printf( \
-        "LABEL readn\n" \
+        "LABEL reads\n" \
         "PUSHFRAME\n" \
         "DEFVAR LF@reads_retval1\n" \
         "MOVE LF@reads_retval1 nil@nil\n" \
@@ -438,7 +438,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS LF@j\n" \
         "GTS\n" \
         "PUSHS bool@true\n" \
-        "JUMIFEQS end_while\n" \
+        "JUMPIFEQS end_while\n" \
         "GETCHAR LF@tmp LF@s LF@i\n" \
         "CONCAT LF@substr_retval1 LF@substr_retval1 LF@tmp\n" \
         "PUSHS int@1\n" \
@@ -458,7 +458,7 @@ void START_AND_BUILTIN_FUNCTIONS()
     // "WRITE int@10\n"
 
     // koniec vstavanych funkcii
-    printf("LABEL startOfCode");
+    printf("LABEL startOfCode\n");
 }
 
 void DEFVAR_AND_INIT(char *var_name, char *number)
