@@ -15,23 +15,24 @@ char *INT2STRING(int number);
 int generate_code(char **string, char *code, bool flag);
 void str2_codestr(char *dst, char *old_str);
 void str2hex(char *value, char *buf);
-char *symbol_generator(Token *token);
+char *create_special_name(char *name, char *number);
+char *symbol_generator(Token *token, char *number);
 
 // start
 void START_AND_BUILTIN_FUNCTIONS();
 
 // variable definition and initialization
-void DEFVAR_AND_INIT(char *var_name);
+void DEFVAR_AND_INIT(char *var_name, char *number);
 int POPS_INFINITE(char **string, bool flag);
-int  POPS(char **string, bool flag, char *var_name);
+int POPS(char **string, bool flag, char *var_name, char *number);
 
 // exppresions
-int PUSHS(char **string, bool flag, Token *token, bool nill_oc);
+int PUSHS(char **string, bool flag, Token *token, char *number, bool nill_oc);
 int ADDS(char **string, bool flag);
 int SUBS(char **string, bool flag);
 int MULS(char **string, bool flag);
-int DIVS(char **string, bool flag, Token *token);
-int IDIVS(char **string, bool flag, Token *token);
+int DIVS(char **string, bool flag);
+int IDIVS(char **string, bool flag);
 int LTS(char **string, bool flag);
 int GTS(char **string, bool flag);
 int EQS(char **string, bool flag);
@@ -42,10 +43,10 @@ int CONCAT(char **string, bool flag);
 int STRLEN(char **string, bool flag);
 
 // call function
-void CREATEFRAME();
-void  DEFINE_ARG(char *func_name, char *number);
-int  INIT_ARG(char **string, bool flag, char *func_name, char *number);
-int  CALL_FUNC(char **string, bool flag, char *func_name);
+int CREATEFRAME(char **string, bool flag);
+int DEFINE_ARG(char *func_name, char *number);
+int INIT_ARG(char **string, bool flag, char *func_name, char *number);
+int CALL_FUNC(char **string, bool flag, char *func_name);
 
 // function definition
 void FUNC_START(char *func_name);
