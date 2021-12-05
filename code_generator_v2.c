@@ -355,56 +355,72 @@ void START_AND_BUILTIN_FUNCTIONS()
     printf("LABEL startOfCode");
 }
 
-int PUSHS(char **string, bool flag, Token *token)
+void DEFVAR(char *var_name)
+{
+    printf("DEFVAR %s", var_name);
+}
+
+int DEFVAR_AND_INIT(char **string, bool flag, char *var_name)
+{
+    printf("DEFVAR %s", var_name);
+
+    // MOVE [var_name] nil@nil
+    return generate_code(string, "MOVE %s nil@nil", var_name);
+}
+
+int PUSHS(char **string, bool flag, Token *token, bool flag)
 {
     int ie;
 
-    // PUSHS nil@nil
-    ie = generate_code(string, "PUSHS nil@nil\n", flag); // check if malloc failed in generate_codes
-    if (ie == INTERNAL_ERROR)
+    if(flag)
     {
-        return ie;
-    }
+        // PUSHS nil@nil
+        ie = generate_code(string, "PUSHS nil@nil\n", flag); // check if malloc failed in generate_codes
+        if (ie == INTERNAL_ERROR)
+        {
+            return ie;
+        }
 
-    char *buffer = (char *)malloc(sizeof(char) * (strlen("TYPE LF@T-Nvar ") +
-                                                  strlen(symbol_generator(token)) +
-                                                  strlen("\n") +
-                                                  ending_0));
-    if (buffer == NULL) // check if malloc failed in CONDITION_START
-    {
-        return INTERNAL_ERROR;
-    }
+        char *buffer = (char *)malloc(sizeof(char) * (strlen("TYPE LF@T-Nvar ") +
+                                                      strlen(symbol_generator(token)) +
+                                                      strlen("\n") +
+                                                      ending_0));
+        if (buffer == NULL) // check if malloc failed in CONDITION_START
+        {
+            return INTERNAL_ERROR;
+        }
 
-    // TYPE LF@T-Nvar [symbol_generator(token)]
-    sprintf(buffer, "TYPE LF@T-Nvar %s\n", symbol_generator(token));
-    ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
-    if (ie == INTERNAL_ERROR)
-    {
-        return ie;
-    }
+        // TYPE LF@T-Nvar [symbol_generator(token)]
+        sprintf(buffer, "TYPE LF@T-Nvar %s\n", symbol_generator(token));
+        ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
+        if (ie == INTERNAL_ERROR)
+        {
+            return ie;
+        }
 
-    // PUSHS LF@T-Nvar
-    ie = generate_code(string, "PUSHS LF@T-Nvar\n", flag); // check if malloc failed in generate_code
-    if (ie == INTERNAL_ERROR)
-    {
-        return ie;
-    }
+        // PUSHS LF@T-Nvar
+        ie = generate_code(string, "PUSHS LF@T-Nvar\n", flag); // check if malloc failed in generate_code
+        if (ie == INTERNAL_ERROR)
+        {
+            return ie;
+        }
 
-    // JUMPIFEQS unexpectedNil
-    ie = generate_code(string, "JUMPIFEQS unexpectedNil\n", flag); // check if malloc failed in generate_code
-    if (ie == INTERNAL_ERROR)
-    {
-        return ie;
-    }
+        // JUMPIFEQS unexpectedNil
+        ie = generate_code(string, "JUMPIFEQS unexpectedNil\n", flag); // check if malloc failed in generate_code
+        if (ie == INTERNAL_ERROR)
+        {
+            return ie;
+        }
 
-    buffer = (char *)realloc(buffer, sizeof(char) * (strlen("PUSHS ") +
-                                                     strlen(symbol_generator(token)) +
-                                                     strlen("\n") +
-                                                     ending_0));
-    if (buffer == NULL) // check if malloc failed in CONDITION_START
-    {
-        return INTERNAL_ERROR;
-    }
+        buffer = (char *)realloc(buffer, sizeof(char) * (strlen("PUSHS ") +
+                                                         strlen(symbol_generator(token)) +
+                                                         strlen("\n") +
+                                                         ending_0));
+        if (buffer == NULL) // check if malloc failed in CONDITION_START
+        {
+            return INTERNAL_ERROR;
+        }
+    }    
 
     // PUSHS [symbol_generator(token)]
     sprintf(buffer, "PUSHS %s\n", symbol_generator(token));
@@ -418,11 +434,11 @@ int PUSHS(char **string, bool flag, Token *token)
     return 0;
 }
 
-int POPS(char **string, bool flag, Token *token)
+int POPS(char **string, bool flag, char *var_name)
 {
     int ie;
     char *buffer = (char *)malloc(sizeof(char) * (strlen("POPS ") +
-                                                  strlen(symbol_generator(token)) +
+                                                  strlen(var_name) +
                                                   strlen("\n") +
                                                   ending_0));
     if (buffer == NULL) // check if malloc failed in CONDITION_START
@@ -430,8 +446,8 @@ int POPS(char **string, bool flag, Token *token)
         return INTERNAL_ERROR;
     }
 
-    // POPS [symbol_generator(token)]
-    sprintf(buffer, "POPS %s\n", symbol_generator(token));
+    // POPS [var_name]
+    sprintf(buffer, "POPS %s\n", var_name);
     ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
@@ -649,23 +665,25 @@ int STRLEN(char **string, bool flag)
     return 0;
 }
 
-int CREATEFRAME(char **string, bool flag)
+int CREATEFRAME()
 {
     // CREATEFRAME
-    return generate_code(string, "CREATEFRAME\n", flag);   
+    printf("CREATEFRAME\n");
 }
 
-int ARGUMENTS(char **string, bool flag, char *func_name, char *number, Token *token)
+int DEFINE_ARG(char *func_name, char *number)
 {
     // DEFVAR TF@[func_name]_arg[number]
-    printf("DEFVAR TF@%s_arg%s\n", func_name, number);
+    printf("DEFVAR TF@%s_arg%s\n", func_name, number);    
+}
 
+int INIT_ARG(char **string, bool flag, char *func_name, char *number)
+{
     int ie;
-    char *buffer = (char *)malloc(sizeof(char) * (strlen("MOVE TF@") +
+    char *buffer = (char *)malloc(sizeof(char) * (strlen("POPS TF@") +
                                                   strlen(func_name) +
                                                   strlen("_arg") +
-                                                  strlen(" ") +
-                                                  strlen(symbol_generator(token)) +
+                                                  strlen(number) + 
                                                   strlen("\n") +
                                                   ending_0));
     if (buffer == NULL) // check if malloc failed in CONDITION_START
@@ -673,8 +691,8 @@ int ARGUMENTS(char **string, bool flag, char *func_name, char *number, Token *to
         return INTERNAL_ERROR;
     }
 
-    // MOVE TF@[func_name]_arg[number] [symbol_generator(token)]
-    sprintf(buffer, "MOVE TF@%s_arg%s %s\n", func_name, number, symbol_generator(token));
+    // POPS TF@[func_name]_arg[number]
+    sprintf(buffer, "POPS TF@%s_arg%s\n", func_name, number);
     ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
@@ -682,7 +700,7 @@ int ARGUMENTS(char **string, bool flag, char *func_name, char *number, Token *to
     }
 
     free(buffer);
-    return 0;    
+    return 0;
 }
 
 int CALL_FUNC(char **string, bool flag, char *func_name)
@@ -948,7 +966,7 @@ int IF_END(char **string, bool flag, char *number)
     return 0;
 }
 
-void CONDITION_VARS(char **string, bool flag, char *number)
+void CONDITION_VARS(char *number)
 {
     printf("DEFVAR LF@T-%sl\n", number);
     printf("DEFVAR LF@T-%sr\n", number);    

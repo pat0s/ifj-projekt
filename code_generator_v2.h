@@ -19,9 +19,13 @@ char *symbol_generator(Token *token);
 // start
 void START_AND_BUILTIN_FUNCTIONS();
 
-// exppresions and POPS
-int PUSHS(char **string, bool flag, Token *token);
-int POPS(char **string, bool flag, Token *token);
+// variable definition and initialization
+void DEFVAR(char *var_name);
+int  DEFVAR_AND_INIT(char **string, bool flag, char *var_name);
+int  POPS(char **string, bool flag, char *var_name);
+
+// exppresions
+int PUSHS(char **string, bool flag, Token *token, bool flag);
 int ADDS(char **string, bool flag);
 int SUBS(char **string, bool flag);
 int MULS(char **string, bool flag);
@@ -37,9 +41,10 @@ int CONCAT(char **string, bool flag);
 int STRLEN(char **string, bool flag);
 
 // call function
-int CREATEFRAME(char **string, bool flag);
-int ARGUMENTS(char **string, bool flag, char *func_name, char *number, Token *token);
-int CALL_FUNC(char **string, bool flag, char *func_name);
+void CREATEFRAME();
+int  DEFINE_ARG(char *func_name, char *number);
+int  INIT_ARG(char **string, bool flag, char *func_name, char *number);
+int  CALL_FUNC(char **string, bool flag, char *func_name);
 
 // function definition
 void FUNC_START(char *func_name);
@@ -59,8 +64,8 @@ int ELSE_BRANCH(char **string, bool flag, char *number);
 int IF_END(char **string, bool flag, char *number);
 
 // condition
-void CONDITION_VARS(char **string, bool flag, char *number);
-int CONDITION_POPS(char **string, bool flag, char *number);
-int CONDITION_PUSHS(char **string, bool flag, char *number);
+void CONDITION_VARS(char *number);
+int  CONDITION_POPS(char **string, bool flag, char *number);
+int  CONDITION_PUSHS(char **string, bool flag, char *number);
 
 #endif
