@@ -403,7 +403,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                     //generovanie kodu, createframe pre funkciu
                 CREATEFRAME(&(data->string), data->whileDeep);
 
-                fArg(token, state, data);
+                fArg(token, state, data, element2->ID);
                 checkError(data);
                 data->errorCode = 4;
 
@@ -559,7 +559,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 //generovanie kodu, createframe pre funkciu
             CREATEFRAME(&(data->string), data->whileDeep);
 
-            fArg(token, state, data);
+            fArg(token, state, data, element2->ID);
             checkError(data);
             
             data->errorCode = 4;
@@ -810,7 +810,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
                 //generovanie kodu, createframe pre funkciu
             CREATEFRAME(&(data->string), data->whileDeep);
 
-            fArg(token, state, data);
+            fArg(token, state, data, element2->ID);
             data->errorCode = 4;
             checkError(data);
                 //Netreba nacitat dalsi token, ked sa vynorim, a bude posledny token ')', tak sa nacita novy token
@@ -1054,7 +1054,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //generovanie kodu, createframe pre funkciu
         CREATEFRAME(&(data->string), data->whileDeep);
 
-        fArg(token, state, data);
+        fArg(token, state, data, element->ID);
         data->errorCode = 4;
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
@@ -1793,7 +1793,7 @@ void fParams(Token *token, enum STATE *state, Data_t *data){
     }
 }
 
-void fArgs(Token *token, enum STATE *state, Data_t *data){
+void fArgs(Token *token, enum STATE *state, Data_t *data, char *functionName){
     
     if(!strcmp(token->name,")")){
         //Narazil som na EPSILON prechod
@@ -1822,9 +1822,14 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
             //generovanie kodu pre argumenty funkcie
-        DEFINE_ARG(&(data->string),data->leaf->ID, INT2STRING(data->indexType), data->whileDeep);
-        INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(data->indexType));
+        if(strcmp(functionName, "write")){    
+            DEFINE_ARG(&(data->string),data->leaf->ID, INT2STRING(data->indexType), data->whileDeep);
+            INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(data->indexType));
+        }
+        else{
+            CALL_FUNC(&(data->string), data->whileDeep, functionName);
 
+        }
 
 
         if(strcmp(data->leaf->ID, "write")){
@@ -1836,7 +1841,7 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
             // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
             //Token vrati precedencna analyza v premennej 'token'
         data->errorCode = 5;
-        fArgs(token, state, data);
+        fArgs(token, state, data, functionName);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
     }
@@ -1857,7 +1862,7 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
  * @param data Pointer to data structure
  */
 
-void fArg(Token *token, enum STATE *state, Data_t *data){
+void fArg(Token *token, enum STATE *state, Data_t *data, char *functionName){
 
     if(!strcmp(token->name,")")){
         //nacitali sme EPSILON
@@ -1904,8 +1909,13 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
             //inkrementacia indexu, kt sa pouziva ako index v poli datovych typov funkcie
 
             //generovanie kodu pre argumenty funkcie
-        DEFINE_ARG(&(data->string),data->leaf->ID, INT2STRING(0), data->whileDeep);
-        INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(0));
+        if(strcmp(functionName, "write")){
+            DEFINE_ARG(&(data->string),data->leaf->ID, INT2STRING(0), data->whileDeep);
+            INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(0));
+        }
+        else{
+            CALL_FUNC(&(data->string), data->whileDeep, functionName);
+        }
 
 
 
@@ -1919,7 +1929,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
             // Ak nacita ')', znaci to EPSILON PRECHOD v <args>, ak nacita ',' tak to znaci dalsie argumenty
             //Token vrati precedencna analyza v premennej 'token'
         data->errorCode = 5;
-        fArgs(token, state, data);
+        fArgs(token, state, data, functionName);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data); 
     }
@@ -2569,7 +2579,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             *state = arg;
                 //Ocakavam argument
 
-            fArg(token, state, data);
+            fArg(token, state, data, element->ID);
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
             data->errorCode = 4;
