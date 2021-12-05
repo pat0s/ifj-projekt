@@ -2307,7 +2307,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
                 if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
                     //Nacitane: global ID : function
-                    data->specialIDNumber = 0;
+                    //data->specialIDNumber = 0;
                         //Ocakavam '('
                     data->errorValue = read_token(token);
                     checkError(data);
@@ -2413,7 +2413,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             }
     }
     else if(!strcmp(token->name,"keyword") && !strcmp(token->value,"function")){
-        data->specialIDNumber = 0;
+        //data->specialIDNumber = 0;
         //Nacitane: function, pravidlo 4.
 
             //Ocakavam ID
