@@ -806,6 +806,40 @@ int STRLEN(char **string, bool flag)
     return 0;
 }
 
+int TOP_I2F(char **string, bool flag)
+{
+    int ie;
+
+    // POPS GF@T-Nsymb1
+    // INT2FLOAT GF@T-Nvar GF@T-Nsymb1
+    // PUSHS GF@T-Nvar
+    ie = generate_code(string, "POPS GF@T-Nsymb1\nINT2FLOAT GF@T-Nvar GF@T-Nsymb1\nPUSHS GF@T-Nvar\n", flag); // check if malloc failed in generate_code
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }
+
+    return 0;
+}
+
+int BEFORE_TOP_I2F(char **string, bool flag)
+{
+    int ie;
+
+    // POPS GF@T-Nsymb1
+    // POPS GF@T-Nsymb2
+    // INT2FLOAT GF@T-Nvar GF@T-Nsymb2
+    // PUSHS GF@T-Nvar
+    // PUSH POPS GF@T-Nsymb1
+    ie = generate_code(string, "POPS GF@T-Nsymb1\nPOPS GF@T-Nsymb2\nINT2FLOAT GF@T-Nvar GF@T-Nsymb2\nPUSHS GF@T-Nvar\nPUSH POPS GF@T-Nsymb1\n", flag); // check if malloc failed in generate_code
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }
+
+    return 0;
+}
+
 int CREATEFRAME(char **string, bool flag)
 {
     // CREATEFRAME    
