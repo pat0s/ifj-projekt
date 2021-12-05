@@ -69,19 +69,20 @@ void str2_codestr(char *dst, char *old_str)
         }
         else if(is_escaped)
         {
-            char tmp[3]; // mozu sa tu ulozit iba cisla 0-32, 35 alebo 92
             switch (old_str[i])
             {
                 // '\t', '\n'
                 case 't':
+                    dst[j++] = '\\';
+                    dst[j++] = '0';
+                    dst[j++] = '0';
+                    dst[j++] = '9';
+					break;
                 case 'n':
                     dst[j++] = '\\';
                     dst[j++] = '0';
-
-                    sprintf(tmp, "%d", old_str[i]);
-                    if (strlen(tmp) == 1) dst[j++] = '0';
-                    dst[j++] = tmp[0];
-                    if (strlen(tmp) > 1) dst[j++] = tmp[1];
+                    dst[j++] = '1';
+                    dst[j++] = '0';
                     
                     break;
                 // '\"'  
@@ -475,6 +476,9 @@ int PUSHS(char **string, bool flag, Token *token, char *number, bool nill_oc)
     int ie;
     char *buffer = NULL;
     char *symbol_gen = symbol_generator(token, number);
+
+	//fprintf(stderr, "tokenvalue: %s\n", token->value);
+	//fprintf(stderr, "tokenname: %s\n", token->name);
 
     if(nill_oc)
     {
