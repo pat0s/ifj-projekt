@@ -1250,7 +1250,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->checkDataType = false;
 
             //generovanie podmienky skoku if
-        IF_CONDITION(data->string, data->whileDeep, INT2STRING(data->specialIDNumber));
+        IF_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber));
         int IDOfIf = data->specialIDNumber;
 
             //Nemusim nacitavat dalsi token, lebo precedencna analyza nacita do premennje token klucove slovo 'then'
@@ -1281,7 +1281,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 data->specialIDNumber++;
 
                     //generovanie kodu else branch
-                ELSE_BRANCH(data->string, data->whileDeep, INT2STRING(IDOfIf));
+                ELSE_BRANCH(&(data->string), data->whileDeep, INT2STRING(IDOfIf));
 
 
                     //vymazanie if framu z tabulky symbolov
@@ -1305,7 +1305,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                         //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo if statement
                    
                         //generovnie kodu end if
-                    IF_END(data->string, data->whileDeep, INT2STRING(IDOfIf));
+                    IF_END(&(data->string), data->whileDeep, INT2STRING(IDOfIf));
                     
                     data->specialIDNumber++;
                         //odstranenie vrchneho framu v symtable
@@ -1343,7 +1343,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->specialIDNumber++;
 
             //generovanie kodu inicializacia while
-        WHILE_START(data->string, data->whileDeep, INT2STRING(data->specialIDNumber));
+        WHILE_START(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber));
         
             //Ocakavam <exp>
         data->errorValue = read_token(token);
@@ -1381,7 +1381,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
 
             //generovanie kodu while condition
-        WHILE_CONDITION(data->string, data->whileDeep, INT2STRING(data->specialIDNumber));
+        WHILE_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber));
 
             //Nemusim nacitavat dalsi token, lebo v tokene bude nacitane klucove slovo 'do', pretoze sa na tomto tokene precedencna analyza zastavi
             //Prestane nacitavat vyraz a spracuje ho
@@ -1402,7 +1402,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo while cyklu
                 
                     //generovanie kodu ukoncenia while
-                WHILE_END(data->string, data->whileDeep, INT2STRING(data->specialIDNumber));
+                WHILE_END(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber));
                 
                 data->whileDeep--;
 
