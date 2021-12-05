@@ -408,14 +408,14 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 data->errorCode = 4;
 
                 if(data->leaf->func->param_length != data->indexType){
-                    printf("ERROR - zly pocet parametrov volania funkcie\n");
+                    fprintf(stderr, "ERROR - zly pocet parametrov volania funkcie\n");
                     data->errorValue = 5;
                     checkError(data);
                 }
                     //return funkcie, kontrola spravneho poctu parametrov
 
                 if(data->leaf->func->ret_length > data->arrayTypeLength){
-                    printf("ERROR - Vysoky pocet returnovych hodnot inej funckie v returne sucastnej funkcie\n");
+                    fprintf(stderr, "ERROR - Vysoky pocet returnovych hodnot inej funckie v returne sucastnej funkcie\n");
                     data->errorValue = 5;
                     checkError(data);
                 }
@@ -564,7 +564,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
             
             data->errorCode = 4;
             if(data->leaf->func->param_length != data->indexType){
-                printf("ERROR - zly pocet parametrov volania funkcie\n");
+                fprintf(stderr, "ERROR - zly pocet parametrov volania funkcie\n");
                 data->errorValue = 5; // aelbo 7, alebo 4
                 checkError(data);
             }
@@ -572,7 +572,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 //skontrolovanie datoveho typu a poctu navratovych hodnot
             if(data->leaf->func->ret_length < 1){
                 //TODO skontroluj chybovy kod
-                printf("ERROR - priradenie funkcie, ktora vracia nehodny pocet navratovych hodnot\n");
+                fprintf(stderr, "ERROR - priradenie funkcie, ktora vracia nehodny pocet navratovych hodnot\n");
                 data->errorValue = 5;
                 checkError(data);
 
@@ -582,7 +582,7 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
             //printf("leaf: %d, premenna: %d\n",data->leaf->func->ret_types[0],data->premenna->dataType  );
             if(data->leaf->func->ret_types[0] != data->premenna->dataType){
                 //TODO skontroluj chybovy kod
-                printf("ERROR - priradenie funkcie, ktora vracia nehodny datovy typ navratovej hodnoty\n");
+                fprintf(stderr, "ERROR - priradenie funkcie, ktora vracia nehodny datovy typ navratovej hodnoty\n");
                 data->errorValue = 4;
                 checkError(data);
 
@@ -816,7 +816,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
                 //Netreba nacitat dalsi token, ked sa vynorim, a bude posledny token ')', tak sa nacita novy token
 
             if(data->leaf->func->param_length != data->indexType){
-                printf("ERROR - zly pocet parametrov volania funkcie10\n");
+                fprintf(stderr, "ERROR - zly pocet parametrov volania funkcie10\n");
                 data->errorValue = 5;
                 checkError(data);
             }
@@ -826,7 +826,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             //printf("assignLength: %d, Ret_length: %d\n", data->assignArrayLength,data->leaf->func->ret_length);
             if(data->assignArrayLength > data->leaf->func->ret_length){
                 //TODO skontroluj chybu a jej chybovu hodnot, moze byt 7 alebo 4
-                printf("ERROR - zly pocet returnovych hodnot funkcie pri pridareni10\n");
+                fprintf(stderr, "ERROR - zly pocet returnovych hodnot funkcie pri pridareni10\n");
                 data->errorValue = 5;
                 checkError(data);
 
@@ -845,7 +845,7 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
                 //kontrola spravneho typu pri priradeni vsledku funkcie do premennej; a:integer = foo(10):integer
             for(int i = 0; i < data->assignArrayLength; i++){
                 if(data->assignArray[i].dataType != data->leaf->func->ret_types[i]){
-                    printf("ERROR - typova nekompatibilita pri priradeni returnu funkcie do premennej10\n");
+                    fprintf(stderr, "ERROR - typova nekompatibilita pri priradeni returnu funkcie do premennej10\n");
                     data->errorValue = 4;
                     checkError(data);
 
@@ -1059,7 +1059,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
         if(data->leaf->func->param_length != data->indexType){
-            printf("ERROR - zly pocet parametrov volania funkcie\n");
+            fprintf( stderr,"ERROR - zly pocet parametrov volania funkcie\n");
             data->errorValue = 5;
             checkError(data);
         }
@@ -1422,7 +1422,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 data->whileDeep--;
 
                 if(data->whileDeep == 0){
-                    printf("%s",data->string);
+                    //printf("%s",data->string);
                     data->string = realloc(data->string, sizeof(char));
                     data->string[0] = '\0';
                 }
@@ -1808,7 +1808,7 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
         if(strcmp(data->leaf->ID, "write")){
             data->checkDataType = true;
             if(data->leaf->func->param_length == data->indexType){
-                printf("ERROR - nadmerny pocet parametrov funkcie\n");
+                fprintf(stderr, "ERROR - nadmerny pocet parametrov funkcie\n");
                 data->errorValue = 5;
                 checkError(data);
             }
@@ -1886,7 +1886,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
         if(strcmp(data->leaf->ID, "write")){
             data->checkDataType = true;
             if(data->leaf->func->param_length == data->indexType){
-                printf("ERROR - nadmerny pocet parametrov funkcie\n");
+                fprintf(stderr, "ERROR - nadmerny pocet parametrov funkcie\n");
                 data->errorValue = 5;
                 checkError(data);
             }
@@ -2575,7 +2575,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
             data->errorCode = 4;
 
             if(data->leaf->func->param_length != data->indexType){
-                printf("ERROR - zly pocet parametrov volania funkcie\n");
+                fprintf(stderr, "ERROR - zly pocet parametrov volania funkcie\n");
                 data->errorValue = 5;
                 checkError(data);
             }
