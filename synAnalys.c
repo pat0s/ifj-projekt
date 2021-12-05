@@ -1838,7 +1838,7 @@ void fArgs(Token *token, enum STATE *state, Data_t *data, char *functionName){
             INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(data->indexType));
         }
         else{
-            //CALL_FUNC(&(data->string), data->whileDeep, functionName);
+            CALL_FUNC_WRITE(&(data->string), data->whileDeep);
 
         }
 
@@ -1925,7 +1925,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data, char *functionName){
             INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(0));
         }
         else{
-           // CALL_FUNC(&(data->string), data->whileDeep, functionName);
+            CALL_FUNC_WRITE(&(data->string), data->whileDeep);
         }
 
 
