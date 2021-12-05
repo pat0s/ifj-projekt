@@ -1273,9 +1273,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
         data->checkDataType = false;
-
+        
+        bool condition = false;
             //generovanie podmienky skoku if
-        IF_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber));
+        IF_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber), condition);
         int IDOfIf = data->specialIDNumber;
 
             //Nemusim nacitavat dalsi token, lebo precedencna analyza nacita do premennje token klucove slovo 'then'
@@ -1405,9 +1406,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
         data->checkDataType = false;
 
+        bool condition = false;
 
             //generovanie kodu while condition
-        WHILE_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber));
+        WHILE_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber), condition);
 
             //Nemusim nacitavat dalsi token, lebo v tokene bude nacitane klucove slovo 'do', pretoze sa na tomto tokene precedencna analyza zastavi
             //Prestane nacitavat vyraz a spracuje ho
@@ -2045,7 +2047,7 @@ void reallocArray(Data_t *data, int *array){
 
 void fType(Token *token, enum STATE *state, Data_t *data){
     
-    if(!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")){
+    if(!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number") || !strcmp(token->value,"nil")){
             if(*state == par_type){
                 if(!strcmp(token->value,"integer"))
                     data->funkcia->param_types[data->funkcia->param_length] = 0;
@@ -2053,6 +2055,8 @@ void fType(Token *token, enum STATE *state, Data_t *data){
                     data->funkcia->param_types[data->funkcia->param_length] = 1;
                 else if (!strcmp(token->value,"string"))
                     data->funkcia->param_types[data->funkcia->param_length] = 2;
+                else if (!strcmp(token->value,"nil"))
+                    data->funkcia->param_types[data->funkcia->param_length] = 3;
                 data->funkcia->param_length++;
                 if(data->funkcia->param_length == 15){
                     reallocArray(data, data->funkcia->param_types);
@@ -2066,6 +2070,8 @@ void fType(Token *token, enum STATE *state, Data_t *data){
                     data->funkcia->ret_types[data->funkcia->ret_length] = 1;
                 else if (!strcmp(token->value,"string"))
                     data->funkcia->ret_types[data->funkcia->ret_length] = 2;
+                else if (!strcmp(token->value,"nil"))
+                    data->funkcia->ret_types[data->funkcia->ret_length] = 3;
                 data->funkcia->ret_length++;
 
                 if(data->funkcia->ret_length == 15){
@@ -2080,6 +2086,8 @@ void fType(Token *token, enum STATE *state, Data_t *data){
                     data->premenna->dataType = 1;
                 else if (!strcmp(token->value,"string"))
                     data->premenna->dataType = 2;
+                else if (!strcmp(token->value,"nil"))
+                    data->premenna->dataType = 3;
 
             }
     }
@@ -2183,7 +2191,7 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
 
             
     }
-    else if(!strcmp(token->name,"keyword") && (!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number")) ){
+    else if(!strcmp(token->name,"keyword") && (!strcmp(token->value,"string") || !strcmp(token->value,"integer") || !strcmp(token->value,"number") || !strcmp(token->value,"nil")) ){
                 //parameter je jeden z datovych typov
             if(!strcmp(token->value,"integer"))
                 data->funkcia->param_types[data->funkcia->param_length] = 0;
@@ -2191,6 +2199,9 @@ void fPar_type(Token *token, enum STATE *state, Data_t *data){
                 data->funkcia->param_types[data->funkcia->param_length] = 1;
             else if (!strcmp(token->value,"string"))
                 data->funkcia->param_types[data->funkcia->param_length] = 2;
+            else if (!strcmp(token->value,"nil"))
+                data->funkcia->param_types[data->funkcia->param_length] = 3;
+
 
             data->funkcia->param_length++;
             //TODO realloc
