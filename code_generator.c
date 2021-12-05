@@ -637,11 +637,10 @@ int DIVS(char **string, bool flag)
         return ie;
     }
 
-    free(buffer);
     return 0;
 }
 
-int IDIVS(char **string, bool flag, Token *token)
+int IDIVS(char **string, bool flag)
 {
     int ie;
 
@@ -681,10 +680,10 @@ int IDIVS(char **string, bool flag, Token *token)
         return ie;
     }
 
-    free(buffer);
     return 0;    
 }
-*/
+
+
 int LTS(char **string, bool flag)
 {
     // LTS
@@ -790,7 +789,7 @@ int CREATEFRAME(char **string, bool flag)
     return generate_code(string, "CREATEFRAME\n", flag);
 }
 
-void DEFINE_ARG(char *func_name, char *number)
+int DEFINE_ARG(char **string, char *func_name, char *number, bool flag)
 {
     int ie;
     char *buffer = (char *)malloc(sizeof(char) * (strlen("DEFVAR TF@") +
