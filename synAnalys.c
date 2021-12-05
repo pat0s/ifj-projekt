@@ -16,7 +16,7 @@
 #include <string.h>
 #include "synAnalys.h"
 #include "error.h"
-#include "code_generator_v2.h"
+#include "code_generator.h"
 #include "symtable.h"
 
 

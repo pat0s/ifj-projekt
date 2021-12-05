@@ -5,7 +5,7 @@ CFLAGS = -std=c99 -pedantic -g -Wall -Wextra -lm #-Wextra -Werror -lm
 
 all: $(EXECUTABLE)
 
-$(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stack.o code_generator_v2.o
+$(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stack.o code_generator.o
 	gcc $(CFLAGS) $^ -o $@
 
 %.o: %.c
@@ -26,5 +26,5 @@ expc:
 symtable:
 	gcc -std=c99 -Wall -pedantic -g symtable.c -o symtable
 
-code_generator_v2:
-	gcc -std=c99 -Wall -pedantic -g code_generator_v2.c -o code_generator_v2
+code_generator:
+	gcc -std=c99 -Wall -pedantic -g code_generator.c -o code_generator
