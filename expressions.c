@@ -13,6 +13,7 @@
 #include "expressions.h"
 #include <string.h>
 #include "error.h"
+#include "code_generator.h"
 
 int precence_table[TABLE_SIZE][TABLE_SIZE] =
 {
@@ -119,9 +120,10 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
             TNode *node = searchFrames(frames,token->value);
             if(node==NULL){
                 //chyba nedefinovana premenna;
-                        //while(frames!=NULL){
-                           // deleteFirst(frames);
-                        //}                  
+                        while(data->list->first != data->list->last){
+                            deleteFirst(frames);
+                        }
+                        deleteFirst(frames);                  
                         fprintf(stderr, "ERROR - undef var\n");
                         free(token);
                         free(data);
@@ -152,9 +154,10 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
 
                     if(!strcmp(top(s),"/")||!strcmp(top(s),"//")){
                         //chyba deleni nulou;
-                        //while(frames!=NULL){
-                           // deleteFirst(frames);
-                        //}                  
+                        while(data->list->first != data->list->last){
+                            deleteFirst(data->list);
+                        }
+                            deleteFirst(data->list);                 
                         fprintf(stderr, "ERROR - Deleni 0\n");
                         free(token);
                         free(data);
@@ -308,25 +311,30 @@ void kontrola_typu_vysledku(Stack* s,Data_t* data,Token* token){
  * 
  * @returns 0 pri uspechu, -1 pri chybe;
  */
-int do_reduc(Stack*s,Token* token){
+int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
     if(!strcmp(top(s),"string")){                           //E -> string
         pop(s);
         push(s,"E","string");
+        PUSHS(&data->string,data->whileDeep,generator_token,NULL,false);
     }
     else if(!strcmp(top(s),"int")){                         //E -> int
         pop(s);     
         push(s,"E","int");
+        PUSHS(&data->string,data->whileDeep,generator_token,NULL,false);
     }
     else if(!strcmp(top(s),"number")){                      //E -> number
         pop(s);
         push(s,"E","number");
+        PUSHS(&data->string,data->whileDeep,generator_token,NULL,false);
     }
     else if(!strcmp(top(s),"nil")){                         //E -> nil
         pop(s);
-        //generovani nil
         push(s,"E","nil");
+        PUSHS(&data->string,data->whileDeep,generator_token,NULL,false);
     }
     else if(!strcmp(top(s),"identifier")){                  //E -> id
+        //printf("generator %s\n",generator_token->value);
+        //printf("token %s\n\n",token->value);
         char type[7];
         strcpy(type,top_type(s));
         pop(s);
@@ -338,9 +346,11 @@ int do_reduc(Stack*s,Token* token){
         if(kontrola_op_za||kontrola_op_pred){
             //generovani bez osetreni nil
             //printf("%s generovat bez osetreni\n",token->name);
+            PUSHS(&data->string,data->whileDeep,generator_token,NULL,false);
         }
         else{
             //printf("%s generovat s osetrenim\n", token->name);
+            PUSHS(&data->string,data->whileDeep,generator_token,NULL,true);
         }
 
         push(s,"E",type);
@@ -351,6 +361,7 @@ int do_reduc(Stack*s,Token* token){
                 pop(s);
                 pop(s);
                 push(s,"E","int");
+                STRLEN(&data->string,data->whileDeep);
             }
             else{
                 return -1;                         //semanticka chyba
@@ -359,6 +370,7 @@ int do_reduc(Stack*s,Token* token){
         else if(!strcmp(top1(s),"+")){                      //E -> E + E
             if(kontrola_typu(s)==0){
             //zavolat generovani +
+            ADDS(&data->string,data->whileDeep);
             }
             else{
                 return -1;
@@ -369,6 +381,7 @@ int do_reduc(Stack*s,Token* token){
             int kontrol=kontrola_typu(s);                    
             if(kontrol==0){
             //zavolat generovani -
+            SUBS(&data->string,data->whileDeep);
             }
             else if(kontrol==-2){
             //zavolat generovani zaporneho cisla    
@@ -380,6 +393,7 @@ int do_reduc(Stack*s,Token* token){
         else if(!strcmp(top1(s),"*")){                      //E -> E * E
             if(kontrola_typu(s)==0){
             //zavolat generovani *
+            MULS(&data->string,data->whileDeep);
             }
             else{
                 return -1;
@@ -388,6 +402,7 @@ int do_reduc(Stack*s,Token* token){
         else if(!strcmp(top1(s),"/")){                      //E -> E / E
             if(kontrola_typu(s)==0){
             //zavolat generovani /
+            DIVS(&data->string,data->whileDeep);
             }
             else{
                 return -1;
@@ -398,6 +413,7 @@ int do_reduc(Stack*s,Token* token){
             change_top_type(s,"int");
             //zavolat zmenu typu na int
             //zavolat generovani //
+            IDIVS(&data->string,data->whileDeep);
                 }
             else{
                 return -1;
@@ -476,6 +492,7 @@ int do_reduc(Stack*s,Token* token){
                 if(!strcmp(top_type(s),"string")){
                     change_top_type(s,"string");
                     //zavolat generovani ..
+                    CONCAT(&data->string,data->whileDeep);
                 }
                 else {
                     return -1;
@@ -498,6 +515,8 @@ void exp_analysator(Data_t *data){
     init_stack(s);
 
     Token *token = data->token;
+    Token *generator_token = malloc(sizeof(Token));
+    generator_token->value=(char*)malloc(token->value_len*sizeof(char));
     Tframe_list *frames= data->list;
 
 
@@ -524,6 +543,11 @@ void exp_analysator(Data_t *data){
 ///////////////////////////////////////////////////////////////    
     
         if(precence_table[i][j]==0&&error!=-1){         //SHIFT
+                if(j==4){
+                strcpy(generator_token->name,token->name);
+                generator_token->value = (char*)realloc(generator_token->value,token->value_len*sizeof(char));
+                strcpy(generator_token->value,token->value);
+                }
                 do_shift(s,data,token,j,frames);
                 read_token(token);
             }                                           
@@ -532,14 +556,14 @@ void exp_analysator(Data_t *data){
                 read_token(token);
             }                                           
         else if(precence_table[i][j]==2&&error!=-1){    //REDUCE
-                error = do_reduc(s,token);
+                error = do_reduc(s,token,generator_token,data);
             }                                           
         else if(precence_table[i][j]==3||error==-1){    //Prazdny zasobnik a vstup je prazdny nebo ')'
                 if(error!=-1){
                    if((i==8 && (j==7||j==8)) ||(i==4&&j==4) ){ 
                     if((i==4&&j==4)) {
                         while((top1(s)!=NULL||strcmp(top(s),"E"))&&error!=-1){
-                            error=do_reduc(s,token);
+                            error=do_reduc(s,token,generator_token,data);
                             //printf("zasobnik %s %s",top1(s),top(s)\n);
                         }
                     } 
@@ -553,10 +577,10 @@ void exp_analysator(Data_t *data){
                 if(precence_table[i][j]==3||error==-1){
                     fprintf(stderr, "ERROR - Chyba syntaktickeho analyzatoru zdola nahoru\n");
                     destroy(s);
-                    /*while(frames!=NULL){
-                        deleteFirst(frames); 
-                        } 
-                        */
+                    while(data->list->first != data->list->last){
+                            deleteFirst(data->list);
+                        }
+                            deleteFirst(data->list);
                     free(token);
                     free(data);
                     exit(INCOMPATIBLE_TYPES);//chyba
