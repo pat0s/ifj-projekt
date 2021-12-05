@@ -41,7 +41,7 @@ int CONCAT(char **string, bool flag);
 int STRLEN(char **string, bool flag);
 
 // call function
-int CREATEFRAME();
+void CREATEFRAME();
 int  DEFINE_ARG(char *func_name, char *number);
 int  INIT_ARG(char **string, bool flag, char *func_name, char *number);
 int  CALL_FUNC(char **string, bool flag, char *func_name);
