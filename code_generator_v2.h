@@ -25,7 +25,7 @@ int  DEFVAR_AND_INIT(char **string, bool flag, char *var_name);
 int  POPS(char **string, bool flag, char *var_name);
 
 // exppresions
-int PUSHS(char **string, bool flag, Token *token, bool flag);
+int PUSHS(char **string, bool flag, Token *token, bool nill_oc);
 int ADDS(char **string, bool flag);
 int SUBS(char **string, bool flag);
 int MULS(char **string, bool flag);

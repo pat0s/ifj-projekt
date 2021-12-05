@@ -368,11 +368,11 @@ int DEFVAR_AND_INIT(char **string, bool flag, char *var_name)
     return generate_code(string, "MOVE %s nil@nil", var_name);
 }
 
-int PUSHS(char **string, bool flag, Token *token, bool flag)
+int PUSHS(char **string, bool flag, Token *token, bool nill_oc)
 {
     int ie;
 
-    if(flag)
+    if(nill_oc)
     {
         // PUSHS nil@nil
         ie = generate_code(string, "PUSHS nil@nil\n", flag); // check if malloc failed in generate_codes
