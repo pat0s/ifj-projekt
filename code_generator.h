@@ -46,6 +46,7 @@ int STRLEN(char **string, bool flag);
 int CREATEFRAME(char **string, bool flag);
 int DEFINE_ARG(char **string, char *func_name, char *number, bool flag);
 int INIT_ARG(char **string, bool flag, char *func_name, char *number);
+int CALL_FUNC_WRITE(char **string, bool flag);
 int CALL_FUNC(char **string, bool flag, char *func_name);
 
 // function definition

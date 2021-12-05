@@ -860,10 +860,25 @@ int INIT_ARG(char **string, bool flag, char *func_name, char *number)
     return 0;
 }
 
-void CALL_FUNC_WRITE()
+int CALL_FUNC_WRITE(char **string, bool flag)
 {
-	printf("POPS GF@T-write\n");
-	printf("WRITE GF@T-write\n");
+	int ie;
+	char *buffer = (char *)malloc(sizeof(char)* 40);
+	if (buffer == NULL)
+	{
+		return INTERNAL_ERROR;	
+	}
+	
+	sprintf(buffer, "POPS GF@T-write\nWRITE GF@T-write\n");
+	ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
+    
+	if (ie == INTERNAL_ERROR)
+	{
+        return ie;
+	}
+
+    free(buffer);
+    return 0; 
 }
 
 int CALL_FUNC(char **string, bool flag, char *func_name)
