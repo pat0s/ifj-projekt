@@ -409,12 +409,14 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             }
         }
         else if(!strcmp(top1(s),"//")){                     //E -> E // E
-            if(kontrola_typu(s)==0){
-            change_top_type(s,"int");
-            //zavolat zmenu typu na int
-            //zavolat generovani //
-            IDIVS(&data->string,data->whileDeep);
+            if(!strcmp(top_type(s),"int")){
+                pop(s);
+                pop(s);
+                if(!strcmp(top_type(s),"int")){
+                    //zavolat generovani //
+                    IDIVS(&data->string,data->whileDeep);
                 }
+            }
             else{
                 return -1;
             }
@@ -423,6 +425,7 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             if(kontrola_typu(s)==0){
             change_top_type(s,"bool");
             //zavolat generovani >
+            GTS(&data->string,data->whileDeep);
             }
             else{
                 return -1;
@@ -432,6 +435,7 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             if(kontrola_typu(s)==0){
             change_top_type(s,"bool");
             //zavolat generovani <
+            LTS(&data->string,data->whileDeep);
             }
             else{
                 return -1;
@@ -441,6 +445,12 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             if(kontrola_typu(s)==0){
             change_top_type(s,"bool");
             //zavolat generovani <=
+            CONDITION_POPS(&data->string,data->whileDeep,INT2STRING(data->specialIDNumber));
+            CONDITION_PUSHS(&data->string,data->whileDeep,INT2STRING(data->specialIDNumber));
+            EQS(&data->string,data->whileDeep);
+            CONDITION_PUSHS(&data->string,data->whileDeep,INT2STRING(data->specialIDNumber));
+            LTS(&data->string,data->whileDeep);
+            ORS(&data->string,data->whileDeep);
             }
             else{
                 return -1;
@@ -450,6 +460,12 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             if(kontrola_typu(s)==0){
             change_top_type(s,"bool");
             //zavolat generovani >=
+            CONDITION_POPS(&data->string,data->whileDeep,INT2STRING(data->specialIDNumber));
+            CONDITION_PUSHS(&data->string,data->whileDeep,INT2STRING(data->specialIDNumber));
+            EQS(&data->string,data->whileDeep);
+            CONDITION_PUSHS(&data->string,data->whileDeep,INT2STRING(data->specialIDNumber));
+            GTS(&data->string,data->whileDeep);
+            ORS(&data->string,data->whileDeep);
             }
             else{
                 return -1;
@@ -469,6 +485,7 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             }
             change_top_type(s,"bool");
             //zavolat generovani ==
+            EQS(&data->string,data->whileDeep);
         }
         else if(!strcmp(top1(s),"~=")){                     //E -> E ~= E
             if(strcmp(top_type(s),"nil")){
@@ -484,6 +501,8 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             }
             change_top_type(s,"bool");
             //zavolat generovani ~=
+            EQS(&data->string,data->whileDeep);
+            NOTS(&data->string,data->whileDeep);
         }
         else if(!strcmp(top1(s),"..")){                     //E -> E..E
             if(!strcmp(top_type(s),"string")){
@@ -547,6 +566,7 @@ void exp_analysator(Data_t *data){
                 strcpy(generator_token->name,token->name);
                 generator_token->value = (char*)realloc(generator_token->value,token->value_len*sizeof(char));
                 strcpy(generator_token->value,token->value);
+                generator_token->value_len=token->value_len;
                 }
                 do_shift(s,data,token,j,frames);
                 read_token(token);
