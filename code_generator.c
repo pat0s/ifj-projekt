@@ -219,6 +219,8 @@ void START_AND_BUILTIN_FUNCTIONS()
     printf("MOVE GF@T-Nsymb1 nil@nil\n");
     printf("DEFVAR GF@T-Nsymb2\n");
     printf("MOVE GF@T-Nsymb2 nil@nil\n");
+	printf("DEFVAR GF@T-write\n");
+	printf("MOVE GF@T-write nil@nil\n");
 
     printf("JUMP startOfCode\n");
     printf("DEFVAR GF@infinite_void_space\n\n");
@@ -226,18 +228,8 @@ void START_AND_BUILTIN_FUNCTIONS()
     printf("EXIT int@8\n\n");
     printf("LABEL divisionByZero\n");
     printf("EXIT int@9\n\n");    
-
-    // write
-    printf(
-        "LABEL write\n" \
-        "PUSHFRAME\n" \
-        "DEFVAR LF@w\n" \
-        "POPS LF@w\n" \
-        "WRITE LF@w\n" \
-        "POPFRAME\n" \
-        "RETURN\n");
-
-    // tointeger
+    
+	// tointeger
     printf(
         "LABEL tointeger\n" \
         "PUSHFRAME\n" \
@@ -866,6 +858,12 @@ int INIT_ARG(char **string, bool flag, char *func_name, char *number)
 
     free(buffer);
     return 0;
+}
+
+void CALL_FUNC_WRITE()
+{
+	printf("POPS GF@T-write\n");
+	printf("WRITE GF@T-write\n");
 }
 
 int CALL_FUNC(char **string, bool flag, char *func_name)
