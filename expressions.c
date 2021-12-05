@@ -287,6 +287,11 @@ void kontrola_typu_vysledku(Stack* s,Data_t* data,Token* token){
             destroy(s);
             return;
         }
+        else if(typ_vyrazu==0 && data->dataType==1){
+            //pretypovat na number
+            destroy(s);
+            return;
+        }
         else{
             //printf("kontrol type %s, %d--------------------\n",top_type(s),data->dataType);
             fprintf(stderr, "ERROR - Chyba syntaktickeho analyzatoru zdola nahoru, nekompatybilita typu vyrazu\n");
