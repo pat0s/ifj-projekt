@@ -1240,6 +1240,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         TNode *rootPtr = NULL;
         insertFirst(data->list, false, rootPtr);
 
+            //generovanie kodu, zaciatok IFU, tvorba premennych
+        CONDITION_VARS(INT2STRING(data->specialIDNumber));
+
             //V podmienkde Ifu sa nemozu skontrolovat datove typy, nemaju sa s cim
         data->checkDataType = false;
             //precedencna analyza by sa mala zastavit po nacitany klucoveho slova 'then', netreba to teda potom nacitavat
@@ -1343,6 +1346,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->specialIDNumber++;
 
             //generovanie kodu inicializacia while
+        CONDITION_VARS(INT2STRING(data->specialIDNumber));
         WHILE_START(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber));
         
             //Ocakavam <exp>
@@ -1803,7 +1807,7 @@ void fArgs(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
 
             //generovanie kodu pre argumenty funkcie
-        DEFINE_ARG(data->leaf->ID, INT2STRING(data->indexType));
+        DEFINE_ARG(&(data->string),data->leaf->ID, INT2STRING(data->indexType), data->whileDeep);
         INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(data->indexType));
 
 
@@ -1885,7 +1889,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
             //inkrementacia indexu, kt sa pouziva ako index v poli datovych typov funkcie
 
             //generovanie kodu pre argumenty funkcie
-        DEFINE_ARG(data->leaf->ID, INT2STRING(0));
+        DEFINE_ARG(&(data->string),data->leaf->ID, INT2STRING(0), data->whileDeep);
         INIT_ARG(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(0));
 
 
