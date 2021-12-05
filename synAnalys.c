@@ -329,6 +329,8 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory pojdem analyzovat
+            
+            RETURN_RETVALS(data->indexType);
 
             //inkrementacia pocitadla indexu pre pole datovy typova navratovych hodnot
             data->indexType++;
@@ -397,6 +399,10 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 data->errorValue = read_token(token);
                 checkError(data);
 
+
+                    //generovanie kodu, createframe pre funkciu
+                CREATEFRAME(&(data->string), data->whileDeep);
+
                 fArg(token, state, data);
                 checkError(data);
                 data->errorCode = 4;
@@ -414,9 +420,12 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                     checkError(data);
                 }
                 
+                    //generovanie kodu call_func
+                CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
 
                 //TODO musim ist odzadu ale neviem podla ktorej premennej, treba skontrolovat
-                for(int i = 0; i ; i--){
+                //priradenie returnov vnorenej funkcie do returnov vonkajsej funkcie, musim priradit zozadu
+                for(int i = data->leaf->func->ret_length-1; i >= 0 ; i--){
                     RETURN_RETVALS(i);
 
                 }
@@ -547,6 +556,9 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = read_token(token);
             checkError(data);
 
+                //generovanie kodu, createframe pre funkciu
+            CREATEFRAME(&(data->string), data->whileDeep);
+
             fArg(token, state, data);
             checkError(data);
             
@@ -574,6 +586,14 @@ void fInit_value(Token *token, enum STATE *state, Data_t *data){
                 data->errorValue = 4;
                 checkError(data);
 
+            }
+
+
+                //generovanie kodu call_func
+            CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+            //TODO POPS DO VOIDU AK funkcia vrati viac ako 1 return na zasobnik
+            for(int i = data->leaf->func->ret_length; i > 1; i--){
+                //TODO POPS DO VOIDU
             }
 
                //vycistenie ukazatela na pomocny TNode
@@ -784,6 +804,9 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = read_token(token);
             checkError(data);
 
+                //generovanie kodu, createframe pre funkciu
+            CREATEFRAME(&(data->string), data->whileDeep);
+
             fArg(token, state, data);
             data->errorCode = 4;
             checkError(data);
@@ -805,6 +828,14 @@ void fAssign(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
 
             }
+
+                //generovanie kodu call_func
+            CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+            //TODO POPS DO VOIDU AK funkcia vrati viac ako 1 return na zasobnik
+            for(int i = data->leaf->func->ret_length; i > data->assignArrayLength; i--){
+                //TODO POPS DO VOIDU
+            }
+
 
                 //TODO cyklus cez pole datovych typov assignarray a navrativych hodnto funkcie ret_types
                 //kontrola spravneho typu pri priradeni vsledku funkcie do premennej; a:integer = foo(10):integer
@@ -1012,6 +1043,9 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
+            //generovanie kodu, createframe pre funkciu
+        CREATEFRAME(&(data->string), data->whileDeep);
+
         fArg(token, state, data);
         data->errorCode = 4;
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -1021,6 +1055,12 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
             data->errorValue = 5;
             checkError(data);
         }
+
+
+            //generovanie kodu call_func
+        CALL_FUNC(&(data->string), data->whileDeep, data->leaf->ID);
+        //TODO POPS returnov funkcie do VOID premennej
+
 
         data->leaf = NULL;
             //Som v stave, kedy mam nacitanu ')' argumentu a musim prejst do <st-list>
@@ -1458,6 +1498,8 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
         data->checkDataType = false;
 
+
+        //TODO POPS(&(data->string), data->whileDeep, data->premenna->ID, INT2STRING(data->specialIDNumber));
         
         data->premenna = NULL;
             //v tokene sa nachadza <st-list>,treba sa rekurzivne zanorit do fSt-list a skontrolovat nacitany token
@@ -1831,7 +1873,7 @@ void fArg(Token *token, enum STATE *state, Data_t *data){
             //inkrementacia indexu, kt sa pouziva ako index v poli datovych typov funkcie
 
             //generovanie kodu pre argumenty funkcie
-        ARGUMENTS(data->string, data->whileDeep, data->leaf->ID, INT2STRING(0), );
+        ARGUMENTS(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(0), );
 
 
         if(strcmp(data->leaf->ID, "write")){
@@ -2442,7 +2484,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             //TODO chyba mi tu PUSH returnovych hodnot
                 //generovanie kodu ukoncenie funkcie
-            FUNC_END(data->funkcia->ID);
+            FUNC_END(data->funkcia->ID,data->funkcia->ret_length );
             
                 //Zaver
             *state = prog_con;
@@ -2508,6 +2550,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 //generovanie volania funkcie
             CALL_FUNC(&(data->string), data->whileDeep, element->ID);
                 //generovanie navratovych hodnot funkcie
+                //TODO generovanie kodu POPS do nejakej Void premennej
             /*for(int i = 0; i < data->leaf->func->ret_length; i++){
                 POPS(&(data->string), data->whileDeep, data->leaf->ID, INT2STRING(i));
             }*/

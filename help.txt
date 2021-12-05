@@ -9,6 +9,7 @@
 TODO:
 1. volanie funkcie pri priradeniach a v tele inej funkcie - CREATEFRAME, ..
 2. zahadzovanie hodnot returnov zo zasobniku
+3. 
 
 
 TODO IVO:
