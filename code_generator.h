@@ -22,6 +22,7 @@ void START_AND_BUILTIN_FUNCTIONS();
 
 // variable definition and initialization
 void DEFVAR_AND_INIT(char *var_name);
+int POPS_INFINITE(char **string, bool flag);
 int  POPS(char **string, bool flag, char *var_name);
 
 // exppresions

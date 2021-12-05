@@ -191,6 +191,7 @@ void START_AND_BUILTIN_FUNCTIONS()
     printf(".IFJcode21\n");
 
     printf("JUMP startOfCode\n");
+    printf("DEFVAR GF@infinite_void_space\n\n");
     printf("LABEL unexpectedNil\n");
     printf("EXIT int@8\n\n");
     printf("LABEL divisionByZero\n");
@@ -493,6 +494,26 @@ int PUSHS(char **string, bool flag, Token *token, bool nill_oc)
 
     // PUSHS [symbol_generator(token)]
     sprintf(buffer, "PUSHS %s\n", symbol_generator(token));
+    ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }
+
+    free(buffer);
+    return 0;
+}
+
+int POPS_INFINITE(char **string, bool flag)
+{
+    int ie;
+    char *buffer = (char *)malloc(sizeof(char) * 30);
+    if (buffer == NULL) // check if malloc failed in CONDITION_START
+    {
+        return INTERNAL_ERROR;
+    }
+
+    sprintf(buffer, "POPS GF@infinite_void_space\n");
     ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
