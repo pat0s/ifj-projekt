@@ -226,8 +226,8 @@ void START_AND_BUILTIN_FUNCTIONS()
         "LABEL write\n" \
         "PUSHFRAME\n" \
         "DEFVAR LF@w\n" \
-        "POPS LF@w" \       
-        "WRITE LF@w" \
+        "POPS LF@w\n" \
+        "WRITE LF@w\n" \
         "POPFRAME\n" \
         "RETURN\n");
 
