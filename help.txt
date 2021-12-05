@@ -20,6 +20,7 @@ TODO IVO:
 5. funkia POPS, odstranime Token *token, nahradit za char *, do ktorej budem davat meno ID a pridat char *number, do ktoreh pojde specialIDString
 6. PUSHS flag na kontrolu nilu, ci generovat kontrolu nilu alebo nie
 7. IDIVS a DIVS duplikovanie vrcholu zasobniku a kontrola delenia nulou
+8. predelat IF pro vyskyt jedine hodnoty v podmince
 
 
 LF@1a
