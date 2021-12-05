@@ -219,7 +219,17 @@ void START_AND_BUILTIN_FUNCTIONS()
     printf("LABEL unexpectedNil\n");
     printf("EXIT int@8\n\n");
     printf("LABEL divisionByZero\n");
-    printf("EXIT int@9\n\n");
+    printf("EXIT int@9\n\n");    
+
+    // write
+    printf(
+        "LABEL write\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@w\n" \
+        "MOVE LF@w LF@write_arg1\n" \
+        "WRITE LF@w" \
+        "POPFRAME\n" \
+        "RETURN\n");
 
     // tointeger
     printf(
@@ -886,7 +896,7 @@ void FUNC_START(char *func_name)
 void PARAMETERS(char *func_name, char *param_name, int number, char *IDcislo)
 {
     printf("DEFVAR LF@C-%s%s\n",IDcislo, param_name);
-    printf("MOVE LF@%s LF@%s_arg%d\n", param_name, func_name, number);
+    printf("MOVE LF@C-%s%s LF@%s_arg%d\n", IDcislo, param_name, func_name, number);
 }
 
 void DEF_RETVALS( int count)

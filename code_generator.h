@@ -68,6 +68,6 @@ int IF_END(char **string, bool flag, char *number);
 // condition
 void CONDITION_VARS(char *number);
 int  CONDITION_POPS(char **string, bool flag, char *number);
-int  CONDITION_PUSHS(char **string, bool flag, char *number);
+int CONDITION_PUSHS(char **string, bool flag, char *number);
 
 #endif
