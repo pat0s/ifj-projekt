@@ -343,16 +343,21 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
         if(!is_empty(s)){
             kontrola_op_pred=(!strcmp(top(s),"==")||!strcmp(top(s),"~="))&&(strcmp(token->name,"+")&&strcmp(token->name,"-")&&strcmp(token->name,"*")&&strcmp(token->name,"/")&&strcmp(token->name,"//")&&strcmp(token->name,".."));
         }
-        if(kontrola_op_za||kontrola_op_pred){
-            //generovani bez osetreni nil
-            //printf("%s generovat bez osetreni\n",token->name);
-            PUSHS(&data->string,data->whileDeep,generator_token,NULL,false);
+        TNode *node=searchFrames(data->list,generator_token->value);
+        if(node!=NULL){
+            if(kontrola_op_za||kontrola_op_pred){
+                //generovani bez osetreni nil
+                //printf("%s generovat bez osetreni\n",token->name);
+                PUSHS(&data->string,data->whileDeep,generator_token,INT2STRING(node->var->specialID),false);
+            }
+            else{
+                //printf("%s generovat s osetrenim\n", token->name);
+                PUSHS(&data->string,data->whileDeep,generator_token,INT2STRING(node->var->specialID),true);
+            }
         }
         else{
-            //printf("%s generovat s osetrenim\n", token->name);
-            PUSHS(&data->string,data->whileDeep,generator_token,NULL,true);
+            return -1;
         }
-
         push(s,"E",type);
     }
     else if(!strcmp(top(s),"E")){                           //E -> #E
