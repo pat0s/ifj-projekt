@@ -162,6 +162,12 @@ char *symbol_generator(Token *token, char* number)
     {
         symbol = create_special_name(token->value, number);
     }
+    else if ((strcmp(token->name, "keyword") == 0) && (strcmp(token->value, "nil") == 0))
+    {
+        symbol = (char *)malloc(sizeof(char) * 8);
+        sprintf(symbol, "nil@nil");
+    }
+    
     else
     {
         if (strcmp(token->name, "string") == 0)
