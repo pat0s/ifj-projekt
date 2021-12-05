@@ -226,7 +226,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "LABEL write\n" \
         "PUSHFRAME\n" \
         "DEFVAR LF@w\n" \
-        "MOVE LF@w LF@write_arg1\n" \
+        "POPS LF@w" \       
         "WRITE LF@w" \
         "POPFRAME\n" \
         "RETURN\n");
@@ -915,7 +915,7 @@ void RETURN_RETVALS( int number)
 
 void FUNC_END(char *func_name, int count)
 {
-    for (int i = 0; i <= count; i++)
+    for (int i = 0; i < count; i++)
     {
         printf("PUSHS LF@retval%d\n", i);        
     }
