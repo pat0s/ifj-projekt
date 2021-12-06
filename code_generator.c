@@ -633,7 +633,7 @@ int DIVS(char **string, bool flag)
 
     // PUSH GF@T-Nvar
     // PUSH GF@T-Nvar
-    ie = generate_code(string, "PUSH GF@T-Nvar\nPUSH GF@T-Nvar\n", flag); // check if malloc failed in generate_code
+    ie = generate_code(string, "PUSHS GF@T-Nvar\nPUSHS GF@T-Nvar\n", flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
         return ie;
@@ -676,7 +676,7 @@ int IDIVS(char **string, bool flag)
 
     // PUSH GF@T-Nvar
     // PUSH GF@T-Nvar
-    ie = generate_code(string, "PUSH GF@T-Nvar\nPUSH GF@T-Nvar\n", flag); // check if malloc failed in generate_code
+    ie = generate_code(string, "PUSHS GF@T-Nvar\nPUSHS GF@T-Nvar\n", flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
         return ie;
@@ -831,7 +831,7 @@ int BEFORE_TOP_I2F(char **string, bool flag)
     // INT2FLOAT GF@T-Nvar GF@T-Nsymb2
     // PUSHS GF@T-Nvar
     // PUSH POPS GF@T-Nsymb1
-    ie = generate_code(string, "POPS GF@T-Nsymb1\nPOPS GF@T-Nsymb2\nINT2FLOAT GF@T-Nvar GF@T-Nsymb2\nPUSHS GF@T-Nvar\nPUSH POPS GF@T-Nsymb1\n", flag); // check if malloc failed in generate_code
+    ie = generate_code(string, "POPS GF@T-Nsymb1\nPOPS GF@T-Nsymb2\nINT2FLOAT GF@T-Nvar GF@T-Nsymb2\nPUSHS GF@T-Nvar\nPUSHS POPS GF@T-Nsymb1\n", flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
         return ie;
@@ -1018,7 +1018,7 @@ int WHILE_CONDITION(char **string, bool flag, char *number, bool n_comp)
         // PUSH string@nil
         // EQS
         // NOTS
-        ie = generate_code(string, "POPS GF@T-Nsymb1\nTYPE GF@T-Nvar GF@T-Nsymb1\nPUSH GF@T-Nvar\nPUSH string@nil\nEQS\nNOTS\n", flag); // check if malloc failed in generate_code
+        ie = generate_code(string, "POPS GF@T-Nsymb1\nTYPE GF@T-Nvar GF@T-Nsymb1\nPUSHS GF@T-Nvar\nPUSHS string@nil\nEQS\nNOTS\n", flag); // check if malloc failed in generate_code
         if (ie == INTERNAL_ERROR)
         {
             return ie;
@@ -1106,7 +1106,7 @@ int IF_CONDITION(char **string, bool flag, char *number, bool n_comp)
         // PUSH string@nil
         // EQS
         // NOTS
-        ie = generate_code(string, "POPS GF@T-Nsymb1\nTYPE GF@T-Nvar GF@T-Nsymb1\nPUSH GF@T-Nvar\nPUSH string@nil\nEQS\nNOTS\n", flag); // check if malloc failed in generate_code
+        ie = generate_code(string, "POPS GF@T-Nsymb1\nTYPE GF@T-Nvar GF@T-Nsymb1\nPUSHS GF@T-Nvar\nPUSHS string@nil\nEQS\nNOTS\n", flag); // check if malloc failed in generate_code
         if (ie == INTERNAL_ERROR)
         {
             return ie;
