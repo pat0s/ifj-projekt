@@ -41,8 +41,8 @@ int ORS(char **string, bool flag);
 int NOTS(char **string, bool flag);
 int CONCAT(char **string, bool flag);
 int STRLEN(char **string, bool flag);
-int TOP_I2F(char **string, bool flag);
-int BEFORE_TOP_I2F(char **string, bool flag);
+int TOP_I2F(char **string, bool flag, char *number);
+int BEFORE_TOP_I2F(char **string, bool flag, char *number);
 
 // call function
 int CREATEFRAME(char **string, bool flag);
