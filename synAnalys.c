@@ -330,7 +330,7 @@ void fValues(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory pojdem analyzovat
             
-            RETURN_RETVALS(data->indexType);
+            RETURN_RETVALS(&(data->string), data->whileDeep, INT2STRING(data->indexType));
 
             //inkrementacia pocitadla indexu pre pole datovy typova navratovych hodnot
             data->indexType++;
@@ -430,7 +430,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 //TODO musim ist odzadu ale neviem podla ktorej premennej, treba skontrolovat
                 //priradenie returnov vnorenej funkcie do returnov vonkajsej funkcie, musim priradit zozadu
                 for(int i = data->leaf->func->ret_length-1; i >= 0 ; i--){
-                    RETURN_RETVALS(i);
+                    RETURN_RETVALS(&(data->string), data->whileDeep, INT2STRING(i));
 
                 }
 
@@ -469,7 +469,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
                     //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
                 
-                RETURN_RETVALS(data->indexType);
+                RETURN_RETVALS(&(data->string), data->whileDeep, INT2STRING(data->indexType));
                 
                     //inkrementacia pocitadla indexu pre pole datovy typova navratovych hodnot
                 data->indexType++;
@@ -499,7 +499,7 @@ void fValue(Token *token, enum STATE *state, Data_t *data){
                 //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
             checkError(data);
                 //Pocitam s tym, ze mi precedencna analyza v tokene vrati token, ktory idem teraz analyzovat
-            RETURN_RETVALS(data->indexType);    
+            RETURN_RETVALS(&(data->string), data->whileDeep, INT2STRING(data->indexType)); 
                 //inkrementacia pocitadla indexu pre pole datovy typova navratovych hodnot
             data->indexType++;
 

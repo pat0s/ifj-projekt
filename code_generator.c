@@ -965,9 +965,29 @@ void DEF_RETVALS( int count)
     }
 }
 
-void RETURN_RETVALS( int number)
+void RETURN_RETVALS(char **string, bool flag, char *number)
 {
-    printf("POPS LF@retval%d\n", number);
+    //printf("POPS LF@retval%d\n", number);
+    int ie;
+    char *buffer = (char *)malloc(sizeof(char) * (strlen("POPS LF@retval") +
+                                                  strlen(number) +
+                                                  strlen("\n") +
+                                                  ending_0));
+    if (buffer == NULL) // check if malloc failed in CONDITION_START
+    {
+        return INTERNAL_ERROR;
+    }
+
+    // LABEL while_[number]
+    sprintf(buffer, "POPS LF@retval%s\n", number);
+    ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }       
+
+    free(buffer);
+    return 0;
 }
 
 void FUNC_END(char *func_name, int count)
