@@ -163,7 +163,7 @@ char *symbol_generator(Token *token, char* number)
     {
         symbol = create_special_name(token->value, number);
     }
-    else if ((strcmp(token->name, "keyword") == 0) && (strcmp(token->value, "nil") == 0))
+    else if ((strcmp(token->name, "nil") == 0) && (strcmp(token->value, "nil") == 0))
     {
         symbol = (char *)malloc(sizeof(char) * 8);
         sprintf(symbol, "nil@nil");
@@ -353,7 +353,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "JUMPIFNEQS readi_end\n" \
         "MOVE LF@readi_retval1 LF@tmp\n" \
         "LABEL readi_end\n" \
-        "PUSHS LF@readi_retva1\n" \
+        "PUSHS LF@readi_retval1\n" \
         "POPFRAME\n" \
         "RETURN\n\n" \
     );
@@ -790,7 +790,7 @@ int STRLEN(char **string, bool flag)
     }
 
     // STRLEN GF@T-Nvar GF@T-Nsymb1
-    ie = generate_code(string, "STRLEN GF@T-Nvar LF@T-Nsymb1\n", flag); // check if malloc failed in generate_code
+    ie = generate_code(string, "STRLEN GF@T-Nvar GF@T-Nsymb1\n", flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
         return ie;
