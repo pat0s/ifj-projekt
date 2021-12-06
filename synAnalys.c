@@ -1050,6 +1050,7 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
 
         data->leaf = element;
         data->indexType = 0;
+        data->isFunctionCalled = true;
 
 
             //Ide argumnet funkcie, dany identifikator by mal patrit funkcii
@@ -1591,15 +1592,22 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
 
+        data->isFunctionCalled = false;
         
 
         
 
             //Ak som mal ID funkcie, tak v tokene je ')', musim  teda nacitat za tejto podmienky dalsi token a prejst do <st-list>
-        if(!strcmp(token->name,")")){
+        if(data->isFunctionCalled){
                 //Ocakavam <st-list>
             data->errorValue = read_token(token);
             checkError(data);
+        }
+        else if(!strcmp(token->name,")") && !data->isFunctionCalled){
+              //Ocakavam <st-list>
+            data->errorValue = read_token(token);
+            checkError(data);
+            POPS(&(data->string), data->whileDeep, data->tokenValue, INT2STRING(element->var->specialID));
         }
         else{
             fprintf(stderr,"\nIM am in if condition\n\n");
@@ -1607,6 +1615,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             POPS(&(data->string), data->whileDeep, data->tokenValue, INT2STRING(element->var->specialID));
         }
 
+        data->isFunctionCalled = false;
 
         data->tokenValue = NULL;
         data->checkDataType = false;
