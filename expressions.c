@@ -582,7 +582,9 @@ void exp_analysator(Data_t *data){
     printf("Pravidlo tabulky: %i\n",precence_table[i][j]);
 */
 ///////////////////////////////////////////////////////////////    
-    
+        if(j==4 && top1(s)!=NULL && !strcmp(top(s),"E")){
+            i=4;
+        }
         if(precence_table[i][j]==0&&error!=-1){         //SHIFT
                 if(i==8&&j==4&&!is_empty(s)){
                     kontrola_typu_vysledku(s,data,token);
