@@ -1264,6 +1264,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
             //generovanie kodu, zaciatok IFU, tvorba premennych
         CONDITION_VARS(INT2STRING(data->specialIDNumber));
+        data->relation_operator_in_condition = false;
 
             //V podmienkde Ifu sa nemozu skontrolovat datove typy, nemaju sa s cim
         data->checkDataType = false;
@@ -1274,9 +1275,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
 
         data->checkDataType = false;
         
-        bool condition = false;
+        
             //generovanie podmienky skoku if
-        IF_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber), condition);
+        IF_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber), data->relation_operator_in_condition);
         int IDOfIf = data->specialIDNumber;
 
             //Nemusim nacitavat dalsi token, lebo precedencna analyza nacita do premennje token klucove slovo 'then'
@@ -1397,6 +1398,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //bude jeden frame ale treba osetrit v generovani kodu definiciu funkcii
         TNode *rootPtr = NULL;
         insertFirst(data->list, false, rootPtr);
+        data->relation_operator_in_condition = false;
 
             //vo While podmienke sa nemozu kontroloval datovy typy, nastal by problem
         data->checkDataType = false;
@@ -1406,10 +1408,10 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
         data->checkDataType = false;
 
-        bool condition = false;
+    
 
             //generovanie kodu while condition
-        WHILE_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber), condition);
+        WHILE_CONDITION(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber), data->relation_operator_in_condition);
 
             //Nemusim nacitavat dalsi token, lebo v tokene bude nacitane klucove slovo 'do', pretoze sa na tomto tokene precedencna analyza zastavi
             //Prestane nacitavat vyraz a spracuje ho
@@ -2674,7 +2676,7 @@ void fExp(Token *token, enum STATE *state, Data_t *data){
         }
         else{
             fprintf(stderr, "Error in state %d, fExp\n", *state);
-            data->errorValue = 2;
+            data->errorValue = 7;
             checkError(data);   
         }
     }

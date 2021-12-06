@@ -1010,7 +1010,7 @@ int WHILE_CONDITION(char **string, bool flag, char *number, bool n_comp)
 {
     int ie;
 
-    if (n_comp)
+    if (!n_comp)
     {
         // POPS GF@T-Nsymb1
         // TYPE GF@T-Nvar GF@T-Nsymb1
@@ -1098,7 +1098,7 @@ int IF_CONDITION(char **string, bool flag, char *number, bool n_comp)
 {
     int ie;
 
-    if(n_comp)
+    if(!n_comp)
     {
         // POPS GF@T-Nsymb1
         // TYPE GF@T-Nvar GF@T-Nsymb1
