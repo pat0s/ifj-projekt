@@ -442,7 +442,7 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             if(kontrola_typu(s,data)==0){
             change_top_type(s,"bool");
             //zavolat generovani >
-            GTS(&data->string,data->whileDeep);
+            LTS(&data->string,data->whileDeep);
             }
             else{
                 return -1;
@@ -453,7 +453,7 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             if(kontrola_typu(s,data)==0){
             change_top_type(s,"bool");
             //zavolat generovani <
-            LTS(&data->string,data->whileDeep);
+            GTS(&data->string,data->whileDeep);
             }
             else{
                 return -1;
