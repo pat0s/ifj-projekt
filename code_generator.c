@@ -965,7 +965,7 @@ void DEF_RETVALS( int count)
     }
 }
 
-void RETURN_RETVALS(char **string, bool flag, char *number)
+int RETURN_RETVALS(char **string, bool flag, char *number)
 {
     //printf("POPS LF@retval%d\n", number);
     int ie;
