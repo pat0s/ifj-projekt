@@ -483,7 +483,7 @@ int PUSHS(char **string, bool flag, Token *token, char *number, bool nill_oc)
     if(nill_oc)
     {
         // PUSHS nil@nil
-        ie = generate_code(string, "PUSHS nil@nil\n", flag); // check if malloc failed in generate_codes
+        ie = generate_code(string, "PUSHS string@nil\n", flag); // check if malloc failed in generate_codes
         if (ie == INTERNAL_ERROR)
         {
             return ie;

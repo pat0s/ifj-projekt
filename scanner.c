@@ -522,6 +522,14 @@ int read_token(Token *token)
             }
             else if (symbol == '\"')
             {
+				if (token->value == NULL)
+				{
+					token->value = (char *)malloc(sizeof(char));
+					token->value[0] = '\0';
+
+					if (token->value == NULL) return INTERNAL_ERROR;
+				}
+
                 strcpy(state, "f24");
                 strcpy(token->name, "string");
                 return 0;
