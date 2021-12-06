@@ -1,7 +1,7 @@
 EXECUTABLE = IFJ21
 CFLAGS = -std=c99 -pedantic -g -Wall -Wextra -lm #-Wextra -Werror -lm
 
-.PHONY = clean all
+.PHONY = clean all tests our_tests
 
 all: $(EXECUTABLE)
 
@@ -11,8 +11,11 @@ $(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stac
 %.o: %.c
 	gcc $(CFLAGS) -c $^ -o $@
 
-test: 
+our_tests: 
 	./run_test.sh IFJ21 yes
+
+test:
+	cd tests/ifjtest && ./ifjtest
 
 clean:
 	rm $(EXECUTABLE) *.o
