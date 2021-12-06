@@ -27,7 +27,7 @@ int precence_table[TABLE_SIZE][TABLE_SIZE] =
     { SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, EQUAL, EMPTY },   // (
     { REDUC, REDUC, REDUC, EMPTY, EMPTY, REDUC, EMPTY, REDUC, REDUC },   // )
     { SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, EMPTY, EMPTY }    // $
-};
+};                                                                       //zasobnik
 
 int rozpoznani_znaku(char*znak){
     if(!strcmp(znak,"+")||!strcmp(znak,"-")){
@@ -584,6 +584,11 @@ void exp_analysator(Data_t *data){
 ///////////////////////////////////////////////////////////////    
     
         if(precence_table[i][j]==0&&error!=-1){         //SHIFT
+                if(i==8&&j==4&&!is_empty(s)){
+                    kontrola_typu_vysledku(s,data,token);
+                    //printf("Return token %s\n",data->token->name);         
+                    return;
+                }
                 if(j==4){
                 strcpy(generator_token->name,token->name);
                 generator_token->value = (char*)realloc(generator_token->value,token->value_len*sizeof(char)+1);
