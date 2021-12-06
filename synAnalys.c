@@ -1602,6 +1602,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
         else{
+            fprintf(stderr,"\nIM am in if condition\n\n");
             // Ak sa jedna o priradenie, budem potrebovat POPS pre hodnotu zo zasobnika pre tuto premennu, ktoru som na zaciatku spracoval
             POPS(&(data->string), data->whileDeep, data->tokenValue, INT2STRING(element->var->specialID));
         }
