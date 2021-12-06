@@ -1407,6 +1407,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
         checkError(data);
         data->checkDataType = false;
+        int whileID = data->specialIDNumber;
 
     
 
@@ -1432,7 +1433,7 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
                 //nacitam dalsi token a idem do stavu <st-list>, pokracujem v behu pogramu uz mimo while cyklu
                 
                     //generovanie kodu ukoncenia while
-                WHILE_END(&(data->string), data->whileDeep, INT2STRING(data->specialIDNumber));
+                WHILE_END(&(data->string), data->whileDeep, INT2STRING(whileID));
                 
                 data->whileDeep--;
 
