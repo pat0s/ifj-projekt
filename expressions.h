@@ -82,6 +82,7 @@ typedef struct sData{
     char *specialIDString;
         //pointer na dynamcky string pri while cykle
     char *string;
+    bool relation_operator_in_condition;
 
 } Data_t;
 
@@ -100,7 +101,7 @@ int vstupni_znak(Token* token);
 int zasobnikovy_znak(Stack *s);
 void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames);
 void do_equal(Stack*s);
-int kontrola_typu(Stack *s);
+int kontrola_typu(Stack *s,Data_t*data);
 int do_reduc(Stack *s,Token* token,Token* generator_token,Data_t* data);
 void exp_analysator(Data_t *data);
 void kontrola_typu_vysledku(Stack *s,Data_t* data,Token* token);
