@@ -222,9 +222,9 @@ void START_AND_BUILTIN_FUNCTIONS()
     printf("MOVE GF@T-Nsymb2 nil@nil\n");
 	printf("DEFVAR GF@T-write\n");
 	printf("MOVE GF@T-write nil@nil\n");
+    printf("DEFVAR GF@infinite_void_space\n\n");
 
     printf("JUMP startOfCode\n");
-    printf("DEFVAR GF@infinite_void_space\n\n");
     printf("LABEL unexpectedNil\n");
     printf("EXIT int@8\n\n");
     printf("LABEL divisionByZero\n");
