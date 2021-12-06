@@ -84,6 +84,8 @@ typedef struct sData{
     char *string;
     bool relation_operator_in_condition;
 
+    bool isFunctionCalled;
+
 } Data_t;
 
 

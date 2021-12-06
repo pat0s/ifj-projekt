@@ -1050,8 +1050,9 @@ void fItem(Token *token, enum STATE *state, Data_t *data){
 
         data->leaf = element;
         data->indexType = 0;
-
-
+        data->isFunctionCalled = true;
+	//		fprintf(stderr, "\nSOM vo FITEM \n\n");
+		
             //Ide argumnet funkcie, dany identifikator by mal patrit funkcii
 
             //TODO treba skontrolovat, ci je funkcia aspon deklarovana
@@ -1585,7 +1586,9 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         data->errorValue = read_token(token);
         checkError(data);
 
-       // fprintf(stderr, "token: %s\n", token->value);
+   //     fprintf(stderr, "token: %s\n", token->name);
+			data->isFunctionCalled = false;
+        
 
         fItem(token, state, data);
             //kontrola, ci sa z rekurzie vratila chybova hodnota alebo nie
@@ -1596,16 +1599,26 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         
 
             //Ak som mal ID funkcie, tak v tokene je ')', musim  teda nacitat za tejto podmienky dalsi token a prejst do <st-list>
-        if(!strcmp(token->name,")")){
-                //Ocakavam <st-list>
+        if(data->isFunctionCalled){
+         //	fprintf(stderr, "\nv prvje podmineke\n");
+			//Ocakavam <st-list>
             data->errorValue = read_token(token);
             checkError(data);
         }
+        else if(!strcmp(token->name,")") && !data->isFunctionCalled){
+       // 	 fprintf(stderr, "\nv druhej podmineke, %s\n", data->tokenValue);
+		  	//Ocakavam <st-list>
+            data->errorValue = read_token(token);
+            checkError(data);
+            POPS(&(data->string), data->whileDeep, data->tokenValue, INT2STRING(element->var->specialID));
+        }
         else{
+         //   fprintf(stderr,"\nIM am in if condition\n\n");
             // Ak sa jedna o priradenie, budem potrebovat POPS pre hodnotu zo zasobnika pre tuto premennu, ktoru som na zaciatku spracoval
             POPS(&(data->string), data->whileDeep, data->tokenValue, INT2STRING(element->var->specialID));
         }
 
+        data->isFunctionCalled = false;
 
         data->tokenValue = NULL;
         data->checkDataType = false;
