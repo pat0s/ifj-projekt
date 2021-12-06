@@ -806,9 +806,30 @@ int STRLEN(char **string, bool flag)
     return 0;
 }
 
-int TOP_I2F(char **string, bool flag)
+int TOP_I2F(char **string, bool flag, char *number)
 {
     int ie;
+    ie = generate_code(string, "POPS GF@T-Nsymb1\nPUSHS GF@T-Nsymb1\nTYPE GF@T-Nvar GF@T-Nsymb1\nPUSHS GF@T-Nvar\nPUSHS string@nil\n", flag);
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }
+    
+    char *buffer = (char *)malloc(sizeof(char) * (strlen("JUMPIFEQS var-nil") +
+                                                  strlen(number) +
+                                                  strlen("\n") +
+                                                  ending_0));
+    if (buffer == NULL) // check if malloc failed
+    {
+        return INTERNAL_ERROR;
+    }
+
+    sprintf(buffer, "JUMPIFEQS var-nil%s\n", number);
+    ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }
 
     // POPS GF@T-Nsymb1
     // INT2FLOAT GF@T-Nvar GF@T-Nsymb1
@@ -819,12 +840,50 @@ int TOP_I2F(char **string, bool flag)
         return ie;
     }
 
+    free(buffer);
+    buffer = (char *)malloc(sizeof(char) * (strlen("LABEL var-nil") +
+                                                  strlen(number) +
+                                                  strlen("\n") +
+                                                  ending_0));
+    if (buffer == NULL) // check if malloc failed
+    {
+        return INTERNAL_ERROR;
+    }
+
+    sprintf(buffer, "LABEL var-nil%s\n", number);
+    ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }
+
     return 0;
 }
 
-int BEFORE_TOP_I2F(char **string, bool flag)
+int BEFORE_TOP_I2F(char **string, bool flag, char *number)
 {
     int ie;
+    ie = generate_code(string, "POPS GF@T-Nsymb1\nPOPS GF@T-Nsymb2\nPUSHS GF@T-Nsymb2\nPUSHS GF@T-Nsymb1\nTYPE GF@T-Nvar GF@T-Nsymb2\nPUSHS GF@T-Nvar\nPUSHS string@nil\n", flag);
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }
+    
+    char *buffer = (char *)malloc(sizeof(char) * (strlen("JUMPIFEQS var-nil-2") +
+                                                  strlen(number) +
+                                                  strlen("\n") +
+                                                  ending_0));
+    if (buffer == NULL) // check if malloc failed
+    {
+        return INTERNAL_ERROR;
+    }
+
+    sprintf(buffer, "JUMPIFEQS var-nil-2%s\n", number);
+    ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }
 
     // POPS GF@T-Nsymb1
     // POPS GF@T-Nsymb2
@@ -832,6 +891,23 @@ int BEFORE_TOP_I2F(char **string, bool flag)
     // PUSHS GF@T-Nvar
     // PUSHS GF@T-Nsymb1
     ie = generate_code(string, "POPS GF@T-Nsymb1\nPOPS GF@T-Nsymb2\nINT2FLOAT GF@T-Nvar GF@T-Nsymb2\nPUSHS GF@T-Nvar\nPUSHS GF@T-Nsymb1\n", flag); // check if malloc failed in generate_code
+    if (ie == INTERNAL_ERROR)
+    {
+        return ie;
+    }
+
+    free(buffer);
+    buffer = (char *)malloc(sizeof(char) * (strlen("LABEL var-nil-2") +
+                                                  strlen(number) +
+                                                  strlen("\n") +
+                                                  ending_0));
+    if (buffer == NULL) // check if malloc failed
+    {
+        return INTERNAL_ERROR;
+    }
+
+    sprintf(buffer, "LABEL var-nil-2%s\n", number);
+    ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
         return ie;
