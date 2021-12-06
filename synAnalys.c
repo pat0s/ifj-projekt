@@ -1487,6 +1487,13 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
             checkError(data);
         }
 
+        element = search(data->list->last->rootPtr, token->value);
+        if(element != NULL){
+            data->errorValue = 3;
+            fprintf(stderr, "Redefinicia premennej\n");
+            checkError(data);
+        }
+
         
 
         Variable_t variable;
