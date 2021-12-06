@@ -49,3 +49,40 @@ return 10+5
 return 10+a, 10+100
 if a<5
 while a < 5
+
+//TOP
+
+CREATEFRAME
+DEFVAR TF@%i2f_arg1
+POPS TF@%i2f_arg1
+CALL %i2f
+
+//BEFORE_TOP
+
+CREATEFRAME
+DEFVAR TF@%i2f_arg1
+DEFVAR TF@%i2f_tmp
+POPS TF@%i2f_tmp
+POPS TF@%i2f_arg1
+CALL %i2f
+PUSHS TF@%i2f_tmp
+
+// funkcia
+
+"LABEL %i2f\n" \
+"PUSHFRAME\n" \
+"DEFVAR LF@i\n" \
+"MOVE LF@i LF@%i2f_arg1\n" \
+"TYPE GF@T-Nvar LF@i\n" \
+"PUSHS GF@T-Nvar\n" \
+"PUSHS string@nil\n" \
+"JUMPIFEQS var-nil\n" \
+"MOVE GF@T-Nvar LF@i\n" \
+
+"INT2FLOAT LF@i GF@T-Nvar\n" \
+
+"LABEL var-nil\n" \
+
+"PUSHS LF@i\n" \
+    	
+"RETURN\n\n" \
