@@ -373,7 +373,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "JUMPIFNEQS reads_end\n" \
         "MOVE LF@reads_retval1 LF@tmp\n" \
         "LABEL reads_end\n" \
-        "PUSHS LF@reads_retva1\n" \
+        "PUSHS LF@reads_retval1\n" \
         "POPFRAME\n" \
         "RETURN\n\n" \
     );
