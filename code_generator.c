@@ -640,7 +640,7 @@ int DIVS(char **string, bool flag)
     }
 
     // PUSHS int@0
-    ie = generate_code(string, "PUSHS float@0\n", flag); // check if malloc failed in generate_code
+    ie = generate_code(string, "PUSHS float@0x0p+0\n", flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
         return ie;
