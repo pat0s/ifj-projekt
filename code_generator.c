@@ -455,6 +455,22 @@ void START_AND_BUILTIN_FUNCTIONS()
         "POPFRAME\n" \
         "RETURN\n\n");
 
+    printf(
+        "LABEL %%write\n" \
+        "PUSHFRAME\n" \
+        "DEFVAR LF@print\n" \
+        "MOVE LF@print LF@%%write_arg0\n" \
+        "DEFVAR LF@type-check\n" \
+        "TYPE LF@type-check LF@print\n" \
+        "PUSHS string@nil\n" \
+        "PUSHS LF@type-check\n" \
+        "JUMPIFNEQS not-nil\n" \
+        "MOVE LF@print string@nil\n" \
+        "LABEL not-nil\n" \
+        "WRITE LF@print\n" \
+        "POPFRAME\n" \
+        "RETURN\n\n");
+
     // -- write function
     // write(a, 10)
     // "WRITE nazov_premennej_a\n"
@@ -981,13 +997,13 @@ int INIT_ARG(char **string, bool flag, char *func_name, char *number)
 int CALL_FUNC_WRITE(char **string, bool flag)
 {
 	int ie;
-	char *buffer = (char *)malloc(sizeof(char)* 40);
+	char *buffer = (char *)malloc(sizeof(char)* 100);
 	if (buffer == NULL)
 	{
 		return INTERNAL_ERROR;	
 	}
 	
-	sprintf(buffer, "POPS GF@T-write\nWRITE GF@T-write\n");
+	sprintf(buffer, "CREATEFRAME\nDEFVAR TF@%%write_arg0\nPOPS TF@%%write_arg0\nCALL %%write\n");
 	ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
     
 	if (ie == INTERNAL_ERROR)
