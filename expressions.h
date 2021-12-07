@@ -88,6 +88,8 @@ typedef struct sData{
 
     int labelCounter;
 
+    int functionReturnLength;
+
 } Data_t;
 
 

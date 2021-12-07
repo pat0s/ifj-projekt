@@ -1572,6 +1572,8 @@ void fSt_list(Token *token, enum STATE *state, Data_t *data){
         checkError(data);
         data->checkDataType = false;
 
+        FUNC_RETURN(&(data->string), data->functionReturnLength, data->whileDeep);
+
 
         //ak bude navratovych typov malo, bude za ne dosadeny nil, TOTO zabezpeci generovanie kodu, ktore hned pri
         //tvorbe a skoku funkcie inicializuje premenne na return a priradi im nil
@@ -2551,6 +2553,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
                 checkError(data);
             }
             data->arrayType = data->funkcia->ret_types;
+            data->functionReturnLength = data->funkcia->ret_length;
 
                 //generovanie returnov funkcie
             DEF_RETVALS(data->funkcia->ret_length);
@@ -2573,7 +2576,8 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             //TODO chyba mi tu PUSH returnovych hodnot
                 //generovanie kodu ukoncenie funkcie
-            FUNC_END(data->funkcia->ID,data->funkcia->ret_length );
+            FUNC_END(data->funkcia->ID);
+            data->functionReturnLength = 0;
             
                 //Zaver
             *state = prog_con;
@@ -2782,6 +2786,7 @@ int main(){
     data->specialIDNumber = 0;
     data->whileDeep = 0;
     data->errorValue = 0;
+    data->functionReturnLength = 0;
     data->leaf = NULL;
     data->labelCounter = 0;
     data->string = (char *)malloc(sizeof(char));
