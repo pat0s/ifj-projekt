@@ -235,17 +235,17 @@ void START_AND_BUILTIN_FUNCTIONS()
         "LABEL tointeger\n" \
         "PUSHFRAME\n" \
         "DEFVAR LF@f\n" \
-        "MOVE LF@f LF@tointeger_arg1\n" \
-        "DEFVAR LF@tointeger_retval1\n" \
-        "MOVE LF@tointeger_retval1 nil@nil\n" \
+        "MOVE LF@f LF@tointeger_arg0\n" \
+        "DEFVAR LF@tointeger_retval0\n" \
+        "MOVE LF@tointeger_retval0 nil@nil\n" \
         "PUSHS string@nil\n" \
         "DEFVAR LF@tmp\n" \
         "TYPE LF@tmp LF@f\n" \
         "PUSHS LF@tmp \n" \
         "JUMPIFEQS tointeger_nil\n" \
-        "FLOAT2INT LF@tointeger_retval1 LF@f\n" \
+        "FLOAT2INT LF@tointeger_retval0 LF@f\n" \
         "LABEL tointeger_nil\n" \
-        "PUSHS LF@tointeger_retval1\n" \
+        "PUSHS LF@tointeger_retval0\n" \
         "POPFRAME\n" \
         "RETURN\n\n");
 
@@ -254,11 +254,11 @@ void START_AND_BUILTIN_FUNCTIONS()
         "LABEL ord\n" \
         "PUSHFRAME\n" \
         "DEFVAR LF@s\n" \
-        "MOVE LF@s LF@ord_arg1\n" \
+        "MOVE LF@s LF@ord_arg0\n" \
         "DEFVAR LF@i\n" \
-        "MOVE LF@i LF@ord_arg2\n" \
-        "DEFVAR LF@ord_retval1\n" \
-        "MOVE LF@ord_retval1 nil@nil\n" \
+        "MOVE LF@i LF@ord_arg1\n" \
+        "DEFVAR LF@ord_retval0\n" \
+        "MOVE LF@ord_retval0 nil@nil\n" \
         "PUSHS string@nil\n" \
         "DEFVAR LF@tmp\n" \
         "TYPE LF@tmp LF@s\n" \
@@ -282,9 +282,9 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS LF@s\n" \
         "PUSHS LF@i\n" \
         "STRI2INTS\n" \
-        "POPS LF@ord_retval1\n" \
+        "POPS LF@ord_retval0\n" \
         "LABEL ord_end\n" \
-        "PUSHS LF@ord_retval1\n" \
+        "PUSHS LF@ord_retval0\n" \
         "POPFRAME\n" \
         "RETURN\n\n");
 
@@ -293,11 +293,13 @@ void START_AND_BUILTIN_FUNCTIONS()
         "LABEL chr\n" \
         "PUSHFRAME\n" \
         "DEFVAR LF@i\n" \
-        "MOVE LF@i LF@chr_arg1\n" \
-        "DEFVAR LF@chr_retval1\n" \
-        "MOVE LF@chr_retval1 nil@nil\n" \
-        "PUSHS nil@nil\n" \
-        "PUSHS LF@i\n" \
+        "MOVE LF@i LF@chr_arg0\n" \
+        "DEFVAR LF@chr_retval0\n" \
+        "MOVE LF@chr_retval0 nil@nil\n" \
+        "PUSHS string@nil\n" \
+        "DEFVAR LF@tmp\n" \
+        "TYPE LF@tmp LF@i\n" \
+        "PUSHS LF@tmo\n" \
         "JUMPIFEQS unexpectedNil\n" \
         "PUSHS LF@i\n" \
         "PUSHS int@0\n" \
@@ -312,8 +314,8 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS LF@i\n" \
         "INT2CHARS\n" \
         // toto obidvoje as vymazat
-        "POPS LF@chr_retval1\n" \
-        "PUSHS LF@chr_retval1\n" \
+        "POPS LF@chr_retval0\n" \
+        "PUSHS LF@chr_retval0\n" \
         "LABEL chr_end\n" \
         "POPFRAME\n" \
         "RETURN\n\n");
@@ -322,8 +324,8 @@ void START_AND_BUILTIN_FUNCTIONS()
     printf( \
         "LABEL readn\n" \
         "PUSHFRAME\n" \
-        "DEFVAR LF@readn_retval1\n" \
-        "MOVE LF@readn_retval1 nil@nil\n" \
+        "DEFVAR LF@readn_retval0\n" \
+        "MOVE LF@readn_retval0 nil@nil\n" \
         "DEFVAR LF@tmp\n" \
         "DEFVAR LF@type_check\n" \
         "READ LF@tmp float\n" \
@@ -331,9 +333,9 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS LF@type_check\n" \
         "PUSHS string@float\n" \
         "JUMPIFNEQS readn_end\n" \
-        "MOVE LF@readn_retval1 LF@tmp\n" \
+        "MOVE LF@readn_retval0 LF@tmp\n" \
         "LABEL readn_end\n" \
-        "PUSHS LF@readn_retval1\n" \
+        "PUSHS LF@readn_retval0\n" \
         "POPFRAME\n" \
         "RETURN\n\n" \
     );
@@ -342,8 +344,8 @@ void START_AND_BUILTIN_FUNCTIONS()
      printf( \
         "LABEL readi\n" \
         "PUSHFRAME\n" \
-        "DEFVAR LF@readi_retval1\n" \
-        "MOVE LF@readi_retval1 nil@nil\n" \
+        "DEFVAR LF@readi_retval0\n" \
+        "MOVE LF@readi_retval0 nil@nil\n" \
         "DEFVAR LF@tmp\n" \
         "DEFVAR LF@type_check\n" \
         "READ LF@tmp int\n" \
@@ -351,9 +353,9 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS LF@type_check\n" \
         "PUSHS string@int\n" \
         "JUMPIFNEQS readi_end\n" \
-        "MOVE LF@readi_retval1 LF@tmp\n" \
+        "MOVE LF@readi_retval0 LF@tmp\n" \
         "LABEL readi_end\n" \
-        "PUSHS LF@readi_retval1\n" \
+        "PUSHS LF@readi_retval0\n" \
         "POPFRAME\n" \
         "RETURN\n\n" \
     );
@@ -362,8 +364,8 @@ void START_AND_BUILTIN_FUNCTIONS()
     printf( \
         "LABEL reads\n" \
         "PUSHFRAME\n" \
-        "DEFVAR LF@reads_retval1\n" \
-        "MOVE LF@reads_retval1 nil@nil\n" \
+        "DEFVAR LF@reads_retval0\n" \
+        "MOVE LF@reads_retval0 nil@nil\n" \
         "DEFVAR LF@tmp\n" \
         "DEFVAR LF@type_check\n" \
         "READ LF@tmp string\n" \
@@ -371,9 +373,9 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS LF@type_check\n" \
         "PUSHS string@string\n" \
         "JUMPIFNEQS reads_end\n" \
-        "MOVE LF@reads_retval1 LF@tmp\n" \
+        "MOVE LF@reads_retval0 LF@tmp\n" \
         "LABEL reads_end\n" \
-        "PUSHS LF@reads_retval1\n" \
+        "PUSHS LF@reads_retval0\n" \
         "POPFRAME\n" \
         "RETURN\n\n" \
     );
@@ -386,12 +388,12 @@ void START_AND_BUILTIN_FUNCTIONS()
         "LABEL substr\n" \
         "PUSHFRAME\n" \
         "DEFVAR LF@s\n" \
-        "MOVE LF@s LF@substr_arg1\n" \
+        "MOVE LF@s LF@substr_arg0\n" \
         "DEFVAR LF@i\n" \
         "MOVE LF@i LF@substr_arg1\n" \
         "DEFVAR LF@j\n" \
-        "MOVE LF@j LF@substr_arg1\n" \
-        "DEFVAR LF@substr_retval1\n" \
+        "MOVE LF@j LF@substr_arg2\n" \
+        "DEFVAR LF@substr_retval0\n" \
         "MOVE LF@substr_retval1 nil@nil\n" \
 
         "PUSHS nil@nil\n" \
@@ -426,7 +428,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS bool@true\n" \
         "JUMPIFEQS substr_end\n" \
 
-        "GETCHAR LF@substr_retval1 LF@s LF@i\n" \
+        "GETCHAR LF@substr_retval0 LF@s LF@i\n" \
         "PUSHS int@1\n" \
         "PUSHS LF@i\n" \
         "ADDS\n" \
@@ -439,7 +441,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS bool@true\n" \
         "JUMPIFEQS end_while\n" \
         "GETCHAR LF@tmp LF@s LF@i\n" \
-        "CONCAT LF@substr_retval1 LF@substr_retval1 LF@tmp\n" \
+        "CONCAT LF@substr_retval1 LF@substr_retval0 LF@tmp\n" \
         "PUSHS int@1\n" \
         "PUSHS LF@i\n" \
         "ADDS\n" \
@@ -447,7 +449,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "JUMP while\n" \
 
         "LABEL end_while\n" \
-        "PUSHS LF@substr_ret1\n" \
+        "PUSHS LF@substr_ret0\n" \
         "POPFRAME\n" \
         "RETURN\n\n");
 
