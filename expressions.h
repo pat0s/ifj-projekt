@@ -86,6 +86,8 @@ typedef struct sData{
 
     bool isFunctionCalled;
 
+    int labelCounter;
+
 } Data_t;
 
 

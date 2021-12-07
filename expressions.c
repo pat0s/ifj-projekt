@@ -220,7 +220,8 @@ int kontrola_typu(Stack *s,Data_t* data){
             }
             else if(!strcmp(top_type(s),"number")){
                 //zmenit typ posledniho vlozeneho na number
-                TOP_I2F(&(data->string),data->whileDeep, INT2STRING(data->specialIDNumber));
+                TOP_I2F(&(data->string),data->whileDeep, INT2STRING(data->labelCounter));
+                data->labelCounter++;
                 strcpy(type,"number");
                 change_top_type(s,type);
                 return 0;
@@ -248,7 +249,8 @@ int kontrola_typu(Stack *s,Data_t* data){
             }
             else if(!strcmp(top_type(s),"int")){
                 //zmenit typ predposledniho na number
-                BEFORE_TOP_I2F(&(data->string),data->whileDeep, INT2STRING(data->specialIDNumber));
+                BEFORE_TOP_I2F(&(data->string),data->whileDeep, INT2STRING(data->labelCounter));
+                data->labelCounter++;
                 strcpy(type,"number");
                 change_top_type(s,type);
                 return 0;
@@ -291,7 +293,8 @@ void kontrola_typu_vysledku(Stack* s,Data_t* data,Token* token){
         }
         else if(typ_vyrazu==0 && data->dataType==1){
             //pretypovat na number
-            TOP_I2F(&(data->string),data->whileDeep, INT2STRING(data->specialIDNumber));
+            TOP_I2F(&(data->string),data->whileDeep, INT2STRING(data->labelCounter));
+            data->labelCounter++;
             destroy(s);
             return;
         }

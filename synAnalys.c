@@ -2783,6 +2783,7 @@ int main(){
     data->whileDeep = 0;
     data->errorValue = 0;
     data->leaf = NULL;
+    data->labelCounter = 0;
     data->string = (char *)malloc(sizeof(char));
     if(data->string == NULL){
         data->errorValue = 99;
