@@ -312,12 +312,15 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS int@255\n" \
         "GTS\n" \
         "PUSHS bool@true\n" \
-        "JUMPIFEQS chr_end\n" \
+        "JUMPIFEQS chr_end_err\n" \
         "PUSHS LF@i\n" \
         "INT2CHARS\n" \
         // toto obidvoje as vymazat
         "POPS LF@chr_retval0\n" \
         "PUSHS LF@chr_retval0\n" \
+        "JUMP chr_end\n"\
+        "LABEL chr_end_err\n" \
+        "PUSHS nil@nil\n"\
         "LABEL chr_end\n" \
         "POPFRAME\n" \
         "RETURN\n\n");
