@@ -360,7 +360,18 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             }
             else{
                 //generovat s osetrenim nil
-                PUSHS(&data->string,data->whileDeep,generator_token,INT2STRING(node->var->specialID),true);
+                kontrola_op_pred=false;
+                if(!is_empty(s)){
+                    kontrola_op_pred=!strcmp(top_type(s),"op");
+                }
+                int k=(rozpoznani_znaku(token->name));
+                kontrola_op_za = (k==0||k==1||k==2||k==5||k==7);
+                if(kontrola_op_pred||kontrola_op_za){
+                  PUSHS(&data->string,data->whileDeep,generator_token,INT2STRING(node->var->specialID),true);  
+                } 
+                else{
+                    PUSHS(&data->string,data->whileDeep,generator_token,INT2STRING(node->var->specialID),false);
+                }
             }
         }
         else{
