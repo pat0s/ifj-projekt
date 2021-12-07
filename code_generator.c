@@ -429,12 +429,14 @@ void START_AND_BUILTIN_FUNCTIONS()
         "STRLEN LF@tmp LF@s\n" \
         "PUSHS LF@j\n" \
         "PUSHS LF@tmp\n" \
+        "INT2FLOATS\n" \
         "GTS\n" \
         "PUSHS bool@true\n" \
         "JUMPIFEQS substr_end\n" \
 
         "GETCHAR LF@substr_retval0 LF@s LF@i\n" \
         "PUSHS int@1\n" \
+        "INT2FLOATS\n" \
         "PUSHS LF@i\n" \
         "ADDS\n" \
         "POPS LF@i\n" \
@@ -446,7 +448,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS bool@true\n" \
         "JUMPIFEQS end_while\n" \
         "GETCHAR LF@tmp LF@s LF@i\n" \
-        "CONCAT LF@substr_retval1 LF@substr_retval0 LF@tmp\n" \
+        "CONCAT LF@substr_retval0 LF@substr_retval0 LF@tmp\n" \
         "PUSHS int@1\n" \
         "PUSHS LF@i\n" \
         "ADDS\n" \
@@ -454,7 +456,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "JUMP while\n" \
 
         "LABEL end_while\n" \
-        "PUSHS LF@substr_ret0\n" \
+        "PUSHS LF@substr_retval0\n" \
         "POPFRAME\n" \
         "RETURN\n\n");
 
