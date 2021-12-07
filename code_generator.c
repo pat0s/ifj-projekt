@@ -301,7 +301,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS string@nil\n" \
         "DEFVAR LF@tmp\n" \
         "TYPE LF@tmp LF@i\n" \
-        "PUSHS LF@tmo\n" \
+        "PUSHS LF@tmp\n" \
         "JUMPIFEQS unexpectedNil\n" \
         "PUSHS LF@i\n" \
         "PUSHS int@0\n" \
