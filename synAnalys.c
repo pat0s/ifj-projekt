@@ -2576,7 +2576,7 @@ void fProg_con(Token *token, enum STATE *state, Data_t *data){
 
             //TODO chyba mi tu PUSH returnovych hodnot
                 //generovanie kodu ukoncenie funkcie
-            FUNC_END(data->funkcia->ID);
+            FUNC_END(data->funkcia->ID, data->functionReturnLength);
             data->functionReturnLength = 0;
             
                 //Zaver

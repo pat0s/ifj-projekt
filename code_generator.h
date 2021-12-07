@@ -57,7 +57,7 @@ void PARAMETERS(char *func_name, char *param_name, int number, char *IDcislo);
 void DEF_RETVALS( int count);
 int RETURN_RETVALS(char **string, bool flag, char *number);
 int FUNC_RETURN(char** string, int count, int flag);
-void FUNC_END(char *func_name);
+void FUNC_END(char *func_name, int count);
 
 // while
 int WHILE_START(char **string, bool flag, char *number);

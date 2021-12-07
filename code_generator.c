@@ -1112,7 +1112,7 @@ int FUNC_RETURN(char** string, int count, int flag)
         return INTERNAL_ERROR;
     }
 
-    buffer = (char *)realloc(buffer, sizeof(char) * (base_len + strlen(buffer) + 25*(count + 1)));
+    buffer = (char *)realloc(buffer, sizeof(char) * (base_len + strlen(buffer) + 25));
     if (buffer == NULL) // check if malloc failed in CONDITION_START
     {
         return INTERNAL_ERROR;
@@ -1120,10 +1120,11 @@ int FUNC_RETURN(char** string, int count, int flag)
     
     for (int i = 0; i < count; i++)
     {
-        sprintf(buffer, "PUSHS LF@retval%d\n", i);        
+        sprintf(buffer, "PUSHS LF@retval%d\n", i);
+		generate_code(string, buffer, flag);
     }
 
-    sprintf(buffer, "POPFRAME\n", "RETURN\n");
+    sprintf(buffer, "POPFRAME\nRETURN\n");
 
     ie = generate_code(string, buffer, flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
@@ -1135,9 +1136,14 @@ int FUNC_RETURN(char** string, int count, int flag)
     return 0;
 }
 
-void FUNC_END(char *func_name)
+void FUNC_END(char *func_name, int count)
 {
-    printf("POPFRAME\n");
+	for (int i = 0; i < count; i++)
+    {
+        printf("PUSHS LF@retval%d\n", i);        
+    }
+    
+	printf("POPFRAME\n");
     printf("RETURN\n");
     printf("LABEL %s_end\n", func_name);
 }
