@@ -280,7 +280,9 @@ void START_AND_BUILTIN_FUNCTIONS()
         "PUSHS bool@true\n" \
         "JUMPIFEQS ord_end\n" \
         "PUSHS LF@s\n" \
+        "PUSHS int@1\n" \
         "PUSHS LF@i\n" \
+        "SUBS\n"\
         "STRI2INTS\n" \
         "POPS LF@ord_retval0\n" \
         "LABEL ord_end\n" \
