@@ -399,7 +399,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "DEFVAR LF@j\n" \
         "MOVE LF@j LF@substr_arg2\n" \
         "DEFVAR LF@substr_retval0\n" \
-        "MOVE LF@substr_retval1 nil@nil\n" \
+        "MOVE LF@substr_retval0 nil@nil\n" \
 
         "PUSHS nil@nil\n" \
         "PUSHS LF@s\n" \
