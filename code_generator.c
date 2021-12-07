@@ -421,7 +421,8 @@ void START_AND_BUILTIN_FUNCTIONS()
 
         "PUSHS LF@i\n" \
         "PUSHS int@1\n" \
-        "LTS\n" \
+    	  "INT2FLOATS\n" \
+	 	  "LTS\n" \
         "PUSHS bool@true\n" \
         "JUMPIFEQS substr_end\n" \
 
@@ -433,10 +434,15 @@ void START_AND_BUILTIN_FUNCTIONS()
         "GTS\n" \
         "PUSHS bool@true\n" \
         "JUMPIFEQS substr_end\n" \
-
-        "GETCHAR LF@substr_retval0 LF@s LF@i\n" \
+        
+		  "PUSHS LF@j\n"\
+		  "FLOAT2INTS\n"\
+		  "POPS LF@j\n"\
+		  "PUSHS LF@i\n"\
+		  "FLOAT2INTS\n"\
+		  "POPS LF@i\n"\
+		  "GETCHAR LF@substr_retval0 LF@s LF@i\n" \
         "PUSHS int@1\n" \
-        "INT2FLOATS\n" \
         "PUSHS LF@i\n" \
         "ADDS\n" \
         "POPS LF@i\n" \
