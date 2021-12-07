@@ -386,11 +386,11 @@ void START_AND_BUILTIN_FUNCTIONS()
         "LABEL substr\n" \
         "PUSHFRAME\n" \
         "DEFVAR LF@s\n" \
-        "MOVE LF@s LF@substr_arg1\n" \
+        "MOVE LF@s LF@substr_arg0\n" \
         "DEFVAR LF@i\n" \
         "MOVE LF@i LF@substr_arg1\n" \
         "DEFVAR LF@j\n" \
-        "MOVE LF@j LF@substr_arg1\n" \
+        "MOVE LF@j LF@substr_arg2\n" \
         "DEFVAR LF@substr_retval1\n" \
         "MOVE LF@substr_retval1 nil@nil\n" \
 
@@ -825,7 +825,7 @@ int STRLEN(char **string, bool flag)
 
 int TOP_I2F(char **string, bool flag, char *number)
 { 
-    int ie = generate_code(string, "CREATEFRAME\nDEFVAR TF@%%i2f_arg1\nPOPS TF@%%i2f_arg1\nCALL %%i2f\n", flag); // check if malloc failed in generate_code
+    int ie = generate_code(string, "CREATEFRAME\nDEFVAR TF@%i2f_arg1\nPOPS TF@%i2f_arg1\nCALL %i2f\n", flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
         return ie;
@@ -836,7 +836,7 @@ int TOP_I2F(char **string, bool flag, char *number)
 
 int BEFORE_TOP_I2F(char **string, bool flag, char *number)
 {
-    int ie = generate_code(string, "CREATEFRAME\nDEFVAR TF@%%i2f_arg1\nDEFVAR TF@%%i2f_tmp\nPOPS TF@%%i2f_tmp\nPOPS TF@%%i2f_arg1\nCALL %%i2f\nPUSHS TF@%%i2f_tmp\n", flag); // check if malloc failed in generate_code
+    int ie = generate_code(string, "CREATEFRAME\nDEFVAR TF@%i2f_arg1\nDEFVAR TF@%i2f_tmp\nPOPS TF@%i2f_tmp\nPOPS TF@%i2f_arg1\nCALL %i2f\nPUSHS TF@%i2f_tmp\n", flag); // check if malloc failed in generate_code
     if (ie == INTERNAL_ERROR)
     {
         return ie;
