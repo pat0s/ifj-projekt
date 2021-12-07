@@ -78,11 +78,7 @@ PUSHS TF@%i2f_tmp
 "PUSHS string@nil\n" \
 "JUMPIFEQS var-nil\n" \
 "MOVE GF@T-Nvar LF@i\n" \
-
 "INT2FLOAT LF@i GF@T-Nvar\n" \
-
 "LABEL var-nil\n" \
-
-"PUSHS LF@i\n" \
-    	
+"PUSHS LF@i\n" \  	
 "RETURN\n\n" \
