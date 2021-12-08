@@ -357,10 +357,11 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
                 //generovat s osetrenim nil
                 kontrola_op_pred=false;
                 if(!is_empty(s)){
-                    kontrola_op_pred=!strcmp(top_type(s),"op");
+                    kontrola_op_pred=!strcmp(top_type(s),"op") && strcmp(top(s),"(") ;
+
                 }
                 int k=(rozpoznani_znaku(token->name));
-                kontrola_op_za = (k==0||k==1||k==2||k==5||k==7);
+                kontrola_op_za = (k==0||k==1||k==2||k==5);
                 if(kontrola_op_pred||kontrola_op_za){
                   PUSHS(&data->string,data->whileDeep,generator_token,INT2STRING(node->var->specialID),true);  
                 } 
