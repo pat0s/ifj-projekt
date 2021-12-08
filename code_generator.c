@@ -408,7 +408,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "DEFVAR LF@j\n" \
         "MOVE LF@j LF@substr_arg2\n" \
         "DEFVAR LF@substr_retval0\n" \
-        "MOVE LF@substr_retval0 nil@nil\n" \
+        "MOVE LF@substr_retval0 string@\n" \
 
         "PUSHS nil@nil\n" \
         "PUSHS LF@s\n" \
@@ -475,6 +475,7 @@ void START_AND_BUILTIN_FUNCTIONS()
         "JUMP while\n" \
 
         "LABEL end_while\n" \
+        "LABEL substr_end\n" \
         "PUSHS LF@substr_retval0\n" \
         "POPFRAME\n" \
         "RETURN\n\n");
