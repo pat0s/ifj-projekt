@@ -1,33 +1,18 @@
 /**
+ * Project: IFJ21 
  * @file symtable.h
- * @author Ivo Procházka
- * @brief 
- * @version 0.1
- * @date 2021-11-13
- * 
- * @copyright Copyright (c) 2021
- * 
+ *
+ * @brief Declarations of functions for symtable and frames 
+ * @author Ivo Procházka, xproch0h
  */
-
 
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
-/**
- * @file symtable.h
- * @author Ivo Procázka
- * @brief 
- * @version 0.1
- * @date 2021-11-24
- * 
- * @copyright Copyright (c) 2021
- * 
- */
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
 #include "error.h"
 
 #define LENGTH(a) (sizeof(a) / sizeof(*a)) // simple macro, counts length of an array

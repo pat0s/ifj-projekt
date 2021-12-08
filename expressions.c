@@ -1,12 +1,9 @@
 /**
  * Project: IFJ21
- * @file expressions.c
- * @author Dovhalenko Dmytro
- * @version 0.1
+ * @file expressions.h
  * 
- * 
- * @copyright Copyright (c) 2021
- * 
+ * @brief Precedence analysis
+ * @author Dovhalenko Dmytro, xdovha00
  */
 
 

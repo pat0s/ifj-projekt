@@ -1,12 +1,9 @@
 /**
+ * Project: IFJ21 
  * @file symtable.c
- * @author Ivo Procházka
- * @brief 
- * @version 0.1
- * @date 2021-11-13
- * 
- * @copyright Copyright (c) 2021
- * 
+ *
+ * @brief Functions for symtable and frames 
+ * @author Ivo Procházka, xproch0h
  */
 #include "symtable.h"
 

@@ -1,7 +1,8 @@
 /**
+ * Project: IFJ21
  * @file expressions_stack.h
  * 
- * @brief
+ * @brief Header file for expressions_stack.c. Contains declarations of struct and functions
  * @author Dovhalenko Dmytro, xdovha00
  */
 

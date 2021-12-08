@@ -1,7 +1,8 @@
 /**
+ * Project: IFJ21
  * @file expressions_stack.c
  * 
- * @brief
+ * @brief Implementation of stack for expressions
  * @author Dovhalenko Dmytro, xdovha00
  */
 

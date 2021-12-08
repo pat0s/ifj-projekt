@@ -1,12 +1,9 @@
 /**
  * Project: IFJ21
- * @file synAnalys.h
- * @author Dalibor Králik
- * @version 0.1
+ * @file synAnalys.c
  * 
- * 
- * @copyright Copyright (c) 2021
- * 
+ * @brief Declarations of function for Syntax analysis
+ * @author Dalibor Králik, xkrali20
  */
 
 
@@ -18,10 +15,6 @@
 
 
 enum STATE {assign, assigns, arg, args, exp, ifStatement, item, item_n, init, init_value, prog, prog_con, par_type, ret_val, ret_type, st_list, type, types, value, values, params, params_n, local};
-
-
-
-
 
 
 void reallocArray(Data_t *data, int *array);

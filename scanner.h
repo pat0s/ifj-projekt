@@ -1,4 +1,5 @@
 /**
+ * Project: IFJ21
  * @file scanner.h
  * 
  * @brief Header file for scanner.c. Contains declarations of struct and functions.

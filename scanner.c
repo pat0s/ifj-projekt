@@ -1,4 +1,5 @@
 /**
+ * Project: IFJ21
  * @file scanner.c
  * 
  * @brief Implementation of Scanner

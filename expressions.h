@@ -1,10 +1,12 @@
 /**
+ * Project: IFJ21
  * @file expressions.h
  * 
- * @brief
+ * @brief Header file for precedence analysis
  * @author Patrik Sehnoutek, xsehno01
  * @author Dovhalenko Dmytro, xdovha00
  */
+
 #include "scanner.h"
 #include "symtable.h"
 #include "expressions_stack.h"

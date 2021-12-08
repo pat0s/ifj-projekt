@@ -1,4 +1,5 @@
 /**
+ * Project: IFJ21 
  * @file error.h
  * 
  * @brief Contains error types

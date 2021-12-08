@@ -1,3 +1,12 @@
+/**
+ * Project: IFJ21
+ * @file code_generator.c
+ * 
+ * @brief Function for code generation
+ * @author Patrik Sehnoutek, xsehno01
+ * @author Ivo Procházka, xproch0h
+ */
+
 #ifndef _CODE_GENERATOR_H_
 #define _CODE_GENERATOR_H_
 
