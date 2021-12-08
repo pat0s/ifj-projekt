@@ -26,7 +26,7 @@ LEX_OK=(".."  "==" "ahoj " "_cau" "AhoK_d" "ahoj_98" "98" "08.0" "98.0")
 
 i=1
 for each in "${lines[@]}"; do
-	echo $each |./$EXECUTABLE
+	echo $each |./$EXECUTABLE > /dev/null 2>/dev/null
 	if [ $? -eq 1 ]; then
 		to_file "-- test c.$i - OK" 
 	else
@@ -39,7 +39,7 @@ to_file ""
 to_file "------------ LEX testy (OK) ------------"
 i=1
 for each in "${LEX_OK[@]}"; do
-	echo $each |./$EXECUTABLE
+	echo $each |./$EXECUTABLE > /dev/null  2>/dev/null
 	if [ $? -eq 2 ]; then
 		to_file "-- test c.$i - OK" 
 	else
@@ -81,7 +81,7 @@ to_file ""
 to_file "------------ Basic testy ------------"
 to_file "Vsetky by mali skoncit s chybovym kodom 0!"
 for i in `seq 1 16`; do
-	./$EXECUTABLE < $BASIC_TESTS$i
+	./$EXECUTABLE < $BASIC_TESTS$i > /dev/null 2>/dev/null
 	check_error_code $? 0 $i
 done
 
@@ -89,35 +89,35 @@ to_file ""
 to_file "---------- Testy syntaktickych chyb ----------"
 to_file "Vsetky by mali skoncit s chybovym kodom 2!"
 for i in `seq 1 10`; do
-	./$EXECUTABLE < $SYN_ERR_TESTS$i	
+	./$EXECUTABLE < $SYN_ERR_TESTS$i > /dev/null 2>/dev/null
 	check_error_code $? 2 $i
 done
 
 to_file ""
 to_file "---------- Testy semantickych chyb (3)----------"
 for i in `seq 1 9`; do
-	./$EXECUTABLE < $SEM_ERR_TESTS$i	
+	./$EXECUTABLE < $SEM_ERR_TESTS$i > /dev/null 2>/dev/null
 	check_error_code $? 3 $i
 done
 
 to_file ""
 to_file "---------- Testy semantickych chyb (4)----------"
 for i in `seq 14 17`; do
-	./$EXECUTABLE < $SEM_ERR_TESTS$i	
+	./$EXECUTABLE < $SEM_ERR_TESTS$i > /dev/null 2>/dev/null
 	check_error_code $? 4 $i
 done
 
 to_file ""
 to_file "---------- Testy semantickych chyb (5)----------"
 for i in `seq 18 20`; do
-	./$EXECUTABLE < $SEM_ERR_TESTS$i	
+	./$EXECUTABLE < $SEM_ERR_TESTS$i > /dev/null 2>/dev/null
 	check_error_code $? 5 $i
 done
 
 to_file ""
 to_file "---------- Testy semantickych chyb (6)----------"
 for i in `seq 10 13`; do
-	./$EXECUTABLE < $SEM_ERR_TESTS$i	
+	./$EXECUTABLE < $SEM_ERR_TESTS$i > /dev/null 2>/dev/null
 	check_error_code $? 6 $i
 done
 
@@ -125,18 +125,21 @@ to_file ""
 to_file "---------- Testy semantickych chyb (9)----------"
 to_file "Delenie nulou ako konstantou 0 a 0.0"
 i=0
-./$EXECUTABLE < $SEM_ERR_TESTS$i
+./$EXECUTABLE < $SEM_ERR_TESTS$i > /dev/null 2>/dev/null
 check_error_code $? 9 1
-./$EXECUTABLE < $SEM_ERR_TESTS$i$i
+./$EXECUTABLE < $SEM_ERR_TESTS$i$i > /dev/null 2>/dev/null
 check_error_code $? 9 2
 
 to_file ""
 to_file "---------- Testy zo zadania ifj projektu ----------"
 to_file "Vsetky by mali skoncit s chybovym kodom 0!"
 for i in `seq 1 5`; do
-	./$EXECUTABLE < $IFJ_TESTS$i	
+	./$EXECUTABLE < $IFJ_TESTS$i > /dev/null 2>/dev/null
 	check_error_code $? 0 $i
 done
 
+echo ""
+echo "---------------------------------------------------------"
+echo "Vysledok testov je ulozeny v subore tests/tests_output.log"
 #-- End of file run_tests.sh --#
 

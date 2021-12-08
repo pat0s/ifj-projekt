@@ -12,6 +12,7 @@ $(EXECUTABLE):  synAnalys.o  scanner.o symtable.o expressions.o expressions_stac
 	gcc $(CFLAGS) -c $^ -o $@
 
 our_tests: 
+	chmod +x run_test.sh
 	./run_test.sh IFJ21 yes
 
 test:
@@ -19,3 +20,4 @@ test:
 
 clean:
 	rm $(EXECUTABLE) *.o
+
