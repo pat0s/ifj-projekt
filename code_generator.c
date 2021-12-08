@@ -151,7 +151,8 @@ char *create_special_name(char *name, char *number)
     char prefix[7] = "LF@C-";
 
     special_name = (char *)malloc((strlen(number) + strlen(name) + 7)*(sizeof(char)));
-    // TODO osetrenie mallocu
+    
+    if (special_name == NULL) exit(INTERNAL_ERROR);
 
     sprintf(special_name, "%s%s%s", prefix, number, name);
     return special_name;
@@ -182,14 +183,13 @@ char *symbol_generator(Token *token, char* number)
     {
         if (strcmp(token->name, "string") == 0)
         {
-            // TODO mozno pomocou reallocu
             char *buf;
             buf = (char *)malloc(sizeof(char) * 1000);
-            // TODO: osetrenie mallocu
+            if (buf == NULL) exit(INTERNAL_ERROR);
             str2_codestr(buf, token->value);
 
             symbol = (char *)malloc((8 + strlen(buf))*(sizeof(char)));
-            // TODO: osetrenie mallocu
+            if (symbol == NULL) exit(INTERNAL_ERROR); 
             strcpy(symbol, "string@");
             strcat(symbol, buf);
             free(buf);
@@ -197,7 +197,7 @@ char *symbol_generator(Token *token, char* number)
         else if(strcmp(token->name, "int") == 0)
         {
             symbol = (char *)malloc((token->value_len + 5)*(sizeof(char)));
-            // TODO: osetrenie mallocu
+            if (symbol == NULL) exit(INTERNAL_ERROR);
             strcpy(symbol, "int@");
             strcat(symbol, token->value);
 
@@ -209,7 +209,7 @@ char *symbol_generator(Token *token, char* number)
             str2hex(token->value, buf);
 
             symbol = (char*)malloc((7 + strlen(buf))*sizeof(char));
-            // TODO osetrenie mallocu
+            if (symbol == NULL) exit(INTERNAL_ERROR);
             strcpy(symbol, "float@");
             strcat(symbol, buf);
         }
