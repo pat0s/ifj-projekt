@@ -29,6 +29,12 @@ int precence_table[TABLE_SIZE][TABLE_SIZE] =
     { SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, EMPTY, EMPTY }    // $
 };                                                                       //zasobnik
 
+/**
+ * @brief Rozpoznani znaku 
+ * 
+ * @returns 0 pro +-, 1 pro * / //, 2 pro .., 3 pro #, 4 pro identifikator cislo nebo retezec, 5 pro relacni operator
+ * 6 pro (, 7 pro ),8 jiny znak
+ */
 int rozpoznani_znaku(char*znak){
     if(!strcmp(znak,"+")||!strcmp(znak,"-")){
         return 0;
@@ -62,7 +68,7 @@ int rozpoznani_znaku(char*znak){
 /**
  * @brief Rozpoznani znaku na vstupu
  * 
- * @returns druhy index precendencni tabulky nebo -1 pri znaku se kterym nepracuje down-top
+ * @returns druhy index precendencni tabulky nebo -1 pri znaku se kterym nepracuje precendencna analyza
  */
 
 int vstupni_znak(Token* token){
@@ -132,19 +138,15 @@ void do_shift(Stack*s,Data_t * data,Token*token,int vstup,Tframe_list *frames){
             int idtype = node->var->data_type;
             if(idtype==0){
                 type="int"; 
-               //printf("idtype = int\n");
             }
             else if(idtype==1){
                 type="number"; 
-                //printf("idtype = num\n");
             }
             else if(idtype==2){
                 type="string";
-                //printf("idtype = string\n");
             }
             else {
                 type="nil";
-                //printf("idtype = nil\n");
             }
         }
         else{
@@ -192,7 +194,7 @@ void do_equal(Stack*s){
 /**
  * @brief Provede kontrolu typu u binarnich operatoru a nastavi typ vysledneho vyrazu;
  * 
- * @returns 0 pri uspechu, -1 pri chybe; -2 jestli zaporne cislo(zamisto operace odecitani)
+ * @returns 0 pri uspechu, -1 pri chybe
  */
 int kontrola_typu(Stack *s,Data_t* data){
     char type[7];
@@ -231,7 +233,6 @@ int kontrola_typu(Stack *s,Data_t* data){
             }
         }
         else {
-            //push(s,"E","int");
             return -1;
         }
     }
@@ -260,7 +261,6 @@ int kontrola_typu(Stack *s,Data_t* data){
             }
         }
         else {
-            //push(s,"E","number");
             return -1;
         }
     }
@@ -273,7 +273,6 @@ int kontrola_typu(Stack *s,Data_t* data){
  */
 void kontrola_typu_vysledku(Stack* s,Data_t* data,Token* token){
     if(data->checkDataType==true){
-        //printf("kontrol type %s, %d --------------------\n",top_type(s),data->dataType);
         int typ_vyrazu;
         if(!strcmp(top_type(s),"int")){
             typ_vyrazu=0;
@@ -299,13 +298,12 @@ void kontrola_typu_vysledku(Stack* s,Data_t* data,Token* token){
             return;
         }
         else{
-            //printf("kontrol type %s, %d--------------------\n",top_type(s),data->dataType);
             fprintf(stderr, "ERROR - Chyba syntaktickeho analyzatoru zdola nahoru, nekompatybilita typu vyrazu\n");
             destroy(s);
-            /*while(frames!=NULL){
-            eleteFirst(frames); 
-            } 
-            */
+            while(data->list->first != data->list->last){
+                deleteFirst(data->list);
+            }
+            deleteFirst(data->list);
             free(token);
             free(data);
             exit(data->errorCode);
@@ -407,12 +405,6 @@ int do_reduc(Stack*s,Token* token,Token* generator_token,Data_t* data){
             //zavolat generovani -
             SUBS(&data->string,data->whileDeep);
             }
-            /*else if(kontrol==-2){
-            //zavolat generovani zaporneho cisla  
-            strcat("-",generator_token->value);
-            generator_token->value_len++; 
-            PUSHS(&data->string,data->whileDeep,generator_token,NULL,false); 
-            }*/
             else{
                 return -1;
             }
@@ -580,29 +572,16 @@ void exp_analysator(Data_t *data){
     i=zasobnikovy_znak(s);
     j=vstupni_znak(token);
     while(i!=8 || j!=8){
-
-//Vypis stavu zasobniku pro debug
-/*
-    char*print=top(s);
-    char*print2=top1(s);
-    printf("Vrchol zasobniku: %s%s\n",print2,print);
-    print=token->name;
-    printf("Vstupni znak: %s\n",print);
-*/
-    i=zasobnikovy_znak(s);
-    j=vstupni_znak(token);
-/*
-    printf("Index tabulky:(%i, %i) \n",i,j);
-    printf("Pravidlo tabulky: %i\n",precence_table[i][j]);
-*/
-///////////////////////////////////////////////////////////////    
+        i=zasobnikovy_znak(s);
+        j=vstupni_znak(token);    
         if(j==4 && top1(s)!=NULL && !strcmp(top(s),"E")){
             i=4;
         }
         if(precence_table[i][j]==0&&error!=-1){         //SHIFT
                 if(i==8&&j==4&&!is_empty(s)){
                     kontrola_typu_vysledku(s,data,token);
-                    //printf("Return token %s\n",data->token->name);         
+                    free(generator_token->value);
+                    free(generator_token);         
                     return;
                 }
                 if(j==4){
@@ -627,12 +606,12 @@ void exp_analysator(Data_t *data){
                     if((i==4&&j==4)) {
                         while((top1(s)!=NULL||strcmp(top(s),"E"))&&error!=-1){
                             error=do_reduc(s,token,generator_token,data);
-                            //printf("zasobnik %s %s",top1(s),top(s)\n);
                         }
                     } 
                     if(error!=-1){
                         kontrola_typu_vysledku(s,data,token);
-                        //printf("Return token %s\n",data->token->name);         
+                        free(generator_token->value);
+                        free(generator_token);
                         return;
                         }
                     }
@@ -646,33 +625,15 @@ void exp_analysator(Data_t *data){
                             deleteFirst(data->list);
                     free(token);
                     free(data);
+                    free(generator_token->value);
+                    free(generator_token);
                     exit(INCOMPATIBLE_TYPES);//chyba
                 }
             }                                           
-//Vypis stavu zasobniku po provedeni operace
-/*
-    print=top(s);
-    print2=top1(s);
-    printf("Vrchol zasobniku: %s%s\n",print2,print);
-    print=top_type(s);
-    printf("Type: %s\n\n",print);
-*/
-///////////////////////////////////////////////////////////
     }
     kontrola_typu_vysledku(s,data,token);
-    //printf("Return token %s\n",data->token->name);
+    free(generator_token->value);
+    free(generator_token);
     return;
 }
-/*
-int main(){
-    Token *token = malloc(sizeof(Token));
-    strcpy(token->name,"int");
-    token->value="sfd";
-
-    
-    token= exp_analysator(token);
-    free(token);
-    return 0;
-}*/
-
 /* End of file expressions.c */
